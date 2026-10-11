@@ -1,0 +1,209 @@
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { Logo } from "@/components/AppShell";
+import { supabase } from "@/integrations/supabase/client";
+
+export const Route = createFileRoute("/auth")({
+  
+  head: () => ({
+    meta: [
+      { title: "Anmelden – KESHJA KI-Finanzassistent" },
+      {
+        name: "description",
+        content:
+          "Melde dich bei KESHJA an oder erstelle ein Konto, um Kassenbons zu erfassen und deine Ausgaben auszuwerten.",
+      },
+      { property: "og:title", content: "Anmelden – KESHJA KI-Finanzassistent" },
+      {
+        property: "og:description",
+        content: "Konto erstellen oder anmelden und Kassenbons automatisch erfassen.",
+      },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
+  component: AuthPage,
+});
+
+const inputClass =
+  "w-full rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20";
+
+function AuthPage() {
+  const navigate = useNavigate();
+  const [mode, setMode] = useState<"login" | "register">("login");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [info, setInfo] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) navigate({ to: "/", replace: true });
+    });
+  }, [navigate]);
+
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    if (busy) return;
+    setBusy(true);
+    setInfo(null);
+
+    try {
+      if (mode === "register") {
+        const { data, error } = await supabase.auth.signUp({
+          email: email.trim(),
+          password,
+          options: {
+            emailRedirectTo: window.location.origin,
+            data: { display_name: name.trim() || undefined },
+          },
+        });
+        if (error) throw error;
+        if (!data.session) {
+          setInfo(
+            "Fast geschafft: Wir haben dir eine E-Mail geschickt. Bestätige den Link, um dein Konto zu aktivieren.",
+          );
+          return;
+        }
+        toast.success("Konto erstellt. Willkommen bei KESHJA!");
+        navigate({ to: "/", replace: true });
+        return;
+      }
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      if (error) throw error;
+      navigate({ to: "/", replace: true });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Anmeldung fehlgeschlagen.";
+      toast.error(
+        message === "Invalid login credentials"
+          ? "E-Mail oder Passwort ist nicht korrekt."
+          : message,
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleReset() {
+    if (!email.trim()) {
+      toast.error("Bitte zuerst deine E-Mail-Adresse eintragen.");
+      return;
+    }
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    if (error) toast.error(error.message);
+    else toast.success("Wir haben dir eine E-Mail zum Zurücksetzen geschickt.");
+  }
+
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
+      <div className="w-full max-w-sm">
+        <div className="flex justify-center">
+          <Logo />
+        </div>
+
+        <div className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-card">
+          <h1 className="text-lg font-semibold">
+            {mode === "login" ? "Willkommen zurück" : "Konto erstellen"}
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {mode === "login"
+              ? "Melde dich an, um deine Kassenbons und Auswertungen zu sehen."
+              : "Ein Konto genügt – Kassenbon fotografieren und loslegen."}
+          </p>
+
+          <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+            {mode === "register" && (
+              <div>
+                <label className="text-xs font-medium text-muted-foreground" htmlFor="name">
+                  Dein Name
+                </label>
+                <input
+                  id="name"
+                  className={`mt-1.5 ${inputClass}`}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  autoComplete="name"
+                  placeholder="Vorname"
+                />
+              </div>
+            )}
+            <div>
+              <label className="text-xs font-medium text-muted-foreground" htmlFor="email">
+                E-Mail
+              </label>
+              <input
+                id="email"
+                type="email"
+                required
+                className={`mt-1.5 ${inputClass}`}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                placeholder="du@example.com"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground" htmlFor="password">
+                Passwort
+              </label>
+              <input
+                id="password"
+                type="password"
+                required
+                minLength={6}
+                className={`mt-1.5 ${inputClass}`}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete={mode === "login" ? "current-password" : "new-password"}
+                placeholder="••••••••"
+              />
+            </div>
+
+            {info && (
+              <p className="rounded-xl bg-accent px-3 py-2.5 text-xs text-accent-foreground">
+                {info}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={busy}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-card transition-opacity hover:opacity-90 disabled:opacity-60"
+            >
+              {busy && <Loader2 className="h-4 w-4 animate-spin" />}
+              {mode === "login" ? "Anmelden" : "Konto erstellen"}
+            </button>
+          </form>
+
+          <div className="mt-5 flex flex-col gap-2 text-center text-xs text-muted-foreground">
+            {mode === "login" && (
+              <button type="button" className="hover:text-foreground" onClick={handleReset}>
+                Passwort vergessen?
+              </button>
+            )}
+            <button
+              type="button"
+              className="font-medium text-primary"
+              onClick={() => {
+                setMode(mode === "login" ? "register" : "login");
+                setInfo(null);
+              }}
+            >
+              {mode === "login"
+                ? "Noch kein Konto? Jetzt registrieren"
+                : "Ich habe bereits ein Konto – anmelden"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}

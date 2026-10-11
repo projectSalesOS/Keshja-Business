@@ -1,0 +1,207 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design system definition.
+ *
+ * The @theme inline block maps CSS custom properties to Tailwind utility
+ * classes (e.g. --color-primary -> bg-primary, text-primary).
+ *
+ * The :root and .dark blocks define the actual color values using oklch.
+ * All colors MUST use oklch format.
+ *
+ * To add a new semantic color:
+ * 1. Add the variable to :root (light value) and .dark (dark value)
+ * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ */
+
+@theme inline {
+  --font-sans:
+    "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Sora", ui-sans-serif, system-ui, sans-serif;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-chart-6: var(--chart-6);
+  --color-chart-7: var(--chart-7);
+  --color-chart-8: var(--chart-8);
+  --shadow-card: var(--shadow-soft);
+  --shadow-elevated: var(--shadow-strong);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.875rem;
+  --background: oklch(0.985 0.004 197);
+  --foreground: oklch(0.235 0.021 240);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.235 0.021 240);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.235 0.021 240);
+  --primary: oklch(0.475 0.079 191);
+  --primary-foreground: oklch(0.99 0.005 190);
+  --secondary: oklch(0.955 0.008 200);
+  --secondary-foreground: oklch(0.33 0.03 220);
+  --muted: oklch(0.958 0.006 210);
+  --muted-foreground: oklch(0.545 0.021 233);
+  --accent: oklch(0.938 0.026 190);
+  --accent-foreground: oklch(0.35 0.06 195);
+  --destructive: oklch(0.567 0.183 24);
+  --destructive-foreground: oklch(0.99 0.005 190);
+  --border: oklch(0.912 0.008 217);
+  --input: oklch(0.912 0.008 217);
+  --ring: oklch(0.475 0.079 191);
+  --chart-1: oklch(0.475 0.079 191);
+  --chart-2: oklch(0.62 0.088 196);
+  --chart-3: oklch(0.45 0.065 250);
+  --chart-4: oklch(0.72 0.105 172);
+  --chart-5: oklch(0.6 0.09 264);
+  --chart-6: oklch(0.78 0.09 145);
+  --chart-7: oklch(0.68 0.1 60);
+  --chart-8: oklch(0.55 0.06 300);
+  --cat-lebensmittel: #2e9e4f;
+  --cat-getraenke: #00a6c4;
+  --cat-alkohol: #8c1d40;
+  --cat-mobilitaet: #2563c9;
+  --cat-haushalt: #e8871e;
+  --cat-drogerie: #e0459b;
+  --cat-gesundheit: #d62828;
+  --cat-restaurant: #ebc017;
+  --cat-freizeit: #8046d6;
+  --cat-haustiere: #8b5a2b;
+  --cat-baby: #17bebb;
+  --cat-kleidung: #f2704f;
+  --cat-wohnen: #6b8e23;
+  --cat-elektronik: #3e4c99;
+  --cat-buero: #0f766e;
+  --cat-tabak: #464f63;
+  --cat-dienstleistungen: #b45309;
+  --cat-sonstiges: #7a8794;
+  --shadow-soft: 0 1px 2px oklch(0.3 0.03 220 / 0.05), 0 8px 24px oklch(0.3 0.03 220 / 0.06);
+  --shadow-strong: 0 12px 40px oklch(0.3 0.03 220 / 0.12);
+  --sidebar: oklch(0.995 0.003 197);
+  --sidebar-foreground: oklch(0.235 0.021 240);
+  --sidebar-primary: oklch(0.475 0.079 191);
+  --sidebar-primary-foreground: oklch(0.99 0.005 190);
+  --sidebar-accent: oklch(0.945 0.018 195);
+  --sidebar-accent-foreground: oklch(0.35 0.06 195);
+  --sidebar-border: oklch(0.918 0.008 217);
+  --sidebar-ring: oklch(0.475 0.079 191);
+}
+
+.dark {
+  --background: oklch(0.19 0.018 235);
+  --foreground: oklch(0.965 0.005 210);
+  --card: oklch(0.235 0.02 236);
+  --card-foreground: oklch(0.965 0.005 210);
+  --popover: oklch(0.235 0.02 236);
+  --popover-foreground: oklch(0.965 0.005 210);
+  --primary: oklch(0.72 0.09 186);
+  --primary-foreground: oklch(0.2 0.03 220);
+  --secondary: oklch(0.29 0.022 235);
+  --secondary-foreground: oklch(0.95 0.006 210);
+  --muted: oklch(0.285 0.02 235);
+  --muted-foreground: oklch(0.71 0.02 225);
+  --accent: oklch(0.32 0.035 200);
+  --accent-foreground: oklch(0.93 0.02 190);
+  --destructive: oklch(0.65 0.17 24);
+  --destructive-foreground: oklch(0.98 0.005 210);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.72 0.09 186);
+  --chart-1: oklch(0.72 0.09 186);
+  --chart-2: oklch(0.6 0.085 196);
+  --chart-3: oklch(0.63 0.08 250);
+  --chart-4: oklch(0.78 0.1 172);
+  --chart-5: oklch(0.68 0.09 264);
+  --chart-6: oklch(0.8 0.09 145);
+  --chart-7: oklch(0.75 0.1 60);
+  --chart-8: oklch(0.66 0.07 300);
+  --cat-lebensmittel: #45c46c;
+  --cat-getraenke: #2fc4de;
+  --cat-alkohol: #c1436c;
+  --cat-mobilitaet: #5b95f0;
+  --cat-haushalt: #f0a04b;
+  --cat-drogerie: #f06cb8;
+  --cat-gesundheit: #ef4b4b;
+  --cat-restaurant: #f2ce3a;
+  --cat-freizeit: #a077ea;
+  --cat-haustiere: #b07b47;
+  --cat-baby: #35d7d4;
+  --cat-kleidung: #ff8d70;
+  --cat-wohnen: #98bb45;
+  --cat-elektronik: #7382d6;
+  --cat-buero: #2fa79d;
+  --cat-tabak: #8794a8;
+  --cat-dienstleistungen: #e08a2e;
+  --cat-sonstiges: #9aa6b2;
+  --shadow-soft: 0 1px 2px oklch(0 0 0 / 0.3), 0 8px 24px oklch(0 0 0 / 0.25);
+  --shadow-strong: 0 12px 40px oklch(0 0 0 / 0.45);
+  --sidebar: oklch(0.215 0.019 236);
+  --sidebar-foreground: oklch(0.965 0.005 210);
+  --sidebar-primary: oklch(0.72 0.09 186);
+  --sidebar-primary-foreground: oklch(0.2 0.03 220);
+  --sidebar-accent: oklch(0.3 0.03 200);
+  --sidebar-accent-foreground: oklch(0.93 0.02 190);
+  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-ring: oklch(0.72 0.09 186);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+}
