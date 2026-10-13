@@ -14,6 +14,8 @@ export const Route = createFileRoute("/_authenticated/einstellungen")({
       },
       { property: "og:title", content: "Einstellungen – KESHJA" },
       { property: "og:description", content: "Grundeinstellungen des KI-Finanzassistenten." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: EinstellungenPage,

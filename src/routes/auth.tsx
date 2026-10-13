@@ -21,6 +21,8 @@ export const Route = createFileRoute("/auth")({
         content: "Konto erstellen oder anmelden und Kassenbons automatisch erfassen.",
       },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AuthPage,
