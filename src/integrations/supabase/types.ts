@@ -82,6 +82,230 @@ export type Database = {
           },
         ]
       }
+      document_items: {
+        Row: {
+          created_at: string
+          description: string
+          document_id: string
+          id: string
+          organization_id: string
+          position: number
+          quantity: number
+          tax_rate: number
+          unit: string | null
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          document_id: string
+          id?: string
+          organization_id: string
+          position?: number
+          quantity?: number
+          tax_rate?: number
+          unit?: string | null
+          unit_price?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          document_id?: string
+          id?: string
+          organization_id?: string
+          position?: number
+          quantity?: number
+          tax_rate?: number
+          unit?: string | null
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_items_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_items_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      documents: {
+        Row: {
+          cancels_document_id: string | null
+          company_snapshot: Json | null
+          created_at: string
+          created_by: string
+          customer_id: string | null
+          customer_snapshot: Json | null
+          doc_date: string
+          due_date: string | null
+          id: string
+          intro: string | null
+          issued_at: string | null
+          kind: string
+          number: string | null
+          organization_id: string
+          payment_days: number | null
+          service_date: string | null
+          service_period_end: string | null
+          small_business: boolean
+          source_quote_id: string | null
+          status: string
+          subtotal: number
+          tax_total: number
+          terms: string | null
+          total: number
+          updated_at: string
+          valid_until: string | null
+        }
+        Insert: {
+          cancels_document_id?: string | null
+          company_snapshot?: Json | null
+          created_at?: string
+          created_by?: string
+          customer_id?: string | null
+          customer_snapshot?: Json | null
+          doc_date?: string
+          due_date?: string | null
+          id?: string
+          intro?: string | null
+          issued_at?: string | null
+          kind: string
+          number?: string | null
+          organization_id: string
+          payment_days?: number | null
+          service_date?: string | null
+          service_period_end?: string | null
+          small_business?: boolean
+          source_quote_id?: string | null
+          status?: string
+          subtotal?: number
+          tax_total?: number
+          terms?: string | null
+          total?: number
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Update: {
+          cancels_document_id?: string | null
+          company_snapshot?: Json | null
+          created_at?: string
+          created_by?: string
+          customer_id?: string | null
+          customer_snapshot?: Json | null
+          doc_date?: string
+          due_date?: string | null
+          id?: string
+          intro?: string | null
+          issued_at?: string | null
+          kind?: string
+          number?: string | null
+          organization_id?: string
+          payment_days?: number | null
+          service_date?: string | null
+          service_period_end?: string | null
+          small_business?: boolean
+          source_quote_id?: string | null
+          status?: string
+          subtotal?: number
+          tax_total?: number
+          terms?: string | null
+          total?: number
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_cancels_document_id_fkey"
+            columns: ["cancels_document_id"]
+            isOneToOne: true
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_source_quote_id_fkey"
+            columns: ["source_quote_id"]
+            isOneToOne: true
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dunning_notices: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          invoice_id: string
+          level: number
+          new_due_date: string
+          notice_date: string
+          open_amount: number
+          organization_id: string
+          sent_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          invoice_id: string
+          level: number
+          new_due_date: string
+          notice_date?: string
+          open_amount: number
+          organization_id: string
+          sent_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          invoice_id?: string
+          level?: number
+          new_due_date?: string
+          notice_date?: string
+          open_amount?: number
+          organization_id?: string
+          sent_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dunning_notices_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dunning_notices_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fixed_costs: {
         Row: {
           active: boolean
@@ -167,6 +391,35 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      number_sequences: {
+        Row: {
+          kind: string
+          last_value: number
+          organization_id: string
+          year: number
+        }
+        Insert: {
+          kind: string
+          last_value?: number
+          organization_id: string
+          year: number
+        }
+        Update: {
+          kind?: string
+          last_value?: number
+          organization_id?: string
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "number_sequences_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       organization_members: {
         Row: {
@@ -271,6 +524,57 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string
+          id: string
+          invoice_id: string
+          method: string | null
+          note: string | null
+          organization_id: string
+          payment_date: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by?: string
+          id?: string
+          invoice_id: string
+          method?: string | null
+          note?: string | null
+          organization_id: string
+          payment_date?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string
+          id?: string
+          invoice_id?: string
+          method?: string | null
+          note?: string | null
+          organization_id?: string
+          payment_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -463,6 +767,7 @@ export type Database = {
           description: string | null
           id: string
           organization_id: string
+          payment_id: string | null
           receipt_id: string | null
           recurring_expense_id: string | null
           recurring_period: string | null
@@ -480,6 +785,7 @@ export type Database = {
           description?: string | null
           id?: string
           organization_id: string
+          payment_id?: string | null
           receipt_id?: string | null
           recurring_expense_id?: string | null
           recurring_period?: string | null
@@ -497,6 +803,7 @@ export type Database = {
           description?: string | null
           id?: string
           organization_id?: string
+          payment_id?: string | null
           receipt_id?: string | null
           recurring_expense_id?: string | null
           recurring_period?: string | null
@@ -517,6 +824,13 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: true
+            referencedRelation: "payments"
             referencedColumns: ["id"]
           },
           {
@@ -541,8 +855,14 @@ export type Database = {
     }
     Functions: {
       book_due_recurring_expenses: { Args: { _org: string }; Returns: number }
+      cancel_invoice: {
+        Args: { _invoice: string; _reason: string }
+        Returns: string
+      }
       create_household: { Args: { _name: string }; Returns: string }
+      create_invoice_from_quote: { Args: { _quote: string }; Returns: string }
       create_organization: { Args: { _name: string }; Returns: string }
+      issue_document: { Args: { _doc: string }; Returns: string }
       join_household: { Args: { _code: string }; Returns: string }
       join_organization: { Args: { _code: string }; Returns: string }
       leave_household: { Args: never; Returns: undefined }
