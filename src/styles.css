@@ -210,6 +210,11 @@
   }
 }
 
+.brand-selected,
+.brand-selected:hover {
+  color: var(--sidebar-primary-foreground);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
