@@ -55,7 +55,10 @@ export function OrganizationCard() {
     setBusy(true);
     const { error } = await fn();
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     await refresh();
     toast.success(ok);
   }
@@ -102,7 +105,10 @@ export function OrganizationCard() {
           className="grid gap-3 sm:grid-cols-2"
           onSubmit={(e) => {
             e.preventDefault();
-            if (!form.name?.trim()) return toast.error("Der Unternehmensname darf nicht leer sein.");
+            if (!form.name?.trim()) {
+              toast.error("Der Unternehmensname darf nicht leer sein.");
+              return;
+            }
             run(() => supabase.from("organizations").update(form).eq("id", org.id), "Unternehmensdaten gespeichert.");
           }}
         >
