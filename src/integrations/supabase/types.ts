@@ -77,8 +77,113 @@ export type Database = {
         }
         Relationships: []
       }
+      organization_members: {
+        Row: {
+          created_at: string
+          id: string
+          organization_id: string
+          role: Database["public"]["Enums"]["org_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          organization_id: string
+          role?: Database["public"]["Enums"]["org_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          organization_id?: string
+          role?: Database["public"]["Enums"]["org_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_members_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          bank_name: string | null
+          bic: string | null
+          city: string | null
+          country: string
+          created_at: string
+          created_by: string
+          default_payment_days: number
+          email: string | null
+          iban: string | null
+          id: string
+          invite_code: string | null
+          legal_form: string | null
+          name: string
+          phone: string | null
+          postal_code: string | null
+          small_business: boolean
+          street: string | null
+          tax_number: string | null
+          updated_at: string
+          vat_id: string | null
+          website: string | null
+        }
+        Insert: {
+          bank_name?: string | null
+          bic?: string | null
+          city?: string | null
+          country?: string
+          created_at?: string
+          created_by?: string
+          default_payment_days?: number
+          email?: string | null
+          iban?: string | null
+          id?: string
+          invite_code?: string | null
+          legal_form?: string | null
+          name: string
+          phone?: string | null
+          postal_code?: string | null
+          small_business?: boolean
+          street?: string | null
+          tax_number?: string | null
+          updated_at?: string
+          vat_id?: string | null
+          website?: string | null
+        }
+        Update: {
+          bank_name?: string | null
+          bic?: string | null
+          city?: string | null
+          country?: string
+          created_at?: string
+          created_by?: string
+          default_payment_days?: number
+          email?: string | null
+          iban?: string | null
+          id?: string
+          invite_code?: string | null
+          legal_form?: string | null
+          name?: string
+          phone?: string | null
+          postal_code?: string | null
+          small_business?: boolean
+          street?: string | null
+          tax_number?: string | null
+          updated_at?: string
+          vat_id?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
+          active_organization_id: string | null
           created_at: string
           display_name: string | null
           household_id: string | null
@@ -86,6 +191,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          active_organization_id?: string | null
           created_at?: string
           display_name?: string | null
           household_id?: string | null
@@ -93,6 +199,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          active_organization_id?: string | null
           created_at?: string
           display_name?: string | null
           household_id?: string | null
@@ -100,6 +207,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "profiles_active_organization_id_fkey"
+            columns: ["active_organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "profiles_household_id_fkey"
             columns: ["household_id"]
@@ -233,11 +347,14 @@ export type Database = {
     }
     Functions: {
       create_household: { Args: { _name: string }; Returns: string }
+      create_organization: { Args: { _name: string }; Returns: string }
       join_household: { Args: { _code: string }; Returns: string }
+      join_organization: { Args: { _code: string }; Returns: string }
       leave_household: { Args: never; Returns: undefined }
+      regenerate_org_invite_code: { Args: { _org: string }; Returns: string }
     }
     Enums: {
-      [_ in never]: never
+      org_role: "owner" | "admin" | "member"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -364,6 +481,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      org_role: ["owner", "admin", "member"],
+    },
   },
 } as const
