@@ -351,6 +351,7 @@ export type Database = {
       join_household: { Args: { _code: string }; Returns: string }
       join_organization: { Args: { _code: string }; Returns: string }
       leave_household: { Args: never; Returns: undefined }
+      leave_organization: { Args: { _org: string }; Returns: undefined }
       regenerate_org_invite_code: { Args: { _org: string }; Returns: string }
     }
     Enums: {
