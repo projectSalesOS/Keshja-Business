@@ -29,6 +29,13 @@
       "when": 1791908841646,
       "tag": "0003_stage3_documents_payments_dunning",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791909201600,
+      "tag": "0004_fix_check_doc_links",
+      "breakpoints": true
     }
   ]
 }
