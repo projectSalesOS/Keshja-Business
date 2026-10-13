@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { LayoutDashboard, Receipt, Repeat, Users, Wallet, Settings, LogOut, FileText, FileSignature } from "lucide-react";
+import { LayoutDashboard, Receipt, Repeat, Users, Wallet, Settings, LogOut, FileText, FileSignature, BarChart3, TrendingUp } from "lucide-react";
 import type { ReactNode } from "react";
 import logoMark from "@/assets/keshja-mark.png.asset.json";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,6 +15,8 @@ const NAV = [
   { to: "/kunden", label: "Kunden", icon: Users },
   { to: "/kassenbons", label: "Belege", icon: Receipt },
   { to: "/fixkosten", label: "Wiederkehrend", icon: Repeat },
+  { to: "/auswertungen", label: "Auswertungen", icon: BarChart3 },
+  { to: "/liquiditaet", label: "Liquidität", icon: TrendingUp },
   { to: "/einstellungen", label: "Einstellungen", icon: Settings },
 ] as const;
 

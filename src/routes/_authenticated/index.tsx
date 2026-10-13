@@ -1,22 +1,24 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Camera, CalendarDays, ShoppingBasket, Repeat, Sparkles, Wallet } from "lucide-react";
-import { useEffect, useState } from "react";
+import { AlertTriangle, Camera, Loader2, Repeat } from "lucide-react";
+import { useMemo, useState } from "react";
 import { AppShell, PageHeader } from "@/components/AppShell";
-import { KpiCard } from "@/components/KpiCard";
-import { ChartSection } from "@/components/ChartSection";
-import { useReceipts } from "@/hooks/useReceipts";
-import { useProfile } from "@/hooks/useProfile";
-import { useMonthlyFixedCosts } from "@/hooks/useFixedCosts";
-import { useOrganization } from "@/hooks/useOrganization";
+import { OrgGate } from "@/components/OrgGate";
+import { Empty, Panel, PeriodPicker, Stat } from "@/components/AnalyticsUi";
+import { useAnalyticsData } from "@/hooks/useAnalytics";
 import {
-  aiSummary,
-  currency,
-  formatDate,
-  receiptsInPeriod,
-  sumForBereich,
-  sumTotals,
-  reportStats,
-} from "@/lib/finance";
+  actualTotals,
+  addDaysIso,
+  change,
+  plannedExpenses,
+  previousRange,
+  rangeFor,
+  receivables,
+  sumReceivables,
+  type Preset,
+  type Range,
+} from "@/lib/analytics";
+import { todayIso } from "@/lib/business";
+import { currency, formatDate } from "@/lib/finance";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
@@ -24,216 +26,184 @@ export const Route = createFileRoute("/_authenticated/")({
       { title: "Dashboard – Keshja Business" },
       {
         name: "description",
-        content:
-          "KESHJA erfasst Kassenbons per Foto, kategorisiert Ausgaben mit KI und zeigt Wochen-, Monats- und wiederkehrende Ausgaben auf einen Blick.",
+        content: "Einnahmen, Ausgaben, Saldo, offene Forderungen und anstehende Ausgaben deines Unternehmens auf einen Blick.",
       },
       { property: "og:title", content: "Dashboard – Keshja Business" },
-      {
-        property: "og:description",
-        content: "Belege fotografieren, KI erkennt die Daten, Geschäftsausgaben im Blick.",
-      },
+      { property: "og:description", content: "Die geschäftliche Startseite von Keshja Business." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: Dashboard,
-});
-
-function Dashboard() {
-  const { data: org } = useOrganization();
-  const allReceipts = useReceipts(org?.organization?.id);
-  const week = receiptsInPeriod("woche", allReceipts);
-  const month = receiptsInPeriod("monat", allReceipts);
-  const latest = receiptsInPeriod("jahr", allReceipts).slice(0, 5);
-  const stats = reportStats(month);
-  const monthlyFixedCosts = useMonthlyFixedCosts(org?.organization?.id);
-
-  const [greeting, setGreeting] = useState("Guten Morgen");
-  const { data: profile } = useProfile();
-  const userName = profile?.displayName.split(" ")[0] ?? "";
-
-  useEffect(() => {
-    const hour = new Date().getHours();
-    if (hour >= 18) setGreeting("Guten Abend");
-    else if (hour >= 12) setGreeting("Guten Tag");
-    else setGreeting("Guten Morgen");
-  }, []);
-
-  const summaryRows: { label: string; value: string }[] = [
-    { label: "Gesamtausgaben", value: currency(stats.total) },
-    { label: "Anzahl Kassenbons", value: String(stats.receiptCount) },
-    { label: "Durchschnittlicher Einkauf", value: currency(stats.average) },
-    { label: "Größte Kategorie", value: stats.topBereich?.name ?? "–" },
-    { label: "Größte Unterkategorie", value: stats.topKategorie?.name ?? "–" },
-    { label: "Wiederkehrende Ausgaben", value: currency(monthlyFixedCosts) },
-  ];
-
-  const bullets = [
-    <>
-      Höchste Ausgaben diesen Monat im Bereich{" "}
-      <strong className="font-semibold text-foreground">{stats.topBereich?.name ?? "–"}</strong> mit{" "}
-      <strong className="font-semibold text-foreground">
-        {currency(stats.topBereich?.value ?? 0)}
-      </strong>
-      .
-    </>,
-    <>
-      Die durchschnittliche Einkaufssumme beträgt{" "}
-      <strong className="font-semibold text-foreground">{currency(stats.average)}</strong>.
-    </>,
-    <>
-      Teuerster Einkauf:{" "}
-      <strong className="font-semibold text-foreground">
-        {stats.mostExpensive?.store ?? "–"}
-      </strong>{" "}
-      mit{" "}
-      <strong className="font-semibold text-foreground">
-        {currency(stats.mostExpensive?.total ?? 0)}
-      </strong>
-      .
-    </>,
-    <>
-      Auffällige Ausreißer wurden{" "}
-      <strong className="font-semibold text-foreground">nicht erkannt</strong>.
-    </>,
-  ];
-
-  return (
+  component: () => (
     <AppShell>
-      <div className="space-y-8">
+      <div className="space-y-6">
         <PageHeader
           title="Dashboard"
-          description="Alle Ausgaben automatisch erfasst, kategorisiert und ausgewertet."
+          description="Deine wichtigsten Geschäftszahlen auf einen Blick."
           action={
             <Link
               to="/kassenbons"
-              className="hidden items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-card transition-opacity hover:opacity-90 lg:inline-flex"
+              search={{ capture: "1" as const }}
+              className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-card hover:opacity-90"
             >
-              <Camera className="h-4 w-4" /> Kassenbon fotografieren
+              <Camera className="h-4 w-4" /> Beleg erfassen
             </Link>
           }
         />
+        <OrgGate>{({ orgId }) => <DashboardView orgId={orgId} />}</OrgGate>
+      </div>
+    </AppShell>
+  ),
+});
 
-        <section className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between sm:gap-4">
-          <div className="min-w-0">
-            <h2
-              className="text-xl font-semibold text-foreground sm:text-2xl"
-              suppressHydrationWarning
-            >
-              {greeting}{userName ? `, ${userName}` : ""} <span aria-hidden>👋</span>
-            </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Du hast deine Finanzen im Blick. Was möchtest du heute erfassen?
-            </p>
-          </div>
-          <Link
-            to="/kassenbons"
-            search={{ capture: "1" as const }}
-            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-card transition-opacity hover:opacity-90"
-          >
-            <Camera className="h-4 w-4" />
-            <span>Bon erfassen</span>
-          </Link>
-        </section>
+function DashboardView({ orgId }: { orgId: string }) {
+  const today = todayIso();
+  const [preset, setPreset] = useState<Preset>("monat");
+  const [custom, setCustom] = useState<Range>(rangeFor("monat", today));
+  const range = rangeFor(preset, today, custom);
+  const prev = previousRange(range);
+  const d = useAnalyticsData(orgId);
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <KpiCard
-            label="Ausgaben Woche"
-            value={currency(sumTotals(week))}
-            hint={`${week.length} Kassenbons`}
-            icon={CalendarDays}
-            color="violet"
-          />
-          <KpiCard
-            label="Ausgaben Monat"
-            value={currency(sumTotals(month))}
-            hint={`${month.length} Kassenbons`}
-            icon={Wallet}
-            color="blue"
-          />
-          <KpiCard
-            label="Lebensmittel Monat"
-            value={currency(sumForBereich(month, "Lebensmittel"))}
-            hint="größter variabler Block"
-            icon={ShoppingBasket}
-            color="green"
-          />
-          <KpiCard
-            label="Wiederkehrend Monat"
-            value={currency(monthlyFixedCosts)}
-            hint="wiederkehrend"
-            icon={Repeat}
-            color="orange"
-          />
-        </div>
+  const m = useMemo(() => {
+    const cur = actualTotals(d.transactions, range);
+    const before = actualTotals(d.transactions, prev);
+    const rcv = receivables(d.invoices, d.payments, today);
+    const planned = plannedExpenses(d.items, d.transactions, { from: "1900-01-01", to: addDaysIso(today, 30) }, today);
+    return { cur, before, rcv, sum: sumReceivables(rcv), planned };
+  }, [d.transactions, d.invoices, d.payments, d.items, range.from, range.to, today]);
 
-        <ChartSection receipts={month} period="monat" />
+  if (d.isLoading)
+    return (
+      <p className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Loader2 className="h-4 w-4 animate-spin" /> Kennzahlen werden geladen …
+      </p>
+    );
+  if (d.error) return <p className="text-sm text-destructive">Daten konnten nicht geladen werden: {d.error.message}</p>;
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          <section className="rounded-2xl border border-border bg-card p-5 shadow-card">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold">Letzte Kassenbons</h2>
-              <Link to="/kassenbons" className="text-xs font-medium text-primary">
-                Alle ansehen
-              </Link>
-            </div>
-            <ul className="mt-4 divide-y divide-border">
-              {latest.map((r) => (
-                <li key={r.id} className="flex items-center justify-between gap-4 py-3">
-                  <div>
-                    <p className="text-sm font-medium">{r.store}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatDate(r.date)} · {r.time} Uhr · {r.items.length} Positionen
-                    </p>
-                  </div>
-                  <span className="text-sm font-semibold tabular-nums">{currency(r.total)}</span>
+  const prevLabel = preset === "monat" || preset === "vormonat" ? "Vormonat" : preset === "jahr" ? "Vorjahr" : "Vorzeitraum";
+  const dueNow = m.planned.filter((p) => p.pastDue);
+  const upcoming = m.planned.filter((p) => !p.pastDue);
+  const recent = [...d.transactions].filter((t) => t.status === "bezahlt").slice(0, 6);
+  const openTx = d.transactions.filter((t) => t.status === "offen");
+
+  return (
+    <div className="space-y-6">
+      <PeriodPicker preset={preset} custom={custom} today={today} onChange={(p, c) => (setPreset(p), setCustom(c))} />
+      <p className="-mt-3 text-xs text-muted-foreground">
+        {formatDate(range.from)} – {formatDate(range.to)} · Vergleich: {formatDate(prev.from)} – {formatDate(prev.to)}
+      </p>
+
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+        <Stat label="Einnahmen" value={currency(m.cur.income)} badge="Ist" delta={{ pct: change(m.cur.income, m.before.income, m.before.count), label: prevLabel }} />
+        <Stat label="Ausgaben" value={currency(m.cur.expense)} badge="Ist" delta={{ pct: change(m.cur.expense, m.before.expense, m.before.count), label: prevLabel, invert: true }} />
+        <Stat
+          label="Saldo"
+          value={currency(m.cur.balance)}
+          badge="Ist"
+          tone={m.cur.count === 0 ? "default" : m.cur.balance >= 0 ? "good" : "bad"}
+          hint={m.cur.count === 0 ? "Keine bezahlten Buchungen im Zeitraum" : `${m.cur.count} Buchungen · Vorzeitraum ${m.before.count ? currency(m.before.balance) : "ohne Daten"}`}
+        />
+        <Stat label="Offene Forderungen" value={currency(m.sum.openTotal)} badge="erwartet" hint={`${m.sum.openCount} offene Rechnungen (Restbeträge)`} />
+        <Stat label="Überfällig" value={currency(m.sum.overdueTotal)} tone={m.sum.overdueCount ? "bad" : "default"} hint={`${m.sum.overdueCount} Rechnungen überfällig`} />
+        <Stat
+          label="Wiederkehrend fällig"
+          value={currency(m.planned.reduce((s, p) => s + p.amount, 0))}
+          badge="geplant"
+          hint={`${dueNow.length} fällig, ${upcoming.length} in 30 Tagen · noch nicht gebucht`}
+        />
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Panel title="Anstehende Aufgaben">
+          <ul className="divide-y divide-border text-sm">
+            {m.rcv.filter((r) => r.overdue).slice(0, 5).map((r) => (
+              <li key={r.id} className="flex items-center justify-between gap-3 py-2">
+                <span className="flex min-w-0 items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 shrink-0 text-destructive" />
+                  <span className="truncate">
+                    {r.number} · {r.customerName} – {r.daysOverdue} Tage überfällig
+                  </span>
+                </span>
+                <span className="shrink-0 font-semibold tabular-nums">{currency(r.open)}</span>
+              </li>
+            ))}
+            {dueNow.length > 0 && (
+              <li className="flex items-center justify-between gap-3 py-2">
+                <span className="flex items-center gap-2">
+                  <Repeat className="h-4 w-4 text-primary" /> {dueNow.length} wiederkehrende Ausgabe(n) fällig, noch nicht gebucht
+                </span>
+                <Link to="/fixkosten" className="shrink-0 text-xs font-medium text-primary">Buchen</Link>
+              </li>
+            )}
+            {openTx.length > 0 && (
+              <li className="flex items-center justify-between gap-3 py-2">
+                <span>{openTx.length} Buchung(en) mit Status „offen“</span>
+                <Link to="/finanzen" className="shrink-0 text-xs font-medium text-primary">Ansehen</Link>
+              </li>
+            )}
+          </ul>
+          {!m.sum.overdueCount && !dueNow.length && !openTx.length && <Empty>Keine offenen Aufgaben.</Empty>}
+        </Panel>
+
+        <Panel title="Letzte Geschäftsvorgänge" action={<Link to="/finanzen" className="text-xs font-medium text-primary">Alle</Link>}>
+          {recent.length ? (
+            <ul className="divide-y divide-border text-sm">
+              {recent.map((t) => (
+                <li key={t.id} className="flex items-center justify-between gap-3 py-2">
+                  <span className="min-w-0">
+                    <span className="block truncate font-medium">{t.description || t.category}</span>
+                    <span className="text-xs text-muted-foreground">{formatDate(t.booking_date)} · {t.category}</span>
+                  </span>
+                  <span className={`shrink-0 font-semibold tabular-nums ${t.type === "income" ? "text-primary" : ""}`}>
+                    {t.type === "income" ? "+" : "−"}{currency(t.amount)}
+                  </span>
                 </li>
               ))}
             </ul>
-            {latest.length === 0 && (
-              <p className="mt-4 text-sm text-muted-foreground">
-                Noch keine Kassenbons erfasst. Scanne deinen ersten Kassenbon, um zu starten.
-              </p>
-            )}
-          </section>
+          ) : (
+            <Empty>Noch keine Buchungen erfasst.</Empty>
+          )}
+        </Panel>
 
-          <section className="rounded-2xl border border-border bg-card p-5 shadow-card">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <h2 className="text-sm font-semibold">KI-Zusammenfassung</h2>
-            </div>
-            <dl className="mt-4 divide-y divide-border">
-              {summaryRows.map((row) => (
-                <div key={row.label} className="flex items-baseline justify-between gap-4 py-2">
-                  <dt className="text-xs text-muted-foreground">{row.label}</dt>
-                  <dd className="text-sm font-semibold tabular-nums text-card-foreground">
-                    {row.value}
-                  </dd>
-                </div>
+        <Panel title="Wiederkehrende Ausgaben – nächste 30 Tage" action={<Link to="/liquiditaet" className="text-xs font-medium text-primary">Liquiditätsvorschau</Link>}>
+          {upcoming.length ? (
+            <ul className="divide-y divide-border text-sm">
+              {upcoming.slice(0, 6).map((p) => (
+                <li key={`${p.id}${p.date}`} className="flex justify-between gap-3 py-2">
+                  <span className="truncate">{formatDate(p.date)} · {p.name}</span>
+                  <span className="shrink-0 tabular-nums">{currency(p.amount)}</span>
+                </li>
               ))}
-            </dl>
-            {stats.receiptCount > 0 ? (
-              <ul className="mt-4 space-y-2 border-t border-border pt-4 text-sm leading-relaxed text-muted-foreground">
-                {bullets.map((b, i) => (
-                  <li key={i} className="flex gap-2">
-                    <span className="text-primary">•</span>
-                    <span>{b}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="mt-4 border-t border-border pt-4 text-sm text-muted-foreground">
-                {aiSummary("monat", month, monthlyFixedCosts)}
-              </p>
-            )}
-          </section>
-        </div>
+            </ul>
+          ) : (
+            <Empty>Keine anstehenden wiederkehrenden Ausgaben.</Empty>
+          )}
+        </Panel>
 
-        <Link
-          to="/kassenbons"
-          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-4 text-base font-semibold text-primary-foreground shadow-elevated transition-opacity hover:opacity-90"
-        >
-          <Camera className="h-5 w-5" /> Kassenbon fotografieren
-        </Link>
+        <Panel title="Offene Rechnungen" action={<Link to="/rechnungen" className="text-xs font-medium text-primary">Rechnungen</Link>}>
+          {m.rcv.length ? (
+            <ul className="divide-y divide-border text-sm">
+              {m.rcv.slice(0, 6).map((r) => (
+                <li key={r.id} className="flex justify-between gap-3 py-2">
+                  <span className="min-w-0 truncate">
+                    {r.number} · {r.customerName}
+                    <span className="block text-xs text-muted-foreground">
+                      fällig {r.due_date ? formatDate(r.due_date) : "–"}{r.paid > 0 ? ` · teilbezahlt ${currency(r.paid)}` : ""}
+                    </span>
+                  </span>
+                  <span className={`shrink-0 font-semibold tabular-nums ${r.overdue ? "text-destructive" : ""}`}>{currency(r.open)}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <Empty>Keine offenen Rechnungen.</Empty>
+          )}
+        </Panel>
       </div>
-    </AppShell>
+      <p className="text-xs text-muted-foreground">
+        Ist = bezahlte Buchungen (Zahlungseingänge zählen genau einmal). Erwartet/geplant = offene Restbeträge bzw. noch nicht gebuchte Fälligkeiten – keine garantierten Zahlungen. Details unter{" "}
+        <Link to="/auswertungen" className="font-medium text-primary">Auswertungen</Link>.
+      </p>
+    </div>
   );
 }
