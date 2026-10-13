@@ -17,6 +17,7 @@ import { Route as AuthenticatedAuswertungenRouteImport } from './routes/_authent
 import { Route as AuthenticatedEinstellungenRouteImport } from './routes/_authenticated/einstellungen'
 import { Route as AuthenticatedFixkostenRouteImport } from './routes/_authenticated/fixkosten'
 import { Route as AuthenticatedKassenbonsRouteImport } from './routes/_authenticated/kassenbons'
+import { Route as AuthenticatedKundenRouteImport } from './routes/_authenticated/kunden'
 import { Route as AuthenticatedDebugOcrRouteImport } from './routes/_authenticated/debug.ocr'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -60,6 +61,11 @@ const AuthenticatedKassenbonsRoute = AuthenticatedKassenbonsRouteImport.update({
   path: '/kassenbons',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedKundenRoute = AuthenticatedKundenRouteImport.update({
+  id: '/kunden',
+  path: '/kunden',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDebugOcrRoute = AuthenticatedDebugOcrRouteImport.update({
   id: '/debug/ocr',
   path: '/debug/ocr',
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/einstellungen': typeof AuthenticatedEinstellungenRoute
   '/fixkosten': typeof AuthenticatedFixkostenRoute
   '/kassenbons': typeof AuthenticatedKassenbonsRoute
+  '/kunden': typeof AuthenticatedKundenRoute
   '/debug/ocr': typeof AuthenticatedDebugOcrRoute
 }
 export interface FileRoutesByTo {
@@ -83,6 +90,7 @@ export interface FileRoutesByTo {
   '/einstellungen': typeof AuthenticatedEinstellungenRoute
   '/fixkosten': typeof AuthenticatedFixkostenRoute
   '/kassenbons': typeof AuthenticatedKassenbonsRoute
+  '/kunden': typeof AuthenticatedKundenRoute
   '/': typeof AuthenticatedIndexRoute
   '/debug/ocr': typeof AuthenticatedDebugOcrRoute
 }
@@ -95,6 +103,7 @@ export interface FileRoutesById {
   '/_authenticated/einstellungen': typeof AuthenticatedEinstellungenRoute
   '/_authenticated/fixkosten': typeof AuthenticatedFixkostenRoute
   '/_authenticated/kassenbons': typeof AuthenticatedKassenbonsRoute
+  '/_authenticated/kunden': typeof AuthenticatedKundenRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/debug/ocr': typeof AuthenticatedDebugOcrRoute
 }
@@ -108,6 +117,7 @@ export interface FileRouteTypes {
     | '/einstellungen'
     | '/fixkosten'
     | '/kassenbons'
+    | '/kunden'
     | '/debug/ocr'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/einstellungen'
     | '/fixkosten'
     | '/kassenbons'
+    | '/kunden'
     | '/'
     | '/debug/ocr'
   id:
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/_authenticated/einstellungen'
     | '/_authenticated/fixkosten'
     | '/_authenticated/kassenbons'
+    | '/_authenticated/kunden'
     | '/_authenticated/'
     | '/_authenticated/debug/ocr'
   fileRoutesById: FileRoutesById
@@ -196,6 +208,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedKassenbonsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/kunden': {
+      id: '/_authenticated/kunden'
+      path: '/kunden'
+      fullPath: '/kunden'
+      preLoaderRoute: typeof AuthenticatedKundenRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/debug/ocr': {
       id: '/_authenticated/debug/ocr'
       path: '/debug/ocr'
@@ -211,6 +230,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedEinstellungenRoute: typeof AuthenticatedEinstellungenRoute
   AuthenticatedFixkostenRoute: typeof AuthenticatedFixkostenRoute
   AuthenticatedKassenbonsRoute: typeof AuthenticatedKassenbonsRoute
+  AuthenticatedKundenRoute: typeof AuthenticatedKundenRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedDebugOcrRoute: typeof AuthenticatedDebugOcrRoute
 }
@@ -220,6 +240,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedEinstellungenRoute: AuthenticatedEinstellungenRoute,
   AuthenticatedFixkostenRoute: AuthenticatedFixkostenRoute,
   AuthenticatedKassenbonsRoute: AuthenticatedKassenbonsRoute,
+  AuthenticatedKundenRoute: AuthenticatedKundenRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedDebugOcrRoute: AuthenticatedDebugOcrRoute,
 }
