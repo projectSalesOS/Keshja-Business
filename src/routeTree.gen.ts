@@ -13,11 +13,13 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedAngeboteRouteImport } from './routes/_authenticated/angebote'
 import { Route as AuthenticatedEinstellungenRouteImport } from './routes/_authenticated/einstellungen'
 import { Route as AuthenticatedFinanzenRouteImport } from './routes/_authenticated/finanzen'
 import { Route as AuthenticatedFixkostenRouteImport } from './routes/_authenticated/fixkosten'
 import { Route as AuthenticatedKassenbonsRouteImport } from './routes/_authenticated/kassenbons'
 import { Route as AuthenticatedKundenRouteImport } from './routes/_authenticated/kunden'
+import { Route as AuthenticatedRechnungenRouteImport } from './routes/_authenticated/rechnungen'
 import { Route as AuthenticatedDebugOcrRouteImport } from './routes/_authenticated/debug.ocr'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -37,6 +39,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAngeboteRoute = AuthenticatedAngeboteRouteImport.update({
+  id: '/angebote',
+  path: '/angebote',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedEinstellungenRoute =
@@ -65,6 +72,11 @@ const AuthenticatedKundenRoute = AuthenticatedKundenRouteImport.update({
   path: '/kunden',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedRechnungenRoute = AuthenticatedRechnungenRouteImport.update({
+  id: '/rechnungen',
+  path: '/rechnungen',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDebugOcrRoute = AuthenticatedDebugOcrRouteImport.update({
   id: '/debug/ocr',
   path: '/debug/ocr',
@@ -75,21 +87,25 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/angebote': typeof AuthenticatedAngeboteRoute
   '/einstellungen': typeof AuthenticatedEinstellungenRoute
   '/finanzen': typeof AuthenticatedFinanzenRoute
   '/fixkosten': typeof AuthenticatedFixkostenRoute
   '/kassenbons': typeof AuthenticatedKassenbonsRoute
   '/kunden': typeof AuthenticatedKundenRoute
+  '/rechnungen': typeof AuthenticatedRechnungenRoute
   '/debug/ocr': typeof AuthenticatedDebugOcrRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/angebote': typeof AuthenticatedAngeboteRoute
   '/einstellungen': typeof AuthenticatedEinstellungenRoute
   '/finanzen': typeof AuthenticatedFinanzenRoute
   '/fixkosten': typeof AuthenticatedFixkostenRoute
   '/kassenbons': typeof AuthenticatedKassenbonsRoute
   '/kunden': typeof AuthenticatedKundenRoute
+  '/rechnungen': typeof AuthenticatedRechnungenRoute
   '/': typeof AuthenticatedIndexRoute
   '/debug/ocr': typeof AuthenticatedDebugOcrRoute
 }
@@ -98,11 +114,13 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/angebote': typeof AuthenticatedAngeboteRoute
   '/_authenticated/einstellungen': typeof AuthenticatedEinstellungenRoute
   '/_authenticated/finanzen': typeof AuthenticatedFinanzenRoute
   '/_authenticated/fixkosten': typeof AuthenticatedFixkostenRoute
   '/_authenticated/kassenbons': typeof AuthenticatedKassenbonsRoute
   '/_authenticated/kunden': typeof AuthenticatedKundenRoute
+  '/_authenticated/rechnungen': typeof AuthenticatedRechnungenRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/debug/ocr': typeof AuthenticatedDebugOcrRoute
 }
@@ -112,21 +130,25 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
+    | '/angebote'
     | '/einstellungen'
     | '/finanzen'
     | '/fixkosten'
     | '/kassenbons'
     | '/kunden'
+    | '/rechnungen'
     | '/debug/ocr'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
     | '/reset-password'
+    | '/angebote'
     | '/einstellungen'
     | '/finanzen'
     | '/fixkosten'
     | '/kassenbons'
     | '/kunden'
+    | '/rechnungen'
     | '/'
     | '/debug/ocr'
   id:
@@ -134,11 +156,13 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
+    | '/_authenticated/angebote'
     | '/_authenticated/einstellungen'
     | '/_authenticated/finanzen'
     | '/_authenticated/fixkosten'
     | '/_authenticated/kassenbons'
     | '/_authenticated/kunden'
+    | '/_authenticated/rechnungen'
     | '/_authenticated/'
     | '/_authenticated/debug/ocr'
   fileRoutesById: FileRoutesById
@@ -179,6 +203,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/angebote': {
+      id: '/_authenticated/angebote'
+      path: '/angebote'
+      fullPath: '/angebote'
+      preLoaderRoute: typeof AuthenticatedAngeboteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/einstellungen': {
       id: '/_authenticated/einstellungen'
       path: '/einstellungen'
@@ -214,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedKundenRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/rechnungen': {
+      id: '/_authenticated/rechnungen'
+      path: '/rechnungen'
+      fullPath: '/rechnungen'
+      preLoaderRoute: typeof AuthenticatedRechnungenRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/debug/ocr': {
       id: '/_authenticated/debug/ocr'
       path: '/debug/ocr'
@@ -225,21 +263,25 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAngeboteRoute: typeof AuthenticatedAngeboteRoute
   AuthenticatedEinstellungenRoute: typeof AuthenticatedEinstellungenRoute
   AuthenticatedFinanzenRoute: typeof AuthenticatedFinanzenRoute
   AuthenticatedFixkostenRoute: typeof AuthenticatedFixkostenRoute
   AuthenticatedKassenbonsRoute: typeof AuthenticatedKassenbonsRoute
   AuthenticatedKundenRoute: typeof AuthenticatedKundenRoute
+  AuthenticatedRechnungenRoute: typeof AuthenticatedRechnungenRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedDebugOcrRoute: typeof AuthenticatedDebugOcrRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAngeboteRoute: AuthenticatedAngeboteRoute,
   AuthenticatedEinstellungenRoute: AuthenticatedEinstellungenRoute,
   AuthenticatedFinanzenRoute: AuthenticatedFinanzenRoute,
   AuthenticatedFixkostenRoute: AuthenticatedFixkostenRoute,
   AuthenticatedKassenbonsRoute: AuthenticatedKassenbonsRoute,
   AuthenticatedKundenRoute: AuthenticatedKundenRoute,
+  AuthenticatedRechnungenRoute: AuthenticatedRechnungenRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedDebugOcrRoute: AuthenticatedDebugOcrRoute,
 }
