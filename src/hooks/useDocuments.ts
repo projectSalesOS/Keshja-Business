@@ -106,7 +106,7 @@ export function useDocActions(orgId: string) {
   };
   const m = <A, R>(fn: (a: A) => Promise<R>) => useMutation({ mutationFn: fn, onSettled: refresh });
 
-  const saveDraft = m(async ({ id, v }: { id?: string; v: DraftInput }) => {
+  const saveDraft = m(async ({ id, v }: { id?: string | undefined; v: DraftInput }) => {
     const { items, kind, ...fields } = v;
     let docId = id;
     if (docId) {

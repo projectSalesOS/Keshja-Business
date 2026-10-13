@@ -105,7 +105,7 @@ export function DocumentsView({ kind, ctx }: { kind: Kind; ctx: OrgContext }) {
         .map((d) => ({
           ...d,
           paid: paidBy.get(d.id) ?? 0,
-          customerName: (d.customer_snapshot?.name as string | undefined) ?? (d.customer_id ? nameOf.get(d.customer_id) ?? "" : ""),
+          customerName: (d.customer_snapshot?.["name"] as string | undefined) ?? (d.customer_id ? nameOf.get(d.customer_id) ?? "" : ""),
         })),
     [docs, kind, paidBy, nameOf],
   );
@@ -412,7 +412,7 @@ function DocumentDetail({
   const sourceQuote = d.source_quote_id ? docs.find((x) => x.id === d.source_quote_id) : undefined;
   const cancellation = d.kind === "invoice" ? docs.find((x) => x.cancels_document_id === d.id) : undefined;
   const cancelled = d.cancels_document_id ? docs.find((x) => x.id === d.cancels_document_id) : undefined;
-  const cust = (d.customer_snapshot?.name as string | undefined) ?? customers.find((c) => c.id === d.customer_id)?.name ?? "–";
+  const cust = (d.customer_snapshot?.["name"] as string | undefined) ?? customers.find((c) => c.id === d.customer_id)?.name ?? "–";
   const [cancelOpen, setCancelOpen] = useState(false);
   const [reason, setReason] = useState("");
 
