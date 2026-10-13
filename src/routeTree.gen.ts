@@ -13,8 +13,8 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
-import { Route as AuthenticatedAuswertungenRouteImport } from './routes/_authenticated/auswertungen'
 import { Route as AuthenticatedEinstellungenRouteImport } from './routes/_authenticated/einstellungen'
+import { Route as AuthenticatedFinanzenRouteImport } from './routes/_authenticated/finanzen'
 import { Route as AuthenticatedFixkostenRouteImport } from './routes/_authenticated/fixkosten'
 import { Route as AuthenticatedKassenbonsRouteImport } from './routes/_authenticated/kassenbons'
 import { Route as AuthenticatedKundenRouteImport } from './routes/_authenticated/kunden'
@@ -39,18 +39,17 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedAuswertungenRoute =
-  AuthenticatedAuswertungenRouteImport.update({
-    id: '/auswertungen',
-    path: '/auswertungen',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedEinstellungenRoute =
   AuthenticatedEinstellungenRouteImport.update({
     id: '/einstellungen',
     path: '/einstellungen',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedFinanzenRoute = AuthenticatedFinanzenRouteImport.update({
+  id: '/finanzen',
+  path: '/finanzen',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedFixkostenRoute = AuthenticatedFixkostenRouteImport.update({
   id: '/fixkosten',
   path: '/fixkosten',
@@ -76,8 +75,8 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/auswertungen': typeof AuthenticatedAuswertungenRoute
   '/einstellungen': typeof AuthenticatedEinstellungenRoute
+  '/finanzen': typeof AuthenticatedFinanzenRoute
   '/fixkosten': typeof AuthenticatedFixkostenRoute
   '/kassenbons': typeof AuthenticatedKassenbonsRoute
   '/kunden': typeof AuthenticatedKundenRoute
@@ -86,8 +85,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/auswertungen': typeof AuthenticatedAuswertungenRoute
   '/einstellungen': typeof AuthenticatedEinstellungenRoute
+  '/finanzen': typeof AuthenticatedFinanzenRoute
   '/fixkosten': typeof AuthenticatedFixkostenRoute
   '/kassenbons': typeof AuthenticatedKassenbonsRoute
   '/kunden': typeof AuthenticatedKundenRoute
@@ -99,8 +98,8 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/_authenticated/auswertungen': typeof AuthenticatedAuswertungenRoute
   '/_authenticated/einstellungen': typeof AuthenticatedEinstellungenRoute
+  '/_authenticated/finanzen': typeof AuthenticatedFinanzenRoute
   '/_authenticated/fixkosten': typeof AuthenticatedFixkostenRoute
   '/_authenticated/kassenbons': typeof AuthenticatedKassenbonsRoute
   '/_authenticated/kunden': typeof AuthenticatedKundenRoute
@@ -113,8 +112,8 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/reset-password'
-    | '/auswertungen'
     | '/einstellungen'
+    | '/finanzen'
     | '/fixkosten'
     | '/kassenbons'
     | '/kunden'
@@ -123,8 +122,8 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/reset-password'
-    | '/auswertungen'
     | '/einstellungen'
+    | '/finanzen'
     | '/fixkosten'
     | '/kassenbons'
     | '/kunden'
@@ -135,8 +134,8 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
-    | '/_authenticated/auswertungen'
     | '/_authenticated/einstellungen'
+    | '/_authenticated/finanzen'
     | '/_authenticated/fixkosten'
     | '/_authenticated/kassenbons'
     | '/_authenticated/kunden'
@@ -180,18 +179,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/auswertungen': {
-      id: '/_authenticated/auswertungen'
-      path: '/auswertungen'
-      fullPath: '/auswertungen'
-      preLoaderRoute: typeof AuthenticatedAuswertungenRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/einstellungen': {
       id: '/_authenticated/einstellungen'
       path: '/einstellungen'
       fullPath: '/einstellungen'
       preLoaderRoute: typeof AuthenticatedEinstellungenRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/finanzen': {
+      id: '/_authenticated/finanzen'
+      path: '/finanzen'
+      fullPath: '/finanzen'
+      preLoaderRoute: typeof AuthenticatedFinanzenRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/fixkosten': {
@@ -226,8 +225,8 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAuswertungenRoute: typeof AuthenticatedAuswertungenRoute
   AuthenticatedEinstellungenRoute: typeof AuthenticatedEinstellungenRoute
+  AuthenticatedFinanzenRoute: typeof AuthenticatedFinanzenRoute
   AuthenticatedFixkostenRoute: typeof AuthenticatedFixkostenRoute
   AuthenticatedKassenbonsRoute: typeof AuthenticatedKassenbonsRoute
   AuthenticatedKundenRoute: typeof AuthenticatedKundenRoute
@@ -236,8 +235,8 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAuswertungenRoute: AuthenticatedAuswertungenRoute,
   AuthenticatedEinstellungenRoute: AuthenticatedEinstellungenRoute,
+  AuthenticatedFinanzenRoute: AuthenticatedFinanzenRoute,
   AuthenticatedFixkostenRoute: AuthenticatedFixkostenRoute,
   AuthenticatedKassenbonsRoute: AuthenticatedKassenbonsRoute,
   AuthenticatedKundenRoute: AuthenticatedKundenRoute,
