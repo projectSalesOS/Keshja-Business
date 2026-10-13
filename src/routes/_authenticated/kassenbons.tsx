@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Field, OrgGate, btnPrimary, btnSecondary, inputClass } from "@/components/OrgGate";
 import { useCustomers, useTransactions } from "@/hooks/useBusiness";
 import { parseAmount } from "@/lib/business";
-import { TransactionForm } from "./finanzen";
+import { TransactionForm } from "@/components/TransactionForm";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { ReceiptCapture } from "@/components/ReceiptCapture";
 import { RECEIPTS_QUERY_KEY, useReceipts } from "@/hooks/useReceipts";
