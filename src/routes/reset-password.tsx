@@ -14,6 +14,8 @@ export const Route = createFileRoute("/reset-password")({
       { property: "og:title", content: "Neues Passwort – KESHJA" },
       { property: "og:description", content: "Passwort für den KI-Finanzassistenten neu setzen." },
       { name: "robots", content: "noindex" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ResetPasswordPage,
