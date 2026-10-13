@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Building2, Copy, Loader2, RefreshCw, Trash2 } from "lucide-react";
+import { Building2, Copy, Loader2, LogOut, RefreshCw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -109,7 +109,14 @@ export function OrganizationCard() {
               toast.error("Der Unternehmensname darf nicht leer sein.");
               return;
             }
-            run(() => supabase.from("organizations").update(form).eq("id", org.id), "Unternehmensdaten gespeichert.");
+            const payload: Fields = {
+              name: form.name.trim(),
+              legal_form: form.legal_form, street: form.street, postal_code: form.postal_code,
+              city: form.city, email: form.email, phone: form.phone, tax_number: form.tax_number,
+              vat_id: form.vat_id, iban: form.iban, bic: form.bic, bank_name: form.bank_name,
+              small_business: form.small_business, default_payment_days: form.default_payment_days,
+            };
+            run(() => supabase.from("organizations").update(payload).eq("id", org.id), "Unternehmensdaten gespeichert.");
           }}
         >
           {TEXT_FIELDS.map((f) => (
@@ -186,6 +193,13 @@ export function OrganizationCard() {
             </li>
           ))}
         </ul>
+        {data.role !== "owner" && (
+          <button type="button" disabled={busy}
+            className="inline-flex items-center gap-2 rounded-xl border border-input px-4 py-2.5 text-sm font-medium text-destructive hover:bg-accent disabled:opacity-50"
+            onClick={() => confirm(`Unternehmen „${org.name}“ wirklich verlassen?`) && run(() => supabase.rpc("leave_organization", { _org: org.id }), "Unternehmen verlassen.")}>
+            <LogOut className="h-4 w-4" /> Unternehmen verlassen
+          </button>
+        )}
       </div>
     </div>
   );
