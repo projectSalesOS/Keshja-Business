@@ -85,7 +85,7 @@ export function actualTotals(tx: ATx[], r: Range, f: TxScope = {}): ActualTotals
   return { income: round(income), expense: round(expense), balance: round(income - expense), count };
 }
 
-export type TxScope = { category?: string; customerId?: string };
+export type TxScope = { category?: string | undefined; customerId?: string | undefined };
 
 function scope(tx: ATx[], r: Range, f: TxScope): ATx[] {
   return tx.filter(

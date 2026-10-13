@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useCustomers, useTransactions } from "@/hooks/useBusiness";
 import { useDocuments, usePayments } from "@/hooks/useDocuments";
 import { useFixedCosts } from "@/hooks/useFixedCosts";
-import type { AInvoice, APayment, ARecurring, ATx } from "@/lib/analytics";
+import type { AInvoice, APayment, ARecurring } from "@/lib/analytics";
 
 /**
  * Bündelt die bestehenden, unternehmensbezogenen Abfragen (RLS + organization_id)
@@ -27,14 +27,14 @@ export function useAnalyticsData(orgId: string) {
         number: d.number,
         customer_id: d.customer_id,
         customerName:
-          (typeof d.customer_snapshot?.name === "string" ? (d.customer_snapshot.name as string) : null) ??
+          (typeof d.customer_snapshot?.["name"] === "string" ? (d.customer_snapshot["name"] as string) : null) ??
           (d.customer_id ? names.get(d.customer_id) : null) ??
           "Ohne Kunde",
         doc_date: d.doc_date,
         due_date: d.due_date,
         total: d.total,
       }));
-    const transactions: ATx[] = tx.data ?? [];
+    const transactions = tx.data ?? [];
     const payments: APayment[] = pays.data ?? [];
     const items: ARecurring[] = recurring.items;
     return { invoices, transactions, payments, items, customers: customers.data ?? [] };
