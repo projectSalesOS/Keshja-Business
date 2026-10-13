@@ -95,7 +95,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               activeProps={{
                 className:
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium bg-sidebar-accent text-sidebar-accent-foreground",
+                  "brand-selected flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium bg-sidebar-primary text-sidebar-primary-foreground",
               }}
             >
               <Icon className="h-4.5 w-4.5" strokeWidth={1.75} />
@@ -154,7 +154,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             className="flex min-w-[4.5rem] flex-1 flex-col items-center gap-1 py-2.5 text-[9px] font-medium text-muted-foreground"
             activeProps={{
               className:
-                "flex min-w-[4.5rem] flex-1 flex-col items-center gap-1 py-2.5 text-[9px] font-medium text-primary",
+                "brand-selected flex min-w-[4.5rem] flex-1 flex-col items-center gap-1 py-2.5 text-[9px] font-medium bg-sidebar-primary text-sidebar-primary-foreground",
             }}
           >
             <Icon className="h-5 w-5" strokeWidth={1.75} />

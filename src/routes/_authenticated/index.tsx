@@ -94,19 +94,21 @@ function DashboardView({ orgId }: { orgId: string }) {
       </p>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-        <Stat label="Einnahmen" value={currency(m.cur.income)} badge="Ist" delta={{ pct: change(m.cur.income, m.before.income, m.before.count), label: prevLabel }} />
-        <Stat label="Ausgaben" value={currency(m.cur.expense)} badge="Ist" delta={{ pct: change(m.cur.expense, m.before.expense, m.before.count), label: prevLabel, invert: true }} />
+        <Stat accent="violet" label="Einnahmen" value={currency(m.cur.income)} badge="Ist" delta={{ pct: change(m.cur.income, m.before.income, m.before.count), label: prevLabel }} />
+        <Stat accent="blue" label="Ausgaben" value={currency(m.cur.expense)} badge="Ist" delta={{ pct: change(m.cur.expense, m.before.expense, m.before.count), label: prevLabel, invert: true }} />
         <Stat
           label="Saldo"
+          accent="turquoise"
           value={currency(m.cur.balance)}
           badge="Ist"
           tone={m.cur.count === 0 ? "default" : m.cur.balance >= 0 ? "good" : "bad"}
           hint={m.cur.count === 0 ? "Keine bezahlten Buchungen im Zeitraum" : `${m.cur.count} Buchungen · Vorzeitraum ${m.before.count ? currency(m.before.balance) : "ohne Daten"}`}
         />
-        <Stat label="Offene Forderungen" value={currency(m.sum.openTotal)} badge="erwartet" hint={`${m.sum.openCount} offene Rechnungen (Restbeträge)`} />
-        <Stat label="Überfällig" value={currency(m.sum.overdueTotal)} tone={m.sum.overdueCount ? "bad" : "default"} hint={`${m.sum.overdueCount} Rechnungen überfällig`} />
+        <Stat accent="green" label="Offene Forderungen" value={currency(m.sum.openTotal)} badge="erwartet" hint={`${m.sum.openCount} offene Rechnungen (Restbeträge)`} />
+        <Stat accent="orange" label="Überfällig" value={currency(m.sum.overdueTotal)} tone={m.sum.overdueCount ? "bad" : "default"} hint={`${m.sum.overdueCount} Rechnungen überfällig`} />
         <Stat
           label="Wiederkehrend fällig"
+          accent="pink"
           value={currency(m.planned.reduce((s, p) => s + p.amount, 0))}
           badge="geplant"
           hint={`${dueNow.length} fällig, ${upcoming.length} in 30 Tagen · noch nicht gebucht`}

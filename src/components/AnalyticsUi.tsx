@@ -66,6 +66,7 @@ export function Stat({
   delta,
   tone = "default",
   badge,
+  accent,
 }: {
   label: string;
   value: string;
@@ -73,10 +74,20 @@ export function Stat({
   delta?: { pct: number | null; label: string; invert?: boolean } | undefined;
   tone?: "default" | "good" | "bad" | "muted";
   badge?: string;
+  accent?: "violet" | "blue" | "turquoise" | "green" | "orange" | "pink";
 }) {
   const toneCls = tone === "good" ? "text-primary" : tone === "bad" ? "text-destructive" : "text-card-foreground";
+  const accentCls = {
+    violet: "bg-kpi-violet",
+    blue: "bg-kpi-blue",
+    turquoise: "bg-kpi-turquoise",
+    green: "bg-kpi-green",
+    orange: "bg-kpi-orange",
+    pink: "bg-kpi-pink",
+  };
   return (
-    <div className="rounded-2xl border border-border bg-card p-4 shadow-card">
+    <div className="relative rounded-2xl border border-border bg-card p-4 shadow-card">
+      {accent && <span aria-hidden="true" className={`absolute inset-y-0 left-0 w-1 rounded-l-2xl ${accentCls[accent]}`} />}
       <div className="flex items-center justify-between gap-2">
         <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</span>
         {badge && (
