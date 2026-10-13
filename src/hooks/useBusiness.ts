@@ -42,7 +42,7 @@ export function useCustomers(orgId: string) {
 export function useSaveCustomer(orgId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, values }: { id?: string; values: Partial<Customer> }) => {
+    mutationFn: async ({ id, values }: { id?: string | undefined; values: Partial<Customer> }) => {
       const { error } = id
         ? await supabase.from("customers").update(values).eq("id", id)
         : await supabase
@@ -81,7 +81,7 @@ export function useTransactions(orgId: string) {
 export function useSaveTransaction(orgId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, values }: { id?: string; values: TransactionInput }) => {
+    mutationFn: async ({ id, values }: { id?: string | undefined; values: TransactionInput }) => {
       const { error } = id
         ? await supabase.from("transactions").update(values).eq("id", id)
         : await supabase.from("transactions").insert({ ...values, organization_id: orgId });

@@ -64,7 +64,7 @@ export function useFixedCosts(orgId: string) {
   const invalidate = () => qc.invalidateQueries({ queryKey: FIXED_COSTS_QUERY_KEY });
 
   const save = useMutation({
-    mutationFn: async ({ id, values }: { id?: string; values: RecurringInput }) => {
+    mutationFn: async ({ id, values }: { id?: string | undefined; values: RecurringInput }) => {
       if (id) {
         const { error } = await supabase.from("fixed_costs").update(toRow(values)).eq("id", id);
         if (error) throw error;

@@ -241,6 +241,7 @@ function ReceiptBusinessPanel({
     await qc.invalidateQueries({ queryKey: RECEIPTS_QUERY_KEY });
     onUpdated({ store: merchant.trim(), date, total: value, customerId: customerId || null, needsReview: false });
     toast.success("Beleg gespeichert.");
+    return;
   }
 
   return (
