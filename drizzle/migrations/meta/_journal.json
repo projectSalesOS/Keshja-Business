@@ -8,6 +8,13 @@
       "when": 1791880012579,
       "tag": "0000_business_core_stage1",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791891339761,
+      "tag": "0001_stage1_fixes_profile_trigger_leave_org",
+      "breakpoints": true
     }
   ]
 }
