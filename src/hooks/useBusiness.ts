@@ -120,7 +120,7 @@ export type ReceiptOption = {
   customer_id: string | null;
 };
 
-export const receiptOptionsKey = (org: string) => ["receipt-options", org] as const;
+export const receiptOptionsKey = (org: string) => ["receipts", "options", org] as const;
 
 /** Kompakte Belegliste des Unternehmens (für Zuordnungen). */
 export function useReceiptOptions(orgId: string) {

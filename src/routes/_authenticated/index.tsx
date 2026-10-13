@@ -38,12 +38,12 @@ export const Route = createFileRoute("/_authenticated/")({
 });
 
 function Dashboard() {
-  const allReceipts = useReceipts();
+  const { data: org } = useOrganization();
+  const allReceipts = useReceipts(org?.organization?.id);
   const week = receiptsInPeriod("woche", allReceipts);
   const month = receiptsInPeriod("monat", allReceipts);
   const latest = receiptsInPeriod("jahr", allReceipts).slice(0, 5);
   const stats = reportStats(month);
-  const { data: org } = useOrganization();
   const monthlyFixedCosts = useMonthlyFixedCosts(org?.organization?.id);
 
   const [greeting, setGreeting] = useState("Guten Morgen");
