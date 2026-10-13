@@ -14,41 +14,132 @@ export type Database = {
   }
   public: {
     Tables: {
+      customers: {
+        Row: {
+          archived_at: string | null
+          city: string | null
+          contact_person: string | null
+          country: string
+          created_at: string
+          created_by: string
+          customer_number: string | null
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          organization_id: string
+          phone: string | null
+          postal_code: string | null
+          street: string | null
+          updated_at: string
+          vat_id: string | null
+        }
+        Insert: {
+          archived_at?: string | null
+          city?: string | null
+          contact_person?: string | null
+          country?: string
+          created_at?: string
+          created_by?: string
+          customer_number?: string | null
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          organization_id: string
+          phone?: string | null
+          postal_code?: string | null
+          street?: string | null
+          updated_at?: string
+          vat_id?: string | null
+        }
+        Update: {
+          archived_at?: string | null
+          city?: string | null
+          contact_person?: string | null
+          country?: string
+          created_at?: string
+          created_by?: string
+          customer_number?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          organization_id?: string
+          phone?: string | null
+          postal_code?: string | null
+          street?: string | null
+          updated_at?: string
+          vat_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customers_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fixed_costs: {
         Row: {
+          active: boolean
           amount: number
           category: string
           created_at: string
+          description: string | null
           due_day: number
+          end_date: string | null
           id: string
           interval: string
           name: string
+          organization_id: string | null
+          start_date: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          active?: boolean
           amount: number
           category: string
           created_at?: string
+          description?: string | null
           due_day?: number
+          end_date?: string | null
           id?: string
           interval?: string
           name: string
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          amount?: number
-          category?: string
-          created_at?: string
-          due_day?: number
-          id?: string
-          interval?: string
-          name?: string
+          organization_id?: string | null
+          start_date?: string
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Update: {
+          active?: boolean
+          amount?: number
+          category?: string
+          created_at?: string
+          description?: string | null
+          due_day?: number
+          end_date?: string | null
+          id?: string
+          interval?: string
+          name?: string
+          organization_id?: string | null
+          start_date?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fixed_costs_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       households: {
         Row: {
@@ -282,6 +373,7 @@ export type Database = {
       receipts: {
         Row: {
           created_at: string
+          customer_id: string | null
           date: string
           deposit_total: number
           discount_total: number
@@ -292,6 +384,7 @@ export type Database = {
           merchant: string
           model: string | null
           needs_review: boolean
+          organization_id: string | null
           time: string | null
           total: number
           trace: Json | null
@@ -299,6 +392,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          customer_id?: string | null
           date: string
           deposit_total?: number
           discount_total?: number
@@ -309,6 +403,7 @@ export type Database = {
           merchant: string
           model?: string | null
           needs_review?: boolean
+          organization_id?: string | null
           time?: string | null
           total: number
           trace?: Json | null
@@ -316,6 +411,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          customer_id?: string | null
           date?: string
           deposit_total?: number
           discount_total?: number
@@ -326,6 +422,7 @@ export type Database = {
           merchant?: string
           model?: string | null
           needs_review?: boolean
+          organization_id?: string | null
           time?: string | null
           total?: number
           trace?: Json | null
@@ -333,10 +430,107 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "receipts_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "receipts_household_id_fkey"
             columns: ["household_id"]
             isOneToOne: false
             referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receipts_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transactions: {
+        Row: {
+          amount: number
+          booking_date: string
+          category: string
+          created_at: string
+          created_by: string
+          customer_id: string | null
+          description: string | null
+          id: string
+          organization_id: string
+          receipt_id: string | null
+          recurring_expense_id: string | null
+          recurring_period: string | null
+          status: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          booking_date?: string
+          category: string
+          created_at?: string
+          created_by?: string
+          customer_id?: string | null
+          description?: string | null
+          id?: string
+          organization_id: string
+          receipt_id?: string | null
+          recurring_expense_id?: string | null
+          recurring_period?: string | null
+          status?: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          booking_date?: string
+          category?: string
+          created_at?: string
+          created_by?: string
+          customer_id?: string | null
+          description?: string | null
+          id?: string
+          organization_id?: string
+          receipt_id?: string | null
+          recurring_expense_id?: string | null
+          recurring_period?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_receipt_id_fkey"
+            columns: ["receipt_id"]
+            isOneToOne: false
+            referencedRelation: "receipts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_recurring_expense_id_fkey"
+            columns: ["recurring_expense_id"]
+            isOneToOne: false
+            referencedRelation: "fixed_costs"
             referencedColumns: ["id"]
           },
         ]
@@ -346,6 +540,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      book_due_recurring_expenses: { Args: { _org: string }; Returns: number }
       create_household: { Args: { _name: string }; Returns: string }
       create_organization: { Args: { _name: string }; Returns: string }
       join_household: { Args: { _code: string }; Returns: string }
