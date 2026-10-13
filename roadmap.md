@@ -4,5 +4,5 @@
 - [x] Etappe 1b: Nummernkreise (automatisch, AN-/RE-Jahr-laufende Nr.)
 - [x] Etappe 2: Kunden, Finanzen (Einnahmen/Ausgaben, wiederkehrend – Fixkosten übernehmen), Belege (Upload, privater Speicher, KI-Scan aus bestehendem Kassenbon-Scan)
 - [x] Etappe 3: Angebote, Rechnungen, Storno, Zahlungen, Mahnwesen, PDF
-- [ ] Etappe 4: Dashboard & Auswertungen (Umsatz vs. Zahlungseingang vs. Ausgaben, CSV)
+- [x] Etappe 4: Dashboard, Auswertungen, Liquiditätsvorschau, Bericht (PDF) + CSV
 - [x] Haushalts-Funktion aus der Oberfläche entfernt (Tabellen stillgelegt, Daten behalten)
