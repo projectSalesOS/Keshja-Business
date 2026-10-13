@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { AppShell, Logo, PageHeader } from "@/components/AppShell";
 import { AccountCard } from "@/components/AccountCard";
-import { HouseholdCard } from "@/components/HouseholdCard";
 import { OrganizationCard } from "@/components/OrganizationCard";
 
 export const Route = createFileRoute("/_authenticated/einstellungen")({
@@ -59,7 +58,6 @@ function EinstellungenPage() {
         <div className="grid gap-4 lg:grid-cols-2">
           <OrganizationCard />
           <AccountCard />
-          <HouseholdCard />
         </div>
 
         <div className="rounded-2xl border border-border bg-card shadow-card">

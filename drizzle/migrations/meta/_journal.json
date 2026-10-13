@@ -15,6 +15,13 @@
       "when": 1791891339761,
       "tag": "0001_stage1_fixes_profile_trigger_leave_org",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791905375488,
+      "tag": "0002_business_stage2",
+      "breakpoints": true
     }
   ]
 }

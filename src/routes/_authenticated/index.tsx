@@ -7,6 +7,7 @@ import { ChartSection } from "@/components/ChartSection";
 import { useReceipts } from "@/hooks/useReceipts";
 import { useProfile } from "@/hooks/useProfile";
 import { useMonthlyFixedCosts } from "@/hooks/useFixedCosts";
+import { useOrganization } from "@/hooks/useOrganization";
 import {
   aiSummary,
   currency,
@@ -20,16 +21,16 @@ import {
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
-      { title: "Dashboard – KESHJA KI-Finanzassistent" },
+      { title: "Dashboard – Keshja Business" },
       {
         name: "description",
         content:
-          "KESHJA erfasst Kassenbons per Foto, kategorisiert Ausgaben mit KI und zeigt Wochen-, Monats- und Fixkosten auf einen Blick.",
+          "KESHJA erfasst Kassenbons per Foto, kategorisiert Ausgaben mit KI und zeigt Wochen-, Monats- und wiederkehrende Ausgaben auf einen Blick.",
       },
-      { property: "og:title", content: "Dashboard – KESHJA KI-Finanzassistent" },
+      { property: "og:title", content: "Dashboard – Keshja Business" },
       {
         property: "og:description",
-        content: "Automatisches Haushaltsbuch: Kassenbon fotografieren, KI kategorisiert, Auswertung fertig.",
+        content: "Belege fotografieren, KI erkennt die Daten, Geschäftsausgaben im Blick.",
       },
     ],
   }),
@@ -37,12 +38,13 @@ export const Route = createFileRoute("/_authenticated/")({
 });
 
 function Dashboard() {
-  const allReceipts = useReceipts();
+  const { data: org } = useOrganization();
+  const allReceipts = useReceipts(org?.organization?.id);
   const week = receiptsInPeriod("woche", allReceipts);
   const month = receiptsInPeriod("monat", allReceipts);
   const latest = receiptsInPeriod("jahr", allReceipts).slice(0, 5);
   const stats = reportStats(month);
-  const monthlyFixedCosts = useMonthlyFixedCosts();
+  const monthlyFixedCosts = useMonthlyFixedCosts(org?.organization?.id);
 
   const [greeting, setGreeting] = useState("Guten Morgen");
   const { data: profile } = useProfile();
@@ -61,7 +63,7 @@ function Dashboard() {
     { label: "Durchschnittlicher Einkauf", value: currency(stats.average) },
     { label: "Größte Kategorie", value: stats.topBereich?.name ?? "–" },
     { label: "Größte Unterkategorie", value: stats.topKategorie?.name ?? "–" },
-    { label: "Fixkosten", value: currency(monthlyFixedCosts) },
+    { label: "Wiederkehrende Ausgaben", value: currency(monthlyFixedCosts) },
   ];
 
   const bullets = [
@@ -155,7 +157,7 @@ function Dashboard() {
             color="green"
           />
           <KpiCard
-            label="Fixkosten Monat"
+            label="Wiederkehrend Monat"
             value={currency(monthlyFixedCosts)}
             hint="wiederkehrend"
             icon={Repeat}

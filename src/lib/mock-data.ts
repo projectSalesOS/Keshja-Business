@@ -28,6 +28,8 @@ export type Receipt = {
   discountTotal?: number | undefined;
   /** Altbeleg mit uneindeutigen Rabattzeilen – manuelle Prüfung nötig */
   needsReview?: boolean;
+  /** zugeordneter Kunde */
+  customerId?: string | null;
 };
 
 export type FixedCost = {

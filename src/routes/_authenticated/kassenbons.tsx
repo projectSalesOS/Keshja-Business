@@ -1,9 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ChevronRight, Search, X } from "lucide-react";
+import { ChevronRight, Loader2, Search, X } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { Field, OrgGate, btnPrimary, btnSecondary, inputClass } from "@/components/OrgGate";
+import { useCustomers, useTransactions } from "@/hooks/useBusiness";
+import { parseAmount } from "@/lib/business";
+import { TransactionForm } from "@/components/TransactionForm";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { ReceiptCapture } from "@/components/ReceiptCapture";
-import { useReceipts } from "@/hooks/useReceipts";
+import { RECEIPTS_QUERY_KEY, useReceipts } from "@/hooks/useReceipts";
 import { currency, formatDate } from "@/lib/finance";
 import { colorToken } from "@/lib/categories";
 import { type Receipt } from "@/lib/mock-data";
@@ -13,13 +20,15 @@ export const Route = createFileRoute("/_authenticated/kassenbons")({
     search["capture"] === "1" ? { capture: "1" } : {},
   head: () => ({
     meta: [
-      { title: "Kassenbons – KESHJA" },
+      { title: "Belege – Keshja Business" },
       {
         name: "description",
         content:
-          "Kassenbons fotografieren, hochladen, durchsuchen und alle Positionen mit Kategorie und Unterkategorie einsehen.",
+          "Belege fotografieren, per KI auslesen, prüfen, Kunden zuordnen und als Ausgabe buchen.",
       },
-      { property: "og:title", content: "Kassenbons – KESHJA" },
+      { property: "og:title", content: "Belege – Keshja Business" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       {
         property: "og:description",
         content: "Alle erfassten Kassenbons mit Geschäft, Datum, Uhrzeit und Gesamtsumme.",
@@ -30,8 +39,27 @@ export const Route = createFileRoute("/_authenticated/kassenbons")({
 });
 
 function KassenbonsPage() {
+  return (
+    <AppShell>
+      <div className="space-y-6">
+        <PageHeader
+          title="Belege"
+          description="Fotografieren oder hochladen – die KI liest die Daten aus, du prüfst und ordnest zu."
+        />
+        <OrgGate>{({ orgId }) => <ReceiptsView orgId={orgId} />}</OrgGate>
+      </div>
+    </AppShell>
+  );
+}
+
+function ReceiptsView({ orgId }: { orgId: string }) {
   const { capture } = Route.useSearch();
-  const receipts = useReceipts();
+  const receipts = useReceipts(orgId);
+  const { data: tx = [] } = useTransactions(orgId);
+  const bookedBy = useMemo(
+    () => new Map(tx.filter((t) => t.receipt_id).map((t) => [t.receipt_id!, t])),
+    [tx],
+  );
   const [query, setQuery] = useState("");
   const [active, setActive] = useState<Receipt | null>(null);
 
@@ -54,14 +82,9 @@ function KassenbonsPage() {
   }, [query, receipts]);
 
   return (
-    <AppShell>
+    <>
       <div className="space-y-6">
-        <PageHeader
-          title="Kassenbons"
-          description="Fotografieren, hochladen und durchsuchen – ohne manuelle Eingabe."
-        />
-
-        <ReceiptCapture autoStart={capture === "1"} />
+        <ReceiptCapture autoStart={capture === "1"} organizationId={orgId} />
 
         <div className="relative">
           <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -89,6 +112,11 @@ function KassenbonsPage() {
                         Prüfen
                       </span>
                     ) : null}
+                    {bookedBy.has(r.id) ? (
+                      <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent-foreground">
+                        Gebucht
+                      </span>
+                    ) : null}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {formatDate(r.date)} · {r.time} Uhr
@@ -103,7 +131,7 @@ function KassenbonsPage() {
           ))}
           {results.length === 0 ? (
             <li className="px-5 py-8 text-center text-sm text-muted-foreground">
-              Keine Kassenbons gefunden.
+              Keine Belege gefunden.
             </li>
           ) : null}
         </ul>
@@ -154,9 +182,131 @@ function KassenbonsPage() {
               <span className="text-sm font-medium">Gesamtsumme</span>
               <span className="text-lg font-semibold tabular-nums">{currency(active.total)}</span>
             </div>
+
+            <ReceiptBusinessPanel
+              key={active.id}
+              orgId={orgId}
+              receipt={active}
+              booked={bookedBy.has(active.id)}
+              linkedReceipts={new Set(bookedBy.keys())}
+              onUpdated={(patch) => setActive({ ...active, ...patch })}
+            />
           </div>
         </div>
       ) : null}
-    </AppShell>
+    </>
+  );
+}
+
+function ReceiptBusinessPanel({
+  orgId,
+  receipt,
+  booked,
+  linkedReceipts,
+  onUpdated,
+}: {
+  orgId: string;
+  receipt: Receipt;
+  booked: boolean;
+  linkedReceipts: Set<string>;
+  onUpdated: (patch: Partial<Receipt>) => void;
+}) {
+  const qc = useQueryClient();
+  const { data: customers = [] } = useCustomers(orgId);
+  const [merchant, setMerchant] = useState(receipt.store);
+  const [date, setDate] = useState(receipt.date);
+  const [total, setTotal] = useState(String(receipt.total).replace(".", ","));
+  const [customerId, setCustomerId] = useState(receipt.customerId ?? "");
+  const [saving, setSaving] = useState(false);
+  const [booking, setBooking] = useState(false);
+
+  async function saveCorrections() {
+    const value = parseAmount(total);
+    if (!merchant.trim()) return toast.error("Bitte einen Händler bzw. Aussteller angeben.");
+    if (!date) return toast.error("Bitte ein Datum angeben.");
+    if (value === null) return toast.error("Bitte einen gültigen Betrag eingeben.");
+    setSaving(true);
+    const { error } = await supabase
+      .from("receipts")
+      .update({
+        merchant: merchant.trim(),
+        date,
+        total: value,
+        customer_id: customerId || null,
+        needs_review: false,
+      })
+      .eq("id", receipt.id);
+    setSaving(false);
+    if (error) return toast.error(error.message);
+    await qc.invalidateQueries({ queryKey: RECEIPTS_QUERY_KEY });
+    onUpdated({ store: merchant.trim(), date, total: value, customerId: customerId || null, needsReview: false });
+    toast.success("Beleg gespeichert.");
+    return;
+  }
+
+  return (
+    <div className="mt-5 space-y-3 border-t border-border pt-4">
+      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        Erkannte Daten prüfen und zuordnen
+      </p>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="col-span-2">
+          <Field label="Händler / Aussteller">
+            <input className={inputClass} value={merchant} onChange={(e) => setMerchant(e.target.value)} />
+          </Field>
+        </div>
+        <Field label="Datum">
+          <input type="date" className={inputClass} value={date} onChange={(e) => setDate(e.target.value)} />
+        </Field>
+        <Field label="Betrag (€)">
+          <input className={inputClass} inputMode="decimal" value={total} onChange={(e) => setTotal(e.target.value)} />
+        </Field>
+        <div className="col-span-2">
+          <Field label="Kunde (optional)">
+            <select className={inputClass} value={customerId} onChange={(e) => setCustomerId(e.target.value)}>
+              <option value="">Kein Kunde</option>
+              {customers
+                .filter((c) => !c.archived_at || c.id === customerId)
+                .map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+            </select>
+          </Field>
+        </div>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <button type="button" className={btnSecondary} disabled={saving} onClick={saveCorrections}>
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Korrekturen speichern
+        </button>
+        {booked ? (
+          <span className="self-center text-xs text-muted-foreground">
+            Bereits als Buchung erfasst (siehe Finanzen).
+          </span>
+        ) : (
+          <button type="button" className={btnPrimary} onClick={() => setBooking(true)}>
+            Als Ausgabe buchen
+          </button>
+        )}
+      </div>
+      {booking ? (
+        <TransactionForm
+          orgId={orgId}
+          tx={null}
+          linkedReceipts={linkedReceipts}
+          preset={{
+            type: "expense",
+            amount: parseAmount(total) ?? receipt.total,
+            booking_date: date,
+            description: merchant.trim(),
+            customer_id: customerId || null,
+            receipt_id: receipt.id,
+            status: "bezahlt",
+          }}
+          onClose={() => setBooking(false)}
+        />
+      ) : null}
+    </div>
   );
 }

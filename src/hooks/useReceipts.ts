@@ -14,6 +14,7 @@ type Row = {
   deposit_total: number | string | null;
   discount_total: number | string | null;
   needs_review: boolean | null;
+  customer_id: string | null;
   receipt_items: {
     name: string;
     quantity: number | string;
@@ -53,12 +54,13 @@ function foldDiscountItems(items: ReceiptItem[]): ReceiptItem[] {
   return result;
 }
 
-async function fetchSavedReceipts(): Promise<Receipt[]> {
+async function fetchSavedReceipts(orgId: string): Promise<Receipt[]> {
   const { data, error } = await supabase
     .from("receipts")
     .select(
-      "id, merchant, date, time, total, goods_total, deposit_total, discount_total, needs_review, receipt_items(name, quantity, price, original_price, discount, discount_kind, category, subcategory, kind)",
+      "id, merchant, date, time, total, goods_total, deposit_total, discount_total, needs_review, customer_id, receipt_items(name, quantity, price, original_price, discount, discount_kind, category, subcategory, kind)",
     )
+    .eq("organization_id", orgId)
     .order("date", { ascending: false })
     .limit(500);
 
@@ -74,6 +76,7 @@ async function fetchSavedReceipts(): Promise<Receipt[]> {
     depositTotal: row.deposit_total == null ? undefined : Number(row.deposit_total),
     discountTotal: row.discount_total == null ? undefined : Number(row.discount_total),
     needsReview: row.needs_review ?? false,
+    customerId: row.customer_id,
     items: foldDiscountItems(
       (row.receipt_items ?? [])
         // Pfand ist eine Belegkomponente und keine Ausgabenkategorie.
@@ -100,11 +103,12 @@ async function fetchSavedReceipts(): Promise<Receipt[]> {
   }));
 }
 
-/** Only real, saved receipts – newest first. */
-export function useReceipts(): Receipt[] {
+/** Gespeicherte Belege des Unternehmens – neueste zuerst. */
+export function useReceipts(orgId: string | null | undefined): Receipt[] {
   const { data } = useQuery({
-    queryKey: RECEIPTS_QUERY_KEY,
-    queryFn: fetchSavedReceipts,
+    queryKey: [...RECEIPTS_QUERY_KEY, "full", orgId],
+    queryFn: () => fetchSavedReceipts(orgId!),
+    enabled: !!orgId,
     staleTime: 30_000,
   });
 

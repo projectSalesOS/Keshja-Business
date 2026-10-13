@@ -12,3 +12,8 @@
 ## Architecture rules
 - Tenant isolation: every business table carries organization_id and RLS uses private.is_org_member / private.is_org_admin (security definer) — avoids policy recursion.
 - Org creation/joining goes through SECURITY DEFINER RPCs (create_organization, join_organization) because membership rows cannot be inserted directly by clients.
+
+- Business data (customers, transactions, receipts, fixed_costs) is scoped by organization_id; cross-links are enforced same-org by trigger private.check_same_org_links — client filters are never the security boundary.
+- Scanning/saving a receipt never creates a transaction; booking is a manual step, and unique indexes (receipt_id, recurring_expense_id+period) prevent double bookings.
+- Recurring expenses are booked only via the user-triggered, idempotent RPC book_due_recurring_expenses — no background job.
+- Household tables/RPCs are deprecated (kept for data, execute revoked); do not wire them back in.
