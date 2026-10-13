@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { LayoutDashboard, Receipt, Repeat, Users, Wallet, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Receipt, Repeat, Users, Wallet, Settings, LogOut, FileText, FileSignature } from "lucide-react";
 import type { ReactNode } from "react";
 import logoMark from "@/assets/keshja-mark.png.asset.json";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +9,8 @@ import { useOrganization } from "@/hooks/useOrganization";
 
 const NAV = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/angebote", label: "Angebote", icon: FileSignature },
+  { to: "/rechnungen", label: "Rechnungen", icon: FileText },
   { to: "/finanzen", label: "Finanzen", icon: Wallet },
   { to: "/kunden", label: "Kunden", icon: Users },
   { to: "/kassenbons", label: "Belege", icon: Receipt },
@@ -141,16 +143,16 @@ export function AppShell({ children }: { children: ReactNode }) {
         {children}
       </main>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-6 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-30 flex overflow-x-auto border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
         {NAV.map(({ to, label, icon: Icon }) => (
           <Link
             key={to}
             to={to}
             activeOptions={{ exact: to === "/" }}
-            className="flex flex-col items-center gap-1 py-2.5 text-[9px] font-medium text-muted-foreground"
+            className="flex min-w-[4.5rem] flex-1 flex-col items-center gap-1 py-2.5 text-[9px] font-medium text-muted-foreground"
             activeProps={{
               className:
-                "flex flex-col items-center gap-1 py-2.5 text-[9px] font-medium text-primary",
+                "flex min-w-[4.5rem] flex-1 flex-col items-center gap-1 py-2.5 text-[9px] font-medium text-primary",
             }}
           >
             <Icon className="h-5 w-5" strokeWidth={1.75} />
