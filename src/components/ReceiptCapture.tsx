@@ -28,7 +28,13 @@ function readAsDataUrl(file: File): Promise<string> {
 const errorMessage = (error: unknown) =>
   error instanceof Error && error.message ? error.message : "Unbekannter Fehler. Bitte erneut versuchen.";
 
-export function ReceiptCapture({ autoStart = false }: { autoStart?: boolean }) {
+export function ReceiptCapture({
+  autoStart = false,
+  organizationId,
+}: {
+  autoStart?: boolean;
+  organizationId: string;
+}) {
   const cameraRef = useRef<HTMLInputElement>(null);
   const uploadRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
@@ -88,9 +94,10 @@ export function ReceiptCapture({ autoStart = false }: { autoStart?: boolean }) {
     setSaving(true);
     setError(null);
     try {
-      await save({ data: draft });
+      if (!organizationId) throw new Error("Bitte zuerst ein Unternehmen anlegen oder beitreten.");
+      await save({ data: { organizationId, receipt: draft } });
       await queryClient.invalidateQueries({ queryKey: RECEIPTS_QUERY_KEY });
-      toast.success("Kassenbon gespeichert – Dashboard und Auswertungen sind aktualisiert.");
+      toast.success("Beleg gespeichert. Unter Belege kannst du ihn als Ausgabe buchen.");
       setDraft(null);
       setWarnings([]);
     } catch (err) {

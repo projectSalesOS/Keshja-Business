@@ -239,32 +239,33 @@ export const analyzeReceipt = createServerFn({ method: "POST" })
 
 export const saveReceipt = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => {
+  .inputValidator((raw: unknown) => {
+    const wrapper = (raw ?? {}) as { organizationId?: unknown; receipt?: unknown };
+    const organizationId =
+      typeof wrapper.organizationId === "string" && /^[0-9a-f-]{36}$/i.test(wrapper.organizationId)
+        ? wrapper.organizationId
+        : null;
+    if (!organizationId) throw new Error("Bitte zuerst ein Unternehmen anlegen oder beitreten.");
+    const input = wrapper.receipt;
     const parsed = parsedReceiptSchema.safeParse(input);
     if (!parsed.success) {
       throw new Error(
         parsed.error.issues[0]?.message ?? "Die Daten sind unvollständig und wurden nicht gespeichert.",
       );
     }
-    return foldDiscounts(normalizeCategories(parsed.data));
+    return { ...foldDiscounts(normalizeCategories(parsed.data)), organizationId };
   })
   .handler(async ({ data, context }): Promise<{ id: string }> => {
     const totals = receiptTotals(data);
     const trace = (data.trace ?? null) as ReceiptTrace | null;
 
-    // Belege gehören immer dem angemeldeten Nutzer; ist er Teil eines Haushalts,
-    // werden sie zusätzlich dem Haushalt zugeordnet und damit gemeinsam sichtbar.
-    const { data: profile } = await context.supabase
-      .from("profiles")
-      .select("household_id")
-      .eq("id", context.userId)
-      .maybeSingle();
-
+    // Belege gehören dem Unternehmen; die Datenbank prüft die Mitgliedschaft (RLS).
+    // Ein gespeicherter Beleg erzeugt bewusst keine Buchung – das geschieht nur manuell.
     const { data: receipt, error } = await context.supabase
       .from("receipts")
       .insert({
         user_id: context.userId,
-        household_id: profile?.household_id ?? null,
+        organization_id: data.organizationId,
         merchant: data.merchant,
         date: data.date,
         time: data.time,
