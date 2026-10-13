@@ -531,11 +531,11 @@ function PaymentsSection({ invoice, ctx, payments, open }: { invoice: Doc; ctx: 
   const [form, setForm] = useState<{ id: string; isNew: boolean; amount: string; date: string; method: string; note: string } | null>(null);
   const canAdd = invoice.status === "issued";
 
-  async function submit() {
+  async function submit(): Promise<void> {
     if (!form) return;
     const amount = parseAmount(form.amount);
-    if (amount === null) return toast.error("Bitte einen gültigen Betrag größer 0 angeben.");
-    if (!form.date || form.date > today) return toast.error("Das Zahlungsdatum darf nicht in der Zukunft liegen.");
+    if (amount === null) { toast.error("Bitte einen gültigen Betrag größer 0 angeben."); return; }
+    if (!form.date || form.date > today) { toast.error("Das Zahlungsdatum darf nicht in der Zukunft liegen."); return; }
     const othersPaid = payments.filter((p) => p.id !== form.id).reduce((s, p) => s + p.amount, 0);
     const over = Math.round((othersPaid + amount - invoice.total) * 100) / 100;
     if (over > 0 && !confirm(`Damit wäre die Rechnung um ${currency(over)} überzahlt. Trotzdem speichern?`)) return;
