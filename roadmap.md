@@ -14,4 +14,4 @@
 - [x] Berichte Monat/Quartal/Jahr/frei, PDF+CSV
 - [x] Firmenlogo (Upload, PDFs)
 - [x] E-Mail-Versand mit PDF-Anhang (Code fertig)
-- [ ] E-Mail-Dienst (Resend) verbinden – wartet auf Nutzer
+- [x] E-Mail-Dienst (Resend) verbunden; eigene Absenderdomain in Resend noch offen
