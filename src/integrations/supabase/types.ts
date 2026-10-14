@@ -691,11 +691,14 @@ export type Database = {
           merchant: string
           model: string | null
           needs_review: boolean
+          net_total: number | null
           organization_id: string | null
           time: string | null
           total: number
           trace: Json | null
           user_id: string | null
+          vat_breakdown: Json
+          vat_total: number | null
         }
         Insert: {
           created_at?: string
@@ -710,11 +713,14 @@ export type Database = {
           merchant: string
           model?: string | null
           needs_review?: boolean
+          net_total?: number | null
           organization_id?: string | null
           time?: string | null
           total: number
           trace?: Json | null
           user_id?: string | null
+          vat_breakdown?: Json
+          vat_total?: number | null
         }
         Update: {
           created_at?: string
@@ -729,11 +735,14 @@ export type Database = {
           merchant?: string
           model?: string | null
           needs_review?: boolean
+          net_total?: number | null
           organization_id?: string | null
           time?: string | null
           total?: number
           trace?: Json | null
           user_id?: string | null
+          vat_breakdown?: Json
+          vat_total?: number | null
         }
         Relationships: [
           {
