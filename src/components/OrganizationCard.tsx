@@ -233,7 +233,7 @@ function LogoSection({ orgId, path, isAdmin, onChanged }: { orgId: string; path:
 
   async function upload(file: File) {
     const err = validateLogoFile(file);
-    if (err) return toast.error(err);
+    if (err) { toast.error(err); return; }
     setBusy(true);
     try {
       const newPath = `${orgId}/logo-${Date.now()}.${LOGO_TYPES[file.type]}`;
@@ -252,14 +252,15 @@ function LogoSection({ orgId, path, isAdmin, onChanged }: { orgId: string; path:
   }
 
   async function removeLogo() {
-    if (!path || !confirm("Logo entfernen?")) return;
+    if (!path || !confirm("Logo entfernen?")) return undefined;
     setBusy(true);
     const { error } = await supabase.from("organizations").update({ logo_path: null }).eq("id", orgId);
     if (!error) await supabase.storage.from(LOGO_BUCKET).remove([path]);
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return undefined; }
     await onChanged();
     toast.success("Logo entfernt.");
+    return undefined;
   }
 
   return (

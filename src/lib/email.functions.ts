@@ -40,13 +40,13 @@ export const sendDocumentEmail = createServerFn({ method: "POST" })
     if (error || !doc) throw new Error("Dokument nicht gefunden oder kein Zugriff.");
     if (doc.kind !== "quote" && doc.kind !== "invoice") throw new Error("Nur Angebote und Rechnungen können versendet werden.");
 
-    const lovableKey = process.env.LOVABLE_API_KEY;
-    const resendKey = process.env.RESEND_API_KEY;
+    const lovableKey = process.env["LOVABLE_API_KEY"];
+    const resendKey = process.env["RESEND_API_KEY"];
     if (!lovableKey || !resendKey)
       return { ok: false as const, error: "Der E-Mail-Versand ist noch nicht eingerichtet (E-Mail-Dienst nicht verbunden). Es wurde nichts versendet." };
 
     const org = (doc as unknown as { organizations: { name: string; email: string | null } | null }).organizations;
-    const fromAddress = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
+    const fromAddress = process.env["RESEND_FROM_EMAIL"] || "onboarding@resend.dev";
     const replyTo = org?.email && EMAIL_RE.test(org.email) ? org.email : undefined;
 
     const res = await fetch(`${GATEWAY_URL}/emails`, {
