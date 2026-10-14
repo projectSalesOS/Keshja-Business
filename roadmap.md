@@ -7,3 +7,11 @@
 - [x] Etappe 4: Dashboard, Auswertungen, Liquiditätsvorschau, Bericht (PDF) + CSV
 - [x] Haushalts-Funktion aus der Oberfläche entfernt (Tabellen stillgelegt, Daten behalten)
 - [x] Design-Update: zentrale Violett-Pink-Farben und sechs pastellfarbene Dashboard-Akzentstreifen, ohne Funktions- oder Layoutumbau
+
+## Vereinfachung (Okt 2026)
+- [x] Dashboard 3 Kennzahlen + Schnellaktionen, abgerundete Akzentbalken
+- [x] Navigation 6 Bereiche, Liquidität entfernt
+- [x] Berichte Monat/Quartal/Jahr/frei, PDF+CSV
+- [x] Firmenlogo (Upload, PDFs)
+- [x] E-Mail-Versand mit PDF-Anhang (Code fertig)
+- [ ] E-Mail-Dienst (Resend) verbinden – wartet auf Nutzer
