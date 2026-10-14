@@ -35,7 +35,7 @@ function DashboardPage() {
       <div className="space-y-6">
         <PageHeader
           title="Dashboard"
-          description={profile ? `Hallo, ${profile.displayName}!` : undefined}
+          description={profile ? `Hallo, ${profile.displayName}!` : "Hallo!"}
         />
         <OrgGate>{({ orgId }) => <DashboardView orgId={orgId} />}</OrgGate>
       </div>

@@ -71,7 +71,7 @@ const RESPONSE_SCHEMA = {
     date: { type: ["string", "null"] },
     time: { type: ["string", "null"] },
     total: { type: ["number", "null"] },
-    vat_breakdown: { type: "array", items: { type: "object", additionalProperties: false, required: ["rate", "net", "tax", "gross"], properties: { rate: { type: "number" }, net: { type: ["number", "null"] }, tax: { type: ["number", "null"] }, gross: { type: ["number", "null"] } } },
+    vat_breakdown: { type: "array", items: { type: "object", additionalProperties: false, required: ["rate", "net", "tax", "gross"], properties: { rate: { type: "number" }, net: { type: ["number", "null"] }, tax: { type: ["number", "null"] }, gross: { type: ["number", "null"] } } } },
     lines: {
       type: "array",
       items: {
