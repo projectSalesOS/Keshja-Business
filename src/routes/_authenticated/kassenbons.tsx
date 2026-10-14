@@ -8,7 +8,7 @@ import { Field, OrgGate, btnPrimary, btnSecondary, inputClass } from "@/componen
 import { useCustomers, useTransactions } from "@/hooks/useBusiness";
 import { parseAmount } from "@/lib/business";
 import { TransactionForm } from "@/components/TransactionForm";
-import { AppShell, PageHeader } from "@/components/AppShell";
+import { AppShell, PageHeader, SectionTabs } from "@/components/AppShell";
 import { ReceiptCapture } from "@/components/ReceiptCapture";
 import { RECEIPTS_QUERY_KEY, useReceipts } from "@/hooks/useReceipts";
 import { currency, formatDate } from "@/lib/finance";
@@ -46,6 +46,7 @@ function KassenbonsPage() {
           title="Belege"
           description="Fotografieren oder hochladen – die KI liest die Daten aus, du prüfst und ordnest zu."
         />
+        <SectionTabs tabs={[{ to: "/finanzen", label: "Buchungen" }, { to: "/kassenbons", label: "Belege" }, { to: "/auswertungen", label: "Berichte" }]} />
         <OrgGate>{({ orgId }) => <ReceiptsView orgId={orgId} />}</OrgGate>
       </div>
     </AppShell>

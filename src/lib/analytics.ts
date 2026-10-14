@@ -16,7 +16,7 @@ import { duePeriods } from "./business";
 import { openAmount } from "./documents";
 
 export type Range = { from: string; to: string };
-export type Preset = "monat" | "vormonat" | "jahr" | "frei";
+export type Preset = "monat" | "vormonat" | "quartal" | "jahr" | "frei";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 const iso = (y: number, m0: number, d: number) => {
@@ -40,6 +40,10 @@ export function rangeFor(preset: Preset, today: string, custom?: Range): Range {
   const [y, m] = parts(today);
   if (preset === "monat") return { from: iso(y, m - 1, 1), to: iso(y, m, 0) };
   if (preset === "vormonat") return { from: iso(y, m - 2, 1), to: iso(y, m - 1, 0) };
+  if (preset === "quartal") {
+    const q0 = Math.floor((m - 1) / 3) * 3;
+    return { from: iso(y, q0, 1), to: iso(y, q0 + 3, 0) };
+  }
   if (preset === "jahr") return { from: `${y}-01-01`, to: `${y}-12-31` };
   const c = custom ?? { from: today, to: today };
   return c.from <= c.to ? c : { from: c.to, to: c.from };

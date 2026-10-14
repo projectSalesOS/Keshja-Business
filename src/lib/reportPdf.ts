@@ -45,7 +45,7 @@ export function buildReportPdf(r: ReportInput): jsPDF {
     y = next();
   };
 
-  pdf.setFont("helvetica", "bold").setFontSize(16).text("Geschäftsbericht", L, y);
+  pdf.setFont("helvetica", "bold").setFontSize(16).text("Einnahmen- und Ausgabenbericht", L, y);
   y += 7;
   pdf.setFont("helvetica", "normal").setFontSize(9);
   const c = r.company;
@@ -76,18 +76,6 @@ export function buildReportPdf(r: ReportInput): jsPDF {
   title("4. Einnahmen nach Kategorie");
   table(["Kategorie", "Betrag"], r.incomeCategories.map((x) => [x.name, money(x.value)]), [1]);
 
-  title("5. Offene und überfällige Forderungen (Stand heute)");
-  table(
-    ["Rechnung", "Kunde", "Fällig", "Offen", "Status"],
-    r.receivables.map((x) => [x.number ?? "", x.customerName, csvDate(x.due_date), money(x.open), x.overdue ? `überfällig (${x.daysOverdue} T.)` : "offen"]),
-    [3],
-  );
-
-  title("6. Wiederkehrende Ausgaben");
-  table(["Bezeichnung", "Kategorie", "Intervall", "Betrag", "Aktiv"], r.recurring.map((x) => [x.name, x.category, x.interval, money(x.amount), x.active ? "ja" : "nein"]), [3]);
-
-  title("7. Prognose: noch nicht gebuchte Fälligkeiten im Zeitraum");
-  table(["Datum", "Bezeichnung", "Betrag"], r.planned.map((x) => [csvDate(x.date), x.name, money(x.amount)]), [2]);
 
   const pages = pdf.getNumberOfPages();
   for (let i = 1; i <= pages; i++) {

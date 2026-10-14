@@ -467,6 +467,7 @@ export type Database = {
           id: string
           invite_code: string | null
           legal_form: string | null
+          logo_path: string | null
           name: string
           phone: string | null
           postal_code: string | null
@@ -490,6 +491,7 @@ export type Database = {
           id?: string
           invite_code?: string | null
           legal_form?: string | null
+          logo_path?: string | null
           name: string
           phone?: string | null
           postal_code?: string | null
@@ -513,6 +515,7 @@ export type Database = {
           id?: string
           invite_code?: string | null
           legal_form?: string | null
+          logo_path?: string | null
           name?: string
           phone?: string | null
           postal_code?: string | null

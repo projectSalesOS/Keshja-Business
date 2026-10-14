@@ -1,5 +1,6 @@
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import { fitLogo, type PdfLogo } from "@/lib/orgLogo";
 import { DUNNING_LABEL, KIND_LABEL, computeTotals, lineTotal, type DocKind } from "@/lib/documents";
 
 type Snap = Record<string, unknown> | null;
@@ -29,8 +30,13 @@ const qty = (n: number) => String(n).replace(".", ",");
 const de = (iso: string | null) => (iso ? iso.split("-").reverse().join(".") : "");
 const s = (o: Snap, k: string) => (o && typeof o[k] === "string" ? (o[k] as string) : "");
 
-function header(pdf: jsPDF, company: Snap, customer: Snap) {
+function header(pdf: jsPDF, company: Snap, customer: Snap, logo?: PdfLogo | null) {
   const L = 20;
+  if (logo) {
+    // Logo rechts oben, max. 50 × 22 mm, Seitenverhältnis bleibt erhalten; endet vor dem Meta-Block (y=45).
+    const { w, h } = fitLogo(logo, 50, 22);
+    pdf.addImage(logo.dataUrl, "PNG", 190 - w, 12, w, h);
+  }
   pdf.setFont("helvetica", "bold").setFontSize(14).text(s(company, "name") || "Unternehmen", L, 22);
   pdf.setFont("helvetica", "normal").setFontSize(8);
   pdf.text(
@@ -72,10 +78,10 @@ function footer(pdf: jsPDF, company: Snap) {
   }
 }
 
-export function buildDocumentPdf(d: PdfDoc, items: PdfItem[]): jsPDF {
+export function buildDocumentPdf(d: PdfDoc, items: PdfItem[], logo?: PdfLogo | null): jsPDF {
   const pdf = new jsPDF({ unit: "mm", format: "a4" });
   const company = d.company_snapshot;
-  header(pdf, company, d.customer_snapshot);
+  header(pdf, company, d.customer_snapshot, logo);
 
   const meta: [string, string][] = [[`${KIND_LABEL[d.kind]}snr.`, d.number ?? "ENTWURF"], ["Datum", de(d.doc_date)]];
   if (s(d.customer_snapshot, "customer_number")) meta.push(["Kundennr.", s(d.customer_snapshot, "customer_number")]);
@@ -150,9 +156,9 @@ export function buildDocumentPdf(d: PdfDoc, items: PdfItem[]): jsPDF {
 
 export type PdfDunning = { level: number; notice_date: string; new_due_date: string; open_amount: number };
 
-export function buildDunningPdf(inv: PdfDoc & { total: number }, n: PdfDunning, paid: number): jsPDF {
+export function buildDunningPdf(inv: PdfDoc & { total: number }, n: PdfDunning, paid: number, logo?: PdfLogo | null): jsPDF {
   const pdf = new jsPDF({ unit: "mm", format: "a4" });
-  header(pdf, inv.company_snapshot, inv.customer_snapshot);
+  header(pdf, inv.company_snapshot, inv.customer_snapshot, logo);
   pdf.setFontSize(9);
   pdf.text("Datum", 140, 45);
   pdf.text(de(n.notice_date), 190, 45, { align: "right" });

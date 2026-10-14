@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Building2, Copy, Loader2, LogOut, RefreshCw, Trash2 } from "lucide-react";
+import { Building2, Copy, ImageUp, Loader2, LogOut, RefreshCw, Trash2 } from "lucide-react";
+import { LOGO_BUCKET, LOGO_TYPES, validateLogoFile } from "@/lib/orgLogo";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -149,6 +150,8 @@ export function OrganizationCard() {
         </form>
       )}
 
+      <LogoSection orgId={org.id} path={org.logo_path} isAdmin={isAdmin} onChanged={refresh} />
+
       <div className="space-y-3">
         <h3 className="text-sm font-semibold">Benutzer</h3>
         {isAdmin && org.invite_code && (
@@ -210,6 +213,76 @@ function Header() {
     <div className="flex items-center gap-2">
       <Building2 className="h-4 w-4 text-primary" />
       <h2 className="text-sm font-semibold">Unternehmen</h2>
+    </div>
+  );
+}
+
+function LogoSection({ orgId, path, isAdmin, onChanged }: { orgId: string; path: string | null; isAdmin: boolean; onChanged: () => Promise<unknown> }) {
+  const [url, setUrl] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    let revoke: string | null = null;
+    setUrl(null);
+    if (!path) return;
+    supabase.storage.from(LOGO_BUCKET).download(path).then(({ data }) => {
+      if (data) { revoke = URL.createObjectURL(data); setUrl(revoke); }
+    });
+    return () => { if (revoke) URL.revokeObjectURL(revoke); };
+  }, [path]);
+
+  async function upload(file: File) {
+    const err = validateLogoFile(file);
+    if (err) { toast.error(err); return; }
+    setBusy(true);
+    try {
+      const newPath = `${orgId}/logo-${Date.now()}.${LOGO_TYPES[file.type]}`;
+      const up = await supabase.storage.from(LOGO_BUCKET).upload(newPath, file, { contentType: file.type });
+      if (up.error) throw up.error;
+      const { error } = await supabase.from("organizations").update({ logo_path: newPath }).eq("id", orgId);
+      if (error) { await supabase.storage.from(LOGO_BUCKET).remove([newPath]); throw error; }
+      if (path) await supabase.storage.from(LOGO_BUCKET).remove([path]);
+      await onChanged();
+      toast.success("Logo gespeichert.");
+    } catch (e) {
+      toast.error(`Logo konnte nicht gespeichert werden: ${(e as Error).message}`);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function removeLogo() {
+    if (!path || !confirm("Logo entfernen?")) return undefined;
+    setBusy(true);
+    const { error } = await supabase.from("organizations").update({ logo_path: null }).eq("id", orgId);
+    if (!error) await supabase.storage.from(LOGO_BUCKET).remove([path]);
+    setBusy(false);
+    if (error) { toast.error(error.message); return undefined; }
+    await onChanged();
+    toast.success("Logo entfernt.");
+    return undefined;
+  }
+
+  return (
+    <div className="space-y-3">
+      <h3 className="text-sm font-semibold">Firmenlogo</h3>
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="flex h-20 w-40 items-center justify-center rounded-xl bg-muted p-2">
+          {url ? <img src={url} alt="Firmenlogo" className="max-h-full max-w-full object-contain" /> : <span className="text-xs text-muted-foreground">Kein Logo</span>}
+        </div>
+        {isAdmin && (
+          <div className="flex flex-wrap gap-2">
+            <label className={`${btn} cursor-pointer ${busy ? "pointer-events-none opacity-50" : ""}`}>
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageUp className="h-4 w-4" />}
+              {path ? "Logo ersetzen" : "Logo hochladen"}
+              <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only"
+                onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void upload(f); }} />
+            </label>
+            {path && <button type="button" className="rounded-xl px-3 py-2 text-sm text-muted-foreground hover:text-destructive" onClick={removeLogo}>Entfernen</button>}
+          </div>
+        )}
+      </div>
+      <p className="text-xs text-muted-foreground">PNG, JPG oder WEBP, max. 2 MB. Erscheint rechts oben auf Angeboten, Rechnungen und Mahnungen.</p>
     </div>
   );
 }

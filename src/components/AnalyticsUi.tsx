@@ -3,9 +3,10 @@ import { inputClass } from "@/components/OrgGate";
 import { rangeFor, type Preset, type Range } from "@/lib/analytics";
 
 export const PRESET_LABEL: Record<Preset, string> = {
-  monat: "Aktueller Monat",
+  monat: "Monat",
   vormonat: "Vormonat",
-  jahr: "Aktuelles Jahr",
+  quartal: "Quartal",
+  jahr: "Jahr",
   frei: "Frei wählbar",
 };
 
@@ -86,8 +87,8 @@ export function Stat({
     pink: "bg-kpi-pink",
   };
   return (
-    <div className="relative rounded-2xl border border-border bg-card p-4 shadow-card">
-      {accent && <span aria-hidden="true" className={`absolute inset-y-0 left-0 w-1 rounded-l-2xl ${accentCls[accent]}`} />}
+    <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-card">
+      {accent && <span aria-hidden="true" className={`absolute inset-y-0 left-0 w-1.5 ${accentCls[accent]}`} />}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</span>
         {badge && (
