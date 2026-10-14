@@ -6,6 +6,7 @@ import { AppShell, PageHeader, SectionTabs } from "@/components/AppShell";
 import { OrgGate, btnPrimary, inputClass } from "@/components/OrgGate";
 import { useCustomers, useDeleteTransaction, useTransactions, type Transaction } from "@/hooks/useBusiness";
 import { TransactionForm } from "@/components/TransactionForm";
+import { useFixedCosts } from "@/hooks/useFixedCosts";
 import {
   EXPENSE_CATEGORIES,
   INCOME_CATEGORIES,
@@ -53,6 +54,7 @@ function FinanceView({ orgId, isAdmin }: { orgId: string; isAdmin: boolean }) {
   const { data = [], isLoading, error } = useTransactions(orgId);
   const { data: customers = [] } = useCustomers(orgId);
   const del = useDeleteTransaction(orgId);
+  const fixed = useFixedCosts(orgId);
   const [filter, setFilter] = useState(DEFAULT_FILTER);
   const [editing, setEditing] = useState<Transaction | "new" | null>(Route.useSearch().neu === "1" ? "new" : null);
 
@@ -64,6 +66,26 @@ function FinanceView({ orgId, isAdmin }: { orgId: string; isAdmin: boolean }) {
 
   return (
     <div className="space-y-4">
+      {fixed.items.length > 0 ? (
+        <div className="flex justify-end">
+          <button
+            type="button"
+            disabled={fixed.bookDue.isPending}
+            className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm font-medium text-foreground hover:bg-accent disabled:opacity-60"
+            onClick={async () => {
+              try {
+                const n = await fixed.bookDue.mutateAsync();
+                toast.success(n > 0 ? `${n} wiederkehrende Ausgabe(n) gebucht.` : "Alle fälligen Fixkosten sind bereits gebucht.");
+              } catch (e) {
+                toast.error((e as Error).message);
+              }
+            }}
+          >
+            {fixed.bookDue.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            Fällige Fixkosten buchen
+          </button>
+        </div>
+      ) : null}
       <div className="grid grid-cols-3 gap-3">
         {[
           ["Einnahmen", sums.income],
