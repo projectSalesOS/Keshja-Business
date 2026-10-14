@@ -44,6 +44,9 @@
   --color-kpi-green: var(--kpi-green);
   --color-kpi-orange: var(--kpi-orange);
   --color-kpi-pink: var(--kpi-pink);
+  --color-finance-income: var(--finance-income);
+  --color-finance-expense: var(--finance-expense);
+  --color-finance-balance: var(--finance-balance);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -94,6 +97,9 @@
   --kpi-green: oklch(0.78 0.12 150);
   --kpi-orange: oklch(0.79 0.12 65);
   --kpi-pink: oklch(0.76 0.12 350);
+  --finance-income: oklch(0.46 0.13 150);
+  --finance-expense: oklch(0.53 0.17 35);
+  --finance-balance: oklch(0.49 0.17 255);
   --secondary: oklch(0.955 0.015 310);
   --secondary-foreground: oklch(0.33 0.08 305);
   --muted: oklch(0.958 0.008 310);
@@ -144,6 +150,9 @@
 }
 
 .dark {
+  --finance-income: oklch(0.78 0.13 150);
+  --finance-expense: oklch(0.76 0.15 35);
+  --finance-balance: oklch(0.77 0.13 255);
   --background: oklch(0.19 0.025 305);
   --foreground: oklch(0.965 0.005 210);
   --card: oklch(0.235 0.028 305);
@@ -203,6 +212,10 @@
 }
 
 @layer components {
+  .kpi-contour {
+    border-radius: inherit;
+    clip-path: inset(0 calc(100% - 6px) 0 0);
+  }
   /* Existing primary controls share the gradient without altering their structure. */
   :where(button, a, [role="button"])[class~="bg-primary"][class~="text-primary-foreground"],
   .brand-selected {

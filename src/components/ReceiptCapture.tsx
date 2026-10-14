@@ -13,6 +13,8 @@ import {
 import { analyzeReceipt, saveReceipt } from "@/lib/receipts.functions";
 import { checkReceipt, isDepositItem } from "@/lib/receipt-check";
 import { RECEIPTS_QUERY_KEY } from "@/hooks/useReceipts";
+import { ReceiptVatEditor } from "@/components/ReceiptVatEditor";
+import { validateVat } from "@/lib/receipt-vat";
 
 const MAX_BYTES = 8 * 1024 * 1024;
 
@@ -91,6 +93,8 @@ export function ReceiptCapture({
 
   const onSave = async () => {
     if (!draft) return;
+    const vatError = validateVat(draft.vatBreakdown ?? [], draft.total);
+    if (vatError) { setError(vatError); return; }
     setSaving(true);
     setError(null);
     try {
@@ -273,6 +277,7 @@ export function ReceiptCapture({
               </div>
             ) : null}
 
+            <div className="mt-4"><ReceiptVatEditor rows={draft.vatBreakdown ?? []} total={draft.total} onChange={(vatBreakdown) => setDraft({ ...draft, vatBreakdown })} /></div>
             <ul className="mt-4 space-y-4">
               {draft.items.map((item, index) => {
                 const bereich = BEREICHE.find((b) => b.name === item.category) ?? BEREICHE[0]!;

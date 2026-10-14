@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { vatRowSchema } from "./receipt-vat";
 import { isDepositItem } from "./receipt-lines";
 import type { ReceiptTrace } from "./receipt-trace";
 import {
@@ -36,6 +37,7 @@ export const parsedReceiptSchema = z.object({
     .regex(/^\d{2}:\d{2}$/)
     .nullable(),
   total: z.number().finite().min(0).max(999999),
+  vatBreakdown: z.array(vatRowSchema).max(20).optional(),
   /** Rabatt auf Belegebene, der keiner Position zugeordnet werden kann */
   discountTotal: z.number().finite().min(0).max(999999).default(0),
   items: z.array(parsedItemSchema).min(1, "Es wurde keine Position erkannt"),

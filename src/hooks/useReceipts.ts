@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { type Receipt, type ReceiptItem } from "@/lib/mock-data";
+import { extractVat } from "@/lib/receipt-vat";
 
 export const RECEIPTS_QUERY_KEY = ["receipts"] as const;
 
@@ -10,6 +11,7 @@ type Row = {
   date: string;
   time: string | null;
   total: number | string;
+  vat_breakdown: unknown;
   goods_total: number | string | null;
   deposit_total: number | string | null;
   discount_total: number | string | null;
@@ -58,7 +60,7 @@ async function fetchSavedReceipts(orgId: string): Promise<Receipt[]> {
   const { data, error } = await supabase
     .from("receipts")
     .select(
-      "id, merchant, date, time, total, goods_total, deposit_total, discount_total, needs_review, customer_id, receipt_items(name, quantity, price, original_price, discount, discount_kind, category, subcategory, kind)",
+      "id, merchant, date, time, total, vat_breakdown, goods_total, deposit_total, discount_total, needs_review, customer_id, receipt_items(name, quantity, price, original_price, discount, discount_kind, category, subcategory, kind)",
     )
     .eq("organization_id", orgId)
     .order("date", { ascending: false })
@@ -72,6 +74,7 @@ async function fetchSavedReceipts(orgId: string): Promise<Receipt[]> {
     date: row.date,
     time: row.time ?? "--:--",
     total: Number(row.total),
+    vatBreakdown: extractVat(row.vat_breakdown),
     goodsTotal: row.goods_total == null ? undefined : Number(row.goods_total),
     depositTotal: row.deposit_total == null ? undefined : Number(row.deposit_total),
     discountTotal: row.discount_total == null ? undefined : Number(row.discount_total),
@@ -107,7 +110,7 @@ async function fetchSavedReceipts(orgId: string): Promise<Receipt[]> {
 export function useReceipts(orgId: string | null | undefined): Receipt[] {
   const { data } = useQuery({
     queryKey: [...RECEIPTS_QUERY_KEY, "full", orgId],
-    queryFn: () => fetchSavedReceipts(orgId!),
+    queryFn: () => { if (!orgId) throw new Error("Kein Unternehmen ausgewählt"); return fetchSavedReceipts(orgId); },
     enabled: !!orgId,
     staleTime: 30_000,
   });

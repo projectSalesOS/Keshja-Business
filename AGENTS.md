@@ -24,7 +24,9 @@
 - Invoice display status (paid/partial/overdue) and quote expiry are derived from payments and dates, not stored. Dunning notices are created manually, validated by trigger, unique per invoice+level.
 - Dashboard/report metrics are computed client-side by pure functions in src/lib/analytics.ts over the existing RLS-scoped queries (shared query keys) — no stored aggregates, one definition of actual vs. forecast values.
 - "Actual" income/expense = paid transactions only (payments sync exactly one income tx); receivables = issued, non-cancelled invoices minus payments; planned = unbooked recurring periods — keeps invoices, payments and recurring costs from being counted twice.
-- Main navigation has six areas; sub-areas (Buchungen/Belege/Berichte, Rechnungen/Angebote) are SectionTabs inside a section, so nav highlighting matches by path prefix.
+- Main navigation has independent invoice and quote entries; booking/receipt/report sub-areas use SectionTabs, and nav highlighting matches by path prefix.
+- Voice booking uses browser speech recognition and conservative local parsing; it only fills TransactionForm and requires confirmation before the existing save mutation, avoiding an additional paid transcription service.
+- Receipt VAT is an optional multi-rate breakdown on receipts, validated in shared pure helpers and a database trigger; missing historical VAT remains unknown and receipt gross amounts continue to drive manual bookings.
 - Document PDFs are built once by makeDocPdf (DocumentsView) and reused for download and email, so the sent attachment equals the export.
 - Document emails go through the createServerFn sendDocumentEmail (Resend connector, attachments) because Lovable app emails cannot carry attachments; no send status is shown unless the provider accepted it.
 - Company logos live in private storage bucket org-logos under <organization_id>/; storage RLS reuses private.is_org_member/is_org_admin; organizations.logo_path points to the current file.

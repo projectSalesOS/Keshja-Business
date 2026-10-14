@@ -9,6 +9,10 @@
 - [x] Design-Update: zentrale Violett-Pink-Farben und sechs pastellfarbene Dashboard-Akzentstreifen, ohne Funktions- oder Layoutumbau
 
 ## Vereinfachung (Okt 2026)
+- [x] Gezielte Verbesserungen: KPI-Farben/Konturen, Navigation, Profilbegrüßung und Sechsmonatsdiagramm (Desktop/Mobil geprüft)
+- [x] Bestätigte Sprachbuchung ohne zusätzlichen kostenpflichtigen Dienst (Parser und bestätigtes Speichern mit simulierter Erkennung geprüft)
+- [x] OCR: korrigierbare Netto-/Steuer-/Bruttobeträge mit mehreren Steuersätzen, Speicherung und Tests (echter OCR-Aufruf mit synthetischem 7-/19-%-Beleg)
+- [ ] Echte Mikrofonerkennung auf dem Nutzergerät prüfen (im Browser-Test nur simulierte Spracherkennung verfügbar)
 - [x] Dashboard 3 Kennzahlen + Schnellaktionen, abgerundete Akzentbalken
 - [x] Navigation 6 Bereiche, Liquidität entfernt
 - [x] Berichte Monat/Quartal/Jahr/frei, PDF+CSV
