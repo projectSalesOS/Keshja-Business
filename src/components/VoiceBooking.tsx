@@ -12,7 +12,7 @@ type Recognition = {
 };
 type SpeechWindow = Window & { SpeechRecognition?: new () => Recognition; webkitSpeechRecognition?: new () => Recognition };
 
-export function VoiceBooking({ onResult }: { onResult: (result: ReturnType<typeof parseVoiceBooking>) => void }) {
+export function VoiceBooking({ onResult, prominent = false }: { onResult: (result: ReturnType<typeof parseVoiceBooking>) => void; prominent?: boolean }) {
   const recognition = useRef<Recognition | null>(null);
   const [supported, setSupported] = useState(false);
   const [listening, setListening] = useState(false);
@@ -34,21 +34,37 @@ export function VoiceBooking({ onResult }: { onResult: (result: ReturnType<typeo
       const text = Array.from(event.results).map((result) => result[0]?.transcript ?? "").join(" ");
       setTranscript(text);
       const result = parseVoiceBooking(text);
+      if (!text.trim()) { setError("Keine Sprache erkannt. Bitte erneut versuchen oder manuell erfassen."); return; }
       onResult(result);
       setError(!result.type || !result.amount ? "Betrag oder Buchungsart nicht eindeutig erkannt. Bitte ergänzen." : "");
     };
-    r.onerror = (event) => { setListening(false); setError(event.error === "not-allowed" ? "Mikrofonzugriff verweigert. Bitte die Browserfreigabe prüfen." : "Spracherkennung nicht verfügbar. Bitte manuell erfassen."); };
-    r.onend = () => setListening(false);
+    let receivedResult = false;
+    const handleResult = r.onresult;
+    r.onresult = (event) => { receivedResult = true; handleResult?.(event); };
+    r.onerror = (event) => {
+      receivedResult = true;
+      setListening(false);
+      const messages: Record<string, string> = {
+        "not-allowed": "Mikrofonzugriff verweigert. Bitte Mikrofon in den Website-Einstellungen deines Browsers erlauben.",
+        "service-not-allowed": "Dein Browser erlaubt die Spracherkennung nicht. Bitte einen unterstützten Browser verwenden oder manuell erfassen.",
+        "audio-capture": "Kein Mikrofon verfügbar. Bitte Anschluss und Mikrofonfreigabe prüfen.",
+        "no-speech": "Keine Sprache erkannt. Bitte erneut versuchen oder manuell erfassen.",
+        network: "Spracherkennung konnte keine Verbindung herstellen. Bitte Internetverbindung prüfen oder manuell erfassen.",
+        aborted: "Sprachaufnahme abgebrochen. Du kannst erneut starten oder manuell erfassen.",
+      };
+      setError(messages[event.error] ?? "Spracherkennung nicht verfügbar. Bitte erneut versuchen oder manuell erfassen.");
+    };
+    r.onend = () => { setListening(false); if (!receivedResult) setError("Keine Sprache erkannt. Bitte erneut versuchen oder manuell erfassen."); };
     setError(""); setTranscript("");
     try { r.start(); setListening(true); } catch { setError("Mikrofon konnte nicht gestartet werden."); }
   }
   return (
-    <div className="space-y-2">
-      <Button type="button" variant="outline" disabled={!supported} onClick={() => listening ? recognition.current?.stop() : start()} aria-label={listening ? "Sprachaufnahme stoppen" : "Sprachbuchung starten"}>
-        {listening ? <Square /> : <Mic />} {listening ? "Aufnahme stoppen" : "Sprachbuchung"}
+    <div className={`space-y-2 ${prominent ? "w-full max-w-72 sm:w-64" : ""}`}>
+      <Button type="button" variant={prominent ? "default" : "outline"} className={prominent ? "min-h-14 w-full whitespace-normal rounded-xl px-4 text-base [&_svg]:size-6" : ""} disabled={!supported} onClick={() => listening ? recognition.current?.stop() : start()} aria-label={listening ? "Sprachaufnahme stoppen" : prominent ? "Buchung erfassen" : "Sprachbuchung starten"} aria-pressed={listening}>
+        {listening ? <Square /> : <Mic />} {listening ? "Aufnahme stoppen" : prominent ? "Buchung erfassen" : "Sprachbuchung"}
       </Button>
       {!supported && <p className="text-xs text-muted-foreground">Dieser Browser unterstützt keine Spracherkennung.</p>}
-      {supported && <p className="text-xs text-muted-foreground">Spracherkennung durch deinen Browser; Audio kann an dessen Anbieter übertragen werden.</p>}
+      {supported && <p className="text-xs text-muted-foreground" role="status">{listening ? "Mikrofon aktiv – bitte Buchung sprechen." : "Spracherkennung durch deinen Browser; Audio kann an dessen Anbieter übertragen werden."}</p>}
       {transcript && <p className="text-sm text-foreground">„{transcript}“</p>}
       {error && <p role="alert" className="text-xs text-destructive">{error}</p>}
     </div>

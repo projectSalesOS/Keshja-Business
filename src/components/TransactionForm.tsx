@@ -12,6 +12,7 @@ import {
 import { TX_TYPE_LABEL, categoriesFor, parseAmount, todayIso, type TxStatus, type TxType } from "@/lib/business";
 import { currency, formatDate } from "@/lib/finance";
 import { VoiceBooking } from "@/components/VoiceBooking";
+import type { parseVoiceBooking } from "@/lib/voice-booking";
 
 export function TransactionForm({
   orgId,
@@ -19,17 +20,19 @@ export function TransactionForm({
   preset,
   linkedReceipts,
   onClose,
+  initialVoiceResult,
 }: {
   orgId: string;
   tx: Transaction | null;
   preset?: Partial<TransactionInput>;
   linkedReceipts: Set<string>;
   onClose: () => void;
+  initialVoiceResult?: ReturnType<typeof parseVoiceBooking>;
 }) {
   const save = useSaveTransaction(orgId);
   const { data: customers = [] } = useCustomers(orgId);
   const { data: receipts = [] } = useReceiptOptions(orgId);
-  const init = tx ?? preset ?? {};
+  const init = tx ?? preset ?? (initialVoiceResult ? { type: initialVoiceResult.type ?? undefined, amount: initialVoiceResult.amount ?? undefined, description: initialVoiceResult.description } : {});
   const [type, setType] = useState<TxType>((init.type as TxType) ?? "expense");
   const [amount, setAmount] = useState(init.amount ? String(init.amount).replace(".", ",") : "");
   const [date, setDate] = useState(init.booking_date ?? todayIso());
@@ -39,7 +42,7 @@ export function TransactionForm({
   const [customerId, setCustomerId] = useState(init.customer_id ?? "");
   const [receiptId, setReceiptId] = useState(init.receipt_id ?? "");
   const [err, setErr] = useState<string | null>(null);
-  const [voiceDraft, setVoiceDraft] = useState(false);
+  const [voiceDraft, setVoiceDraft] = useState(Boolean(initialVoiceResult));
   const [voiceConfirmed, setVoiceConfirmed] = useState(false);
 
   const cats = categoriesFor(type);
