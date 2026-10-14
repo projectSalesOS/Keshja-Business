@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { AlertTriangle, Ban, Check, Download, FileText, Loader2, Pencil, Plus, Search, Send, Trash2, X } from "lucide-react";
+import { AlertTriangle, Ban, Check, Download, FileText, Loader2, Pencil, Plus, Mail, Search, Send, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { Field, Modal, btnPrimary, btnSecondary, inputClass, type OrgContext } from "@/components/OrgGate";
 import { useCustomers, type Customer } from "@/hooks/useBusiness";
@@ -66,8 +66,9 @@ function customerSnap(c: Customer | undefined): Record<string, unknown> | null {
   return { name, contact_person, street, postal_code, city, country, customer_number, vat_id };
 }
 
-async function downloadDocPdf(d: Doc, org: Organization | null, customers: Customer[]) {
-  const { buildDocumentPdf } = await import("@/lib/documentPdf");
+/** Erzeugt genau das PDF, das sowohl heruntergeladen als auch per E-Mail versendet wird. */
+async function makeDocPdf(d: Doc, org: Organization | null, customers: Customer[]) {
+  const [{ buildDocumentPdf }, { loadPdfLogo }] = await Promise.all([import("@/lib/documentPdf"), import("@/lib/orgLogo")]);
   const isDraft = d.status === "draft";
   const pdfDoc: PdfDoc = {
     ...d,
@@ -76,7 +77,61 @@ async function downloadDocPdf(d: Doc, org: Organization | null, customers: Custo
     customer_snapshot: isDraft ? customerSnap(customers.find((c) => c.id === d.customer_id)) : d.customer_snapshot,
     due_date: isDraft && d.kind === "invoice" ? addDays(d.doc_date, d.payment_days ?? org?.default_payment_days ?? 14) : d.due_date,
   };
-  buildDocumentPdf(pdfDoc, d.items).save(`${KIND_LABEL[d.kind]}_${d.number ?? "Entwurf"}.pdf`);
+  const logo = await loadPdfLogo(org?.logo_path);
+  return { pdf: buildDocumentPdf(pdfDoc, d.items, logo), filename: `${KIND_LABEL[d.kind]}_${d.number ?? "Entwurf"}.pdf` };
+}
+
+async function downloadDocPdf(d: Doc, org: Organization | null, customers: Customer[]) {
+  const { pdf, filename } = await makeDocPdf(d, org, customers);
+  pdf.save(filename);
+}
+
+function EmailDialog({ d, org, customers, onClose }: { d: Doc; org: Organization | null; customers: Customer[]; onClose: () => void }) {
+  const cust = customers.find((c) => c.id === d.customer_id);
+  const label = KIND_LABEL[d.kind];
+  const [to, setTo] = useState(cust?.email ?? "");
+  const [subject, setSubject] = useState(`${label} ${d.number ?? ""} – ${org?.name ?? ""}`.trim());
+  const [message, setMessage] = useState(
+    `Guten Tag${cust?.contact_person ? ` ${cust.contact_person}` : ""},\n\nanbei erhalten Sie ${d.kind === "quote" ? "unser Angebot" : "unsere Rechnung"} ${d.number ?? ""} als PDF.\n\nMit freundlichen Grüßen\n${org?.name ?? ""}`,
+  );
+  const [state, setState] = useState<{ kind: "idle" | "sending" | "ok" | "error"; text?: string }>({ kind: "idle" });
+
+  async function send() {
+    setState({ kind: "sending" });
+    try {
+      const { pdf, filename } = await makeDocPdf(d, org, customers);
+      const pdfBase64 = (pdf.output("datauristring") as string).split(",")[1] ?? "";
+      const { sendDocumentEmail } = await import("@/lib/email.functions");
+      const r = await sendDocumentEmail({ data: { documentId: d.id, to, subject, message, filename, pdfBase64 } });
+      if (r.ok) {
+        setState({ kind: "ok", text: `E-Mail an ${to} wurde vom E-Mail-Dienst angenommen.` });
+        toast.success("E-Mail versendet.");
+      } else {
+        setState({ kind: "error", text: r.error });
+      }
+    } catch (e) {
+      setState({ kind: "error", text: (e as Error).message });
+    }
+  }
+
+  return (
+    <Modal title={`${label} per E-Mail senden`} onClose={onClose}>
+      <div className="space-y-3">
+        <Field label="Empfänger"><input type="email" className={inputClass} value={to} onChange={(e) => setTo(e.target.value)} /></Field>
+        <Field label="Betreff"><input className={inputClass} value={subject} onChange={(e) => setSubject(e.target.value)} /></Field>
+        <Field label="Nachricht"><textarea rows={7} className={inputClass} value={message} onChange={(e) => setMessage(e.target.value)} /></Field>
+        <p className="text-xs text-muted-foreground">Anhang: {label}_{d.number ?? "Entwurf"}.pdf (identisch mit dem PDF-Download)</p>
+        {state.kind === "ok" && <p className="rounded-lg bg-primary/10 px-3 py-2 text-sm text-primary">{state.text}</p>}
+        {state.kind === "error" && <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{state.text}</p>}
+        <div className="flex flex-wrap gap-2">
+          <button type="button" className={btnPrimary} disabled={state.kind === "sending" || state.kind === "ok" || !to.trim()} onClick={send}>
+            {state.kind === "sending" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />} Senden
+          </button>
+          <button type="button" className={btnSecondary} onClick={onClose}>Schließen</button>
+        </div>
+      </div>
+    </Modal>
+  );
 }
 
 export function DocumentsView({ kind, ctx, startNew = false }: { kind: Kind; ctx: OrgContext; startNew?: boolean }) {
@@ -415,6 +470,7 @@ function DocumentDetail({
   const cust = (d.customer_snapshot?.["name"] as string | undefined) ?? customers.find((c) => c.id === d.customer_id)?.name ?? "–";
   const [cancelOpen, setCancelOpen] = useState(false);
   const [reason, setReason] = useState("");
+  const [mailOpen, setMailOpen] = useState(false);
 
   async function run<T>(p: Promise<T>, ok: string) {
     try { await p; toast.success(ok); } catch (e) { toast.error((e as Error).message); }
@@ -463,6 +519,12 @@ function DocumentDetail({
         <button type="button" className={btnSecondary} onClick={() => downloadDocPdf(d, org, customers).catch((e) => toast.error(`PDF konnte nicht erstellt werden: ${(e as Error).message}`))}>
           <Download className="h-4 w-4" /> PDF
         </button>
+        {d.status !== "draft" && (
+          <button type="button" className={btnSecondary} onClick={() => setMailOpen(true)}>
+            <Mail className="h-4 w-4" /> Per E-Mail senden
+          </button>
+        )}
+        {mailOpen && <EmailDialog d={d} org={org} customers={customers} onClose={() => setMailOpen(false)} />}
         {d.status === "draft" ? (
           <>
             <button type="button" className={btnPrimary} onClick={onEdit}><Pencil className="h-4 w-4" /> Bearbeiten</button>
@@ -607,6 +669,7 @@ function PaymentsSection({ invoice, ctx, payments, open }: { invoice: Doc; ctx: 
 }
 
 function DunningSection({ invoice, ctx, paid }: { invoice: Doc; ctx: OrgContext; paid: number }) {
+  const logoPath = useOrganization().data?.organization?.logo_path;
   const a = useDocActions(ctx.orgId);
   const { data: all = [] } = useDunning(ctx.orgId);
   const notices = all.filter((n) => n.invoice_id === invoice.id);
@@ -616,8 +679,8 @@ function DunningSection({ invoice, ctx, paid }: { invoice: Doc; ctx: OrgContext;
 
   async function pdf(n: Dunning) {
     try {
-      const { buildDunningPdf } = await import("@/lib/documentPdf");
-      buildDunningPdf(invoice, n, paid).save(`${DUNNING_LABEL[n.level]}_${invoice.number}.pdf`.replace(/\s/g, "_"));
+      const [{ buildDunningPdf }, { loadPdfLogo }] = await Promise.all([import("@/lib/documentPdf"), import("@/lib/orgLogo")]);
+      buildDunningPdf(invoice, n, paid, await loadPdfLogo(logoPath)).save(`${DUNNING_LABEL[n.level]}_${invoice.number}.pdf`.replace(/\s/g, "_"));
     } catch (e) {
       toast.error(`PDF konnte nicht erstellt werden: ${(e as Error).message}`);
     }
