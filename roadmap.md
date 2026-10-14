@@ -9,7 +9,7 @@
 - [x] Design-Update: zentrale Violett-Pink-Farben und sechs pastellfarbene Dashboard-Akzentstreifen, ohne Funktions- oder Layoutumbau
 
 ## Vereinfachung (Okt 2026)
-- [ ] Dashboard-Optimierung: direkter Sprachstart, Gewinnfarben und vier Schnellaktionen; Layout und bestätigte Speicherung prüfen.
+- [x] Dashboard-Optimierung: direkter Sprachstart über vorhandene Erkennung, Gewinnfarben und vier Schnellaktionen; 29 Tests bestanden, Layout 320/411/1280 px ohne Überbreite, vier Erfassungsansichten geöffnet, simulierte Spracherkennung mit Bestätigung gespeichert/zurückgelesen/Testbuchung gelöscht; Freigabefehler und nicht unterstützter Browser geprüft. Echte Mikrofonerkennung bleibt geräteabhängig offen (siehe unten).
 - [x] Gezielte Verbesserungen: KPI-Farben/Konturen, Navigation, Profilbegrüßung und Sechsmonatsdiagramm (Desktop/Mobil geprüft)
 - [x] Bestätigte Sprachbuchung ohne zusätzlichen kostenpflichtigen Dienst (Parser und bestätigtes Speichern mit simulierter Erkennung geprüft)
 - [x] OCR: korrigierbare Netto-/Steuer-/Bruttobeträge mit mehreren Steuersätzen, Speicherung und Tests (echter OCR-Aufruf mit synthetischem 7-/19-%-Beleg)
