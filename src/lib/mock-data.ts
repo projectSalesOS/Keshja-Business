@@ -1,3 +1,4 @@
+import type { VatRow } from "./receipt-vat";
 export type ReceiptItem = {
   name: string;
   price: number;
@@ -19,6 +20,7 @@ export type Receipt = {
   date: string; // ISO date (yyyy-mm-dd)
   time: string; // HH:mm
   total: number;
+  vatBreakdown?: VatRow[];
   items: ReceiptItem[];
   /** Warenwert ohne Pfand */
   goodsTotal?: number | undefined;

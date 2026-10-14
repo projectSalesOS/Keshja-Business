@@ -14,6 +14,8 @@ import { RECEIPTS_QUERY_KEY, useReceipts } from "@/hooks/useReceipts";
 import { currency, formatDate } from "@/lib/finance";
 import { colorToken } from "@/lib/categories";
 import { type Receipt } from "@/lib/mock-data";
+import { ReceiptVatEditor } from "@/components/ReceiptVatEditor";
+import { validateVat, vatTotals } from "@/lib/receipt-vat";
 
 export const Route = createFileRoute("/_authenticated/kassenbons")({
   validateSearch: (search: Record<string, unknown>): { capture?: "1" } =>
@@ -220,12 +222,15 @@ function ReceiptBusinessPanel({
   const [customerId, setCustomerId] = useState(receipt.customerId ?? "");
   const [saving, setSaving] = useState(false);
   const [booking, setBooking] = useState(false);
+  const [vatBreakdown, setVatBreakdown] = useState(receipt.vatBreakdown ?? []);
 
   async function saveCorrections() {
     const value = parseAmount(total);
     if (!merchant.trim()) return toast.error("Bitte einen Händler bzw. Aussteller angeben.");
     if (!date) return toast.error("Bitte ein Datum angeben.");
     if (value === null) return toast.error("Bitte einen gültigen Betrag eingeben.");
+    const vatError = validateVat(vatBreakdown, value);
+    if (vatError) return toast.error(vatError);
     setSaving(true);
     const { error } = await supabase
       .from("receipts")
@@ -233,6 +238,9 @@ function ReceiptBusinessPanel({
         merchant: merchant.trim(),
         date,
         total: value,
+        vat_breakdown: vatBreakdown,
+        net_total: vatBreakdown.length ? vatTotals(vatBreakdown).net : null,
+        vat_total: vatBreakdown.length ? vatTotals(vatBreakdown).tax : null,
         customer_id: customerId || null,
         needs_review: false,
       })
@@ -240,7 +248,7 @@ function ReceiptBusinessPanel({
     setSaving(false);
     if (error) return toast.error(error.message);
     await qc.invalidateQueries({ queryKey: RECEIPTS_QUERY_KEY });
-    onUpdated({ store: merchant.trim(), date, total: value, customerId: customerId || null, needsReview: false });
+    onUpdated({ store: merchant.trim(), date, total: value, vatBreakdown, customerId: customerId || null, needsReview: false });
     toast.success("Beleg gespeichert.");
     return;
   }
@@ -277,6 +285,7 @@ function ReceiptBusinessPanel({
           </Field>
         </div>
       </div>
+      <ReceiptVatEditor rows={vatBreakdown} total={parseAmount(total) ?? receipt.total} onChange={setVatBreakdown} />
       <div className="flex flex-wrap gap-2">
         <button type="button" className={btnSecondary} disabled={saving} onClick={saveCorrections}>
           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Korrekturen speichern

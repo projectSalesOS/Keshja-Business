@@ -11,6 +11,7 @@ import {
   type ParsedReceipt,
 } from "./receipt-schema";
 import type { ReceiptTrace } from "./receipt-trace";
+import { extractVat, validateVat, vatTotals } from "./receipt-vat";
 
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const MODEL = "openai/gpt-5.4-mini";
@@ -57,18 +58,20 @@ ${CATEGORY_TREE_PROMPT}
   der passenden Hauptkategorie. Passt gar nichts: "Geschenke & Sonstiges" / "Sonstiges".
 - Datum immer als JJJJ-MM-TT, Uhrzeit als HH:MM oder null.
 - Erfinde keine Zeilen. Nicht lesbare Zeilen weglassen.
+- Schreibe zusätzlich den gedruckten Umsatzsteuerblock nach "vat_breakdown" ab: je Steuersatz "rate" in Prozent, "net", "tax", "gross". Fehlende Beträge null; keine Berechnungen. Alle vorhandenen Steuersätze separat, keine Angaben erfinden; ohne Steuerblock leere Liste.
 - Ist das Bild kein lesbarer Kassenbon, setze readable=false und lines auf eine leere Liste.`;
 
 const RESPONSE_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["readable", "merchant", "date", "time", "total", "lines"],
+  required: ["readable", "merchant", "date", "time", "total", "lines", "vat_breakdown"],
   properties: {
     readable: { type: "boolean" },
     merchant: { type: ["string", "null"] },
     date: { type: ["string", "null"] },
     time: { type: ["string", "null"] },
     total: { type: ["number", "null"] },
+    vat_breakdown: { type: "array", items: { type: "object", additionalProperties: false, required: ["rate", "net", "tax", "gross"], properties: { rate: { type: "number" }, net: { type: ["number", "null"] }, tax: { type: ["number", "null"] }, gross: { type: ["number", "null"] } } },
     lines: {
       type: "array",
       items: {
@@ -131,20 +134,15 @@ async function transcribe(imageDataUrl: string, apiKey: string): Promise<Record<
     throw new Error("Netzwerkfehler bei der KI-Analyse. Bitte erneut versuchen.");
   }
 
-  if (response.status === 429) {
-    throw new Error("Zu viele Anfragen. Bitte kurz warten und erneut versuchen.");
-  }
-  if (response.status === 402) {
-    throw new Error("Das KI-Guthaben ist aufgebraucht. Bitte Credits aufladen.");
-  }
   if (!response.ok) {
-    console.error("AI gateway error", response.status, await response.text());
-    throw new Error("Die KI-Analyse ist fehlgeschlagen. Bitte erneut versuchen.");
+    const failure = await response.json().catch(() => null) as { message?: string; error?: { message?: string } } | null;
+    throw new Error(failure?.message ?? failure?.error?.message ?? `KI-Analyse nicht verfügbar (${response.status}).`);
   }
 
-  const payload = (await response.json()) as { choices?: { message?: { content?: string } }[] };
+  const payload = (await response.json()) as { choices?: { message?: { content?: string; refusal?: string } }[] };
+  if (payload.choices?.[0]?.message?.refusal) throw new Error(payload.choices[0].message.refusal);
   const content = payload.choices?.[0]?.message?.content;
-  if (!content) throw new Error("Die KI hat keine Daten geliefert. Bitte erneut versuchen.");
+  if (!content) throw new Error("Die KI hat keine Daten geliefert; die Analyse wurde beendet.");
 
   try {
     return JSON.parse(content) as Record<string, unknown>;
@@ -225,10 +223,13 @@ export const analyzeReceipt = createServerFn({ method: "POST" })
       );
     }
     warnings.push(...trace.notes);
+    const vatBreakdown = extractVat(raw["vat_breakdown"]);
+    const vatWarning = validateVat(vatBreakdown, receipt.total);
+    if (vatWarning) warnings.push(vatWarning);
 
     const imageSha256 = await sha256(data.imageDataUrl);
     return {
-      receipt: { ...receipt, trace, imageSha256, model: MODEL },
+      receipt: { ...receipt, vatBreakdown, trace, imageSha256, model: MODEL },
       warnings,
       check,
       trace,
@@ -253,6 +254,8 @@ export const saveReceipt = createServerFn({ method: "POST" })
         parsed.error.issues[0]?.message ?? "Die Daten sind unvollständig und wurden nicht gespeichert.",
       );
     }
+    const vatError = validateVat(parsed.data.vatBreakdown ?? [], parsed.data.total);
+    if (vatError) throw new Error(vatError);
     return { ...foldDiscounts(normalizeCategories(parsed.data)), organizationId };
   })
   .handler(async ({ data, context }): Promise<{ id: string }> => {
@@ -270,6 +273,9 @@ export const saveReceipt = createServerFn({ method: "POST" })
         date: data.date,
         time: data.time,
         total: data.total,
+        net_total: data.vatBreakdown?.length ? vatTotals(data.vatBreakdown).net : null,
+        vat_total: data.vatBreakdown?.length ? vatTotals(data.vatBreakdown).tax : null,
+        vat_breakdown: data.vatBreakdown ?? [],
         discount_total: data.discountTotal,
         goods_total: totals.goodsTotal,
         deposit_total: totals.depositTotal,
