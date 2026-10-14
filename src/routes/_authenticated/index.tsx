@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Camera, FileText, Loader2, Plus } from "lucide-react";
+import { Camera, FileSignature, FileText, Loader2, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { OrgGate } from "@/components/OrgGate";
@@ -10,6 +10,9 @@ import { useAnalyticsData } from "@/hooks/useAnalytics";
 import { actualTotals, monthlySeries, rangeFor, receivables, type Preset, type Range } from "@/lib/analytics";
 import { todayIso } from "@/lib/business";
 import { currency, formatDate } from "@/lib/finance";
+import { VoiceBooking } from "@/components/VoiceBooking";
+import { TransactionForm } from "@/components/TransactionForm";
+import type { parseVoiceBooking } from "@/lib/voice-booking";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
@@ -17,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/")({
       { title: "Dashboard – Keshja Business" },
       {
         name: "description",
-        content: "Einnahmen, Ausgaben und Differenz deines Unternehmens auf einen Blick – mit Schnellaktionen.",
+        content: "Einnahmen, Ausgaben und Gewinn deines Unternehmens auf einen Blick – mit Schnellaktionen und Sprachbuchung.",
       },
       { property: "og:title", content: "Dashboard – Keshja Business" },
       { property: "og:description", content: "Die geschäftliche Startseite von Keshja Business." },
@@ -33,17 +36,14 @@ function DashboardPage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        <PageHeader
-          title="Dashboard"
-          description={profile ? `Hallo, ${profile.displayName}!` : "Hallo!"}
-        />
-        <OrgGate>{({ orgId }) => <DashboardView orgId={orgId} />}</OrgGate>
+        <OrgGate>{({ orgId }) => <DashboardView orgId={orgId} greeting={profile ? `Hallo, ${profile.displayName}!` : "Hallo!"} />}</OrgGate>
       </div>
     </AppShell>
   );
 }
 
-function DashboardView({ orgId }: { orgId: string }) {
+function DashboardView({ orgId, greeting }: { orgId: string; greeting: string }) {
+  const [voiceResult, setVoiceResult] = useState<ReturnType<typeof parseVoiceBooking> | null>(null);
   const today = todayIso();
   const [preset, setPreset] = useState<Preset>("monat");
   const [custom, setCustom] = useState<Range>(rangeFor("monat", today));
@@ -75,30 +75,34 @@ function DashboardView({ orgId }: { orgId: string }) {
 
   return (
     <div className="space-y-5">
+      <PageHeader title="Dashboard" description={greeting} action={<VoiceBooking prominent onResult={setVoiceResult} />} />
       <PeriodPicker preset={preset} custom={custom} today={today} onChange={(p, c) => (setPreset(p), setCustom(c))} />
       <p className="-mt-2 text-xs text-muted-foreground">
         {formatDate(range.from)} – {formatDate(range.to)} · nur verbuchte (bezahlte) Beträge
       </p>
 
       <div className="grid gap-3 sm:grid-cols-3">
-        <Stat accent="green" valueColor="income" label="Einnahmen" value={currency(m.cur.income)} />
-        <Stat accent="orange" valueColor="expense" label="Ausgaben" value={currency(m.cur.expense)} />
+        <Stat matchAccent valueColor="dashboardIncome" label="Einnahmen" value={currency(m.cur.income)} />
+        <Stat matchAccent valueColor="dashboardExpense" label="Ausgaben" value={currency(m.cur.expense)} />
         <Stat
-          accent="blue"
-          valueColor="balance"
-          label="Differenz"
+          matchAccent
+          valueColor={m.cur.balance > 0 ? "profitPositive" : m.cur.balance < 0 ? "profitNegative" : "profitNeutral"}
+          label="Gewinn"
           value={currency(m.cur.balance)}
           tone={m.cur.count === 0 ? "default" : m.cur.balance >= 0 ? "good" : "bad"}
           hint={`${m.cur.count} Buchungen im Zeitraum`}
         />
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <div aria-label="Schnellaktionen" className="grid grid-cols-2 gap-3">
         <Link to="/kassenbons" search={{ capture: "1" as const }} className={quick}>
           <Camera className="h-5 w-5 text-primary" /> Beleg erfassen
         </Link>
         <Link to="/finanzen" search={{ neu: "1" as const }} className={quick}>
           <Plus className="h-5 w-5 text-primary" /> Buchung erfassen
+        </Link>
+        <Link to="/angebote" search={{ neu: "1" as const }} className={quick}>
+          <FileSignature className="h-5 w-5 text-primary" /> Angebot erstellen
         </Link>
         <Link to="/rechnungen" search={{ neu: "1" as const }} className={quick}>
           <FileText className="h-5 w-5 text-primary" /> Rechnung erstellen
@@ -163,6 +167,7 @@ function DashboardView({ orgId }: { orgId: string }) {
           </Panel>
         )}
       </div>
+      {voiceResult && <TransactionForm orgId={orgId} tx={null} initialVoiceResult={voiceResult} linkedReceipts={new Set(d.transactions.flatMap((t) => t.receipt_id ? [t.receipt_id] : []))} onClose={() => setVoiceResult(null)} />}
     </div>
   );
 }

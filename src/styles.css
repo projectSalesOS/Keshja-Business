@@ -47,6 +47,11 @@
   --color-finance-income: var(--finance-income);
   --color-finance-expense: var(--finance-expense);
   --color-finance-balance: var(--finance-balance);
+  --color-dashboard-income: var(--dashboard-income);
+  --color-dashboard-expense: var(--dashboard-expense);
+  --color-profit-positive: var(--profit-positive);
+  --color-profit-negative: var(--profit-negative);
+  --color-profit-neutral: var(--profit-neutral);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -80,6 +85,11 @@
 }
 
 :root {
+  --dashboard-income: oklch(0.38 0.10 150);
+  --dashboard-expense: oklch(0.39 0.13 12);
+  --profit-positive: oklch(0.57 0.13 145);
+  --profit-negative: oklch(0.61 0.15 20);
+  --profit-neutral: var(--muted-foreground);
   --radius: 0.875rem;
   --background: oklch(0.985 0.004 315);
   --foreground: oklch(0.235 0.035 305);
@@ -150,6 +160,11 @@
 }
 
 .dark {
+  --dashboard-income: oklch(0.73 0.12 150);
+  --dashboard-expense: oklch(0.73 0.12 12);
+  --profit-positive: oklch(0.80 0.13 145);
+  --profit-negative: oklch(0.78 0.12 20);
+  --profit-neutral: var(--muted-foreground);
   --finance-income: oklch(0.78 0.13 150);
   --finance-expense: oklch(0.76 0.15 35);
   --finance-balance: oklch(0.77 0.13 255);

@@ -69,6 +69,7 @@ export function Stat({
   badge,
   accent,
   valueColor,
+  matchAccent = false,
 }: {
   label: string;
   value: string;
@@ -77,9 +78,10 @@ export function Stat({
   tone?: "default" | "good" | "bad" | "muted";
   badge?: string;
   accent?: "violet" | "blue" | "turquoise" | "green" | "orange" | "pink";
-  valueColor?: "income" | "expense" | "balance";
+  valueColor?: "income" | "expense" | "balance" | "dashboardIncome" | "dashboardExpense" | "profitPositive" | "profitNegative" | "profitNeutral";
+  matchAccent?: boolean;
 }) {
-  const toneCls = valueColor ? { income: "text-finance-income", expense: "text-finance-expense", balance: "text-finance-balance" }[valueColor] : tone === "good" ? "text-primary" : tone === "bad" ? "text-destructive" : "text-card-foreground";
+  const toneCls = valueColor ? { income: "text-finance-income", expense: "text-finance-expense", balance: "text-finance-balance", dashboardIncome: "text-dashboard-income", dashboardExpense: "text-dashboard-expense", profitPositive: "text-profit-positive", profitNegative: "text-profit-negative", profitNeutral: "text-profit-neutral" }[valueColor] : tone === "good" ? "text-primary" : tone === "bad" ? "text-destructive" : "text-card-foreground";
   const accentCls = {
     violet: "bg-kpi-violet",
     blue: "bg-kpi-blue",
@@ -90,7 +92,7 @@ export function Stat({
   };
   return (
     <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-card">
-      {accent && <span aria-hidden="true" className={`kpi-contour absolute inset-0 pointer-events-none ${accentCls[accent]}`} />}
+      {(accent || matchAccent) && <span aria-hidden="true" className={`kpi-contour absolute inset-0 pointer-events-none ${matchAccent ? `bg-current ${toneCls}` : accent ? accentCls[accent] : ""}`} />}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</span>
         {badge && (
