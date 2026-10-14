@@ -59,7 +59,7 @@ export function VoiceBooking({ onResult, prominent = false }: { onResult: (resul
     try { r.start(); setListening(true); } catch { setError("Mikrofon konnte nicht gestartet werden."); }
   }
   return (
-    <div className={`space-y-2 ${prominent ? "w-full max-w-72 sm:w-64" : ""}`}>
+    <div className={`space-y-2 ${prominent ? "ml-auto w-full max-w-72 sm:w-64" : ""}`}>
       <Button type="button" variant={prominent ? "default" : "outline"} className={prominent ? "min-h-14 w-full whitespace-normal rounded-xl px-4 text-base [&_svg]:size-6" : ""} disabled={!supported} onClick={() => listening ? recognition.current?.stop() : start()} aria-label={listening ? "Sprachaufnahme stoppen" : prominent ? "Buchung erfassen" : "Sprachbuchung starten"} aria-pressed={listening}>
         {listening ? <Square /> : <Mic />} {listening ? "Aufnahme stoppen" : prominent ? "Buchung erfassen" : "Sprachbuchung"}
       </Button>
