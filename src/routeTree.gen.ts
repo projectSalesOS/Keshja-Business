@@ -20,7 +20,6 @@ import { Route as AuthenticatedFinanzenRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedFixkostenRouteImport } from './routes/_authenticated/fixkosten'
 import { Route as AuthenticatedKassenbonsRouteImport } from './routes/_authenticated/kassenbons'
 import { Route as AuthenticatedKundenRouteImport } from './routes/_authenticated/kunden'
-import { Route as AuthenticatedLiquiditaetRouteImport } from './routes/_authenticated/liquiditaet'
 import { Route as AuthenticatedRechnungenRouteImport } from './routes/_authenticated/rechnungen'
 import { Route as AuthenticatedDebugOcrRouteImport } from './routes/_authenticated/debug.ocr'
 
@@ -80,12 +79,6 @@ const AuthenticatedKundenRoute = AuthenticatedKundenRouteImport.update({
   path: '/kunden',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedLiquiditaetRoute =
-  AuthenticatedLiquiditaetRouteImport.update({
-    id: '/liquiditaet',
-    path: '/liquiditaet',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedRechnungenRoute = AuthenticatedRechnungenRouteImport.update({
   id: '/rechnungen',
   path: '/rechnungen',
@@ -108,7 +101,6 @@ export interface FileRoutesByFullPath {
   '/fixkosten': typeof AuthenticatedFixkostenRoute
   '/kassenbons': typeof AuthenticatedKassenbonsRoute
   '/kunden': typeof AuthenticatedKundenRoute
-  '/liquiditaet': typeof AuthenticatedLiquiditaetRoute
   '/rechnungen': typeof AuthenticatedRechnungenRoute
   '/debug/ocr': typeof AuthenticatedDebugOcrRoute
 }
@@ -122,7 +114,6 @@ export interface FileRoutesByTo {
   '/fixkosten': typeof AuthenticatedFixkostenRoute
   '/kassenbons': typeof AuthenticatedKassenbonsRoute
   '/kunden': typeof AuthenticatedKundenRoute
-  '/liquiditaet': typeof AuthenticatedLiquiditaetRoute
   '/rechnungen': typeof AuthenticatedRechnungenRoute
   '/': typeof AuthenticatedIndexRoute
   '/debug/ocr': typeof AuthenticatedDebugOcrRoute
@@ -139,7 +130,6 @@ export interface FileRoutesById {
   '/_authenticated/fixkosten': typeof AuthenticatedFixkostenRoute
   '/_authenticated/kassenbons': typeof AuthenticatedKassenbonsRoute
   '/_authenticated/kunden': typeof AuthenticatedKundenRoute
-  '/_authenticated/liquiditaet': typeof AuthenticatedLiquiditaetRoute
   '/_authenticated/rechnungen': typeof AuthenticatedRechnungenRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/debug/ocr': typeof AuthenticatedDebugOcrRoute
@@ -157,7 +147,6 @@ export interface FileRouteTypes {
     | '/fixkosten'
     | '/kassenbons'
     | '/kunden'
-    | '/liquiditaet'
     | '/rechnungen'
     | '/debug/ocr'
   fileRoutesByTo: FileRoutesByTo
@@ -171,7 +160,6 @@ export interface FileRouteTypes {
     | '/fixkosten'
     | '/kassenbons'
     | '/kunden'
-    | '/liquiditaet'
     | '/rechnungen'
     | '/'
     | '/debug/ocr'
@@ -187,7 +175,6 @@ export interface FileRouteTypes {
     | '/_authenticated/fixkosten'
     | '/_authenticated/kassenbons'
     | '/_authenticated/kunden'
-    | '/_authenticated/liquiditaet'
     | '/_authenticated/rechnungen'
     | '/_authenticated/'
     | '/_authenticated/debug/ocr'
@@ -278,13 +265,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedKundenRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/liquiditaet': {
-      id: '/_authenticated/liquiditaet'
-      path: '/liquiditaet'
-      fullPath: '/liquiditaet'
-      preLoaderRoute: typeof AuthenticatedLiquiditaetRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/rechnungen': {
       id: '/_authenticated/rechnungen'
       path: '/rechnungen'
@@ -310,7 +290,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedFixkostenRoute: typeof AuthenticatedFixkostenRoute
   AuthenticatedKassenbonsRoute: typeof AuthenticatedKassenbonsRoute
   AuthenticatedKundenRoute: typeof AuthenticatedKundenRoute
-  AuthenticatedLiquiditaetRoute: typeof AuthenticatedLiquiditaetRoute
   AuthenticatedRechnungenRoute: typeof AuthenticatedRechnungenRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedDebugOcrRoute: typeof AuthenticatedDebugOcrRoute
@@ -324,7 +303,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedFixkostenRoute: AuthenticatedFixkostenRoute,
   AuthenticatedKassenbonsRoute: AuthenticatedKassenbonsRoute,
   AuthenticatedKundenRoute: AuthenticatedKundenRoute,
-  AuthenticatedLiquiditaetRoute: AuthenticatedLiquiditaetRoute,
   AuthenticatedRechnungenRoute: AuthenticatedRechnungenRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedDebugOcrRoute: AuthenticatedDebugOcrRoute,

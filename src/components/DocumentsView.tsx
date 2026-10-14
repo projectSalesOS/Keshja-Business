@@ -79,7 +79,7 @@ async function downloadDocPdf(d: Doc, org: Organization | null, customers: Custo
   buildDocumentPdf(pdfDoc, d.items).save(`${KIND_LABEL[d.kind]}_${d.number ?? "Entwurf"}.pdf`);
 }
 
-export function DocumentsView({ kind, ctx }: { kind: Kind; ctx: OrgContext }) {
+export function DocumentsView({ kind, ctx, startNew = false }: { kind: Kind; ctx: OrgContext; startNew?: boolean }) {
   const { orgId } = ctx;
   const today = todayIso();
   const { data: docs = [], isLoading, error } = useDocuments(orgId);
@@ -88,7 +88,7 @@ export function DocumentsView({ kind, ctx }: { kind: Kind; ctx: OrgContext }) {
   const { data: orgState } = useOrganization();
   const org = orgState?.organization ?? null;
   const [filter, setFilter] = useState<InvoiceFilter>({ status: "all", customerId: "", from: "", to: "", search: "" });
-  const [editing, setEditing] = useState<Doc | "new" | null>(null);
+  const [editing, setEditing] = useState<Doc | "new" | null>(startNew ? "new" : null);
   const [viewingId, setViewingId] = useState<string | null>(null);
 
   const paidBy = useMemo(() => {

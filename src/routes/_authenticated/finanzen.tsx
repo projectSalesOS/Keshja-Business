@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { AppShell, PageHeader } from "@/components/AppShell";
+import { AppShell, PageHeader, SectionTabs } from "@/components/AppShell";
 import { OrgGate, btnPrimary, inputClass } from "@/components/OrgGate";
 import { useCustomers, useDeleteTransaction, useTransactions, type Transaction } from "@/hooks/useBusiness";
 import { TransactionForm } from "@/components/TransactionForm";
@@ -18,11 +18,12 @@ import {
 import { currency, formatDate } from "@/lib/finance";
 
 export const Route = createFileRoute("/_authenticated/finanzen")({
+  validateSearch: (search: Record<string, unknown>): { neu?: "1" } => (search["neu"] === "1" ? { neu: "1" } : {}),
   head: () => ({
     meta: [
-      { title: "Finanzen – Keshja Business" },
+      { title: "Einnahmen & Ausgaben – Keshja Business" },
       { name: "description", content: "Geschäftliche Einnahmen und Ausgaben erfassen und filtern." },
-      { property: "og:title", content: "Finanzen – Keshja Business" },
+      { property: "og:title", content: "Einnahmen & Ausgaben – Keshja Business" },
       { property: "og:description", content: "Einnahmen und Ausgaben deines Unternehmens." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -31,7 +32,8 @@ export const Route = createFileRoute("/_authenticated/finanzen")({
   component: () => (
     <AppShell>
       <div className="space-y-6">
-        <PageHeader title="Finanzen" description="Einnahmen und Ausgaben deines Unternehmens." />
+        <PageHeader title="Einnahmen & Ausgaben" description="Alle Buchungen erfassen, suchen und filtern." />
+        <SectionTabs tabs={[{ to: "/finanzen", label: "Buchungen" }, { to: "/kassenbons", label: "Belege" }, { to: "/auswertungen", label: "Berichte" }]} />
         <OrgGate>{({ orgId, isAdmin }) => <FinanceView orgId={orgId} isAdmin={isAdmin} />}</OrgGate>
       </div>
     </AppShell>
@@ -52,7 +54,7 @@ function FinanceView({ orgId, isAdmin }: { orgId: string; isAdmin: boolean }) {
   const { data: customers = [] } = useCustomers(orgId);
   const del = useDeleteTransaction(orgId);
   const [filter, setFilter] = useState(DEFAULT_FILTER);
-  const [editing, setEditing] = useState<Transaction | "new" | null>(null);
+  const [editing, setEditing] = useState<Transaction | "new" | null>(Route.useSearch().neu === "1" ? "new" : null);
 
   const list = useMemo(() => filterTransactions(data, filter), [data, filter]);
   const sums = totals(list);

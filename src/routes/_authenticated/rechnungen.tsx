@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AppShell, PageHeader } from "@/components/AppShell";
+import { AppShell, PageHeader, SectionTabs } from "@/components/AppShell";
 import { OrgGate } from "@/components/OrgGate";
 import { DocumentsView } from "@/components/DocumentsView";
 
 export const Route = createFileRoute("/_authenticated/rechnungen")({
+  validateSearch: (search: Record<string, unknown>): { neu?: "1" } => (search["neu"] === "1" ? { neu: "1" } : {}),
   head: () => ({
     meta: [
       { title: "Rechnungen – Keshja Business" },
@@ -17,8 +18,9 @@ export const Route = createFileRoute("/_authenticated/rechnungen")({
   component: () => (
     <AppShell>
       <div className="space-y-6">
-        <PageHeader title="Rechnungen" description="Rechnungen, Zahlungseingänge, Mahnungen und Stornos." />
-        <OrgGate>{(ctx) => <DocumentsView kind="invoice" ctx={ctx} />}</OrgGate>
+        <PageHeader title="Angebote & Rechnungen" description="Rechnungen schreiben, versenden und Zahlungen erfassen." />
+        <SectionTabs tabs={[{ to: "/rechnungen", label: "Rechnungen" }, { to: "/angebote", label: "Angebote" }]} />
+        <OrgGate>{(ctx) => <DocumentsView kind="invoice" ctx={ctx} startNew={Route.useSearch().neu === "1"} />}</OrgGate>
       </div>
     </AppShell>
   ),
