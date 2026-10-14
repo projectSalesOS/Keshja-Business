@@ -11,6 +11,7 @@ import {
 } from "@/hooks/useBusiness";
 import { TX_TYPE_LABEL, categoriesFor, parseAmount, todayIso, type TxStatus, type TxType } from "@/lib/business";
 import { currency, formatDate } from "@/lib/finance";
+import { VoiceBooking } from "@/components/VoiceBooking";
 
 export function TransactionForm({
   orgId,
@@ -38,12 +39,16 @@ export function TransactionForm({
   const [customerId, setCustomerId] = useState(init.customer_id ?? "");
   const [receiptId, setReceiptId] = useState(init.receipt_id ?? "");
   const [err, setErr] = useState<string | null>(null);
+  const [voiceDraft, setVoiceDraft] = useState(false);
+  const [voiceConfirmed, setVoiceConfirmed] = useState(false);
 
   const cats = categoriesFor(type);
   const availableReceipts = receipts.filter((r) => r.id === receiptId || !linkedReceipts.has(r.id));
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (save.isPending) return;
+    if (voiceDraft && !voiceConfirmed) return setErr("Bitte die erkannten Angaben vor dem Speichern bestätigen.");
     const value = parseAmount(amount);
     if (value === null) return setErr("Bitte einen gültigen Betrag größer 0 eingeben (z. B. 49,90).");
     if (!date) return setErr("Bitte ein Buchungsdatum angeben.");
@@ -73,6 +78,13 @@ export function TransactionForm({
   return (
     <Modal title={tx ? "Buchung bearbeiten" : "Neue Buchung"} onClose={onClose}>
       <form className="space-y-3" onSubmit={submit}>
+        {!tx && <VoiceBooking onResult={(result) => {
+          if (result.type) { setType(result.type); setCategory(""); }
+          else setCategory("");
+          setAmount(result.amount === null ? "" : String(result.amount).replace(".", ","));
+          setDescription(result.description);
+          setVoiceDraft(true); setVoiceConfirmed(false);
+        }} />}
         <div className="grid grid-cols-2 gap-2">
           {(["expense", "income"] as TxType[]).map((t) => (
             <button
@@ -139,6 +151,7 @@ export function TransactionForm({
           </select>
         </Field>
         {err ? <p className="text-sm text-destructive">{err}</p> : null}
+        {voiceDraft && <label className="flex items-start gap-2 text-sm"><input type="checkbox" checked={voiceConfirmed} onChange={(e) => setVoiceConfirmed(e.target.checked)} className="mt-1 accent-primary" />Betrag, Buchungsart und Beschreibung geprüft und bestätigt</label>}
         <div className="flex justify-end gap-2 pt-2">
           <button type="button" className={btnSecondary} onClick={onClose}>
             Abbrechen
