@@ -2,24 +2,19 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Download, FileDown, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { AppShell, PageHeader } from "@/components/AppShell";
+import { AppShell, PageHeader, SectionTabs } from "@/components/AppShell";
 import { OrgGate, btnSecondary, inputClass } from "@/components/OrgGate";
-import { Empty, Panel, PeriodPicker, Stat, tooltipStyle } from "@/components/AnalyticsUi";
+import { Empty, Panel, PeriodPicker, Stat } from "@/components/AnalyticsUi";
 import { useAnalyticsData } from "@/hooks/useAnalytics";
 import { useOrganization } from "@/hooks/useOrganization";
 import {
   actualTotals,
   byCategory,
-  byCustomer,
   csvDate,
   downloadCsv,
   monthLabel,
   monthlySeries,
-  plannedExpenses,
   rangeFor,
-  receivables,
-  sumReceivables,
   toCsv,
   type Preset,
   type Range,
@@ -30,9 +25,9 @@ import { currency, formatDate } from "@/lib/finance";
 export const Route = createFileRoute("/_authenticated/auswertungen")({
   head: () => ({
     meta: [
-      { title: "Auswertungen & Berichte – Keshja Business" },
-      { name: "description", content: "Einnahmen, Ausgaben, Saldo, Kategorien, Kunden und Forderungen auswerten; Bericht als PDF und CSV." },
-      { property: "og:title", content: "Auswertungen & Berichte – Keshja Business" },
+      { title: "Berichte – Keshja Business" },
+      { name: "description", content: "Einnahmen- und Ausgabenberichte je Monat, Quartal, Jahr oder Zeitraum als PDF und CSV." },
+      { property: "og:title", content: "Berichte – Keshja Business" },
       { property: "og:description", content: "Geschäftsauswertungen mit PDF- und CSV-Export." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -41,19 +36,18 @@ export const Route = createFileRoute("/_authenticated/auswertungen")({
   component: () => (
     <AppShell>
       <div className="space-y-6">
-        <PageHeader title="Auswertungen" description="Entwicklung, Kategorien, Kunden und Forderungen – mit Bericht und Export." />
+        <PageHeader title="Einnahmen & Ausgaben" description="Einfache Berichte für Monat, Quartal, Jahr oder freien Zeitraum – als PDF oder CSV." />
+        <SectionTabs tabs={[{ to: "/finanzen", label: "Buchungen" }, { to: "/kassenbons", label: "Belege" }, { to: "/auswertungen", label: "Berichte" }]} />
         <OrgGate>{({ orgId }) => <ReportsView orgId={orgId} />}</OrgGate>
       </div>
     </AppShell>
   ),
 });
 
-const axis = { fontSize: 11, fill: "var(--muted-foreground)" };
-const short = (n: number) => (Math.abs(n) >= 1000 ? `${Math.round(n / 100) / 10}k` : String(Math.round(n)));
 
 function ReportsView({ orgId }: { orgId: string }) {
   const today = todayIso();
-  const [preset, setPreset] = useState<Preset>("jahr");
+  const [preset, setPreset] = useState<Preset>("monat");
   const [custom, setCustom] = useState<Range>(rangeFor("jahr", today));
   const [category, setCategory] = useState("");
   const [customerId, setCustomerId] = useState("");
@@ -63,16 +57,11 @@ function ReportsView({ orgId }: { orgId: string }) {
 
   const r = useMemo(() => {
     const f = { category: category || undefined, customerId: customerId || undefined };
-    const rcv = receivables(d.invoices, d.payments, today, customerId || undefined);
     return {
       totals: actualTotals(d.transactions, range, f),
       months: monthlySeries(d.transactions, range, f),
       expenseCats: byCategory(d.transactions, range, "expense", f),
       incomeCats: byCategory(d.transactions, range, "income", f),
-      customers: byCustomer(d.invoices, d.payments, range, today).filter((c) => !customerId || c.id === customerId),
-      rcv,
-      rcvSum: sumReceivables(rcv),
-      planned: plannedExpenses(d.items, d.transactions, range, today).filter((p) => p.date > today),
     };
   }, [d.transactions, d.invoices, d.payments, d.items, range.from, range.to, category, customerId, today]);
 
@@ -96,14 +85,11 @@ function ReportsView({ orgId }: { orgId: string }) {
   };
   const exportMonths = () =>
     downloadCsv(`monatsuebersicht_${tag}.csv`, toCsv(["Monat", "Einnahmen (EUR)", "Ausgaben (EUR)", "Saldo (EUR)", "Saldo kumuliert (EUR)", "Buchungen"], r.months.map((m) => [m.month, m.income, m.expense, m.balance, m.cumulative, m.count])));
-  const exportRcv = () =>
-    downloadCsv(`forderungen_${today}.csv`, toCsv(["Rechnung", "Kunde", "Rechnungsdatum", "Fällig", "Betrag (EUR)", "Bezahlt (EUR)", "Offen (EUR)", "Status"], r.rcv.map((x) => [x.number, x.customerName, csvDate(x.doc_date), csvDate(x.due_date), x.total, x.paid, x.open, x.overdue ? "überfällig" : "offen"])));
   const exportPdf = async () => {
     const o = org?.organization;
     if (!o) return;
     try {
       const { buildReportPdf } = await import("@/lib/reportPdf");
-      const all = { ...r, rcv: receivables(d.invoices, d.payments, today) };
       buildReportPdf({
         company: o,
         range,
@@ -112,10 +98,10 @@ function ReportsView({ orgId }: { orgId: string }) {
         months: monthlySeries(d.transactions, range),
         expenseCategories: byCategory(d.transactions, range, "expense"),
         incomeCategories: byCategory(d.transactions, range, "income"),
-        receivables: all.rcv,
-        recurring: d.items,
-        planned: r.planned,
-      }).save(`geschaeftsbericht_${tag}.pdf`);
+        receivables: [],
+        recurring: [],
+        planned: [],
+      }).save(`bericht_${tag}.pdf`);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "PDF konnte nicht erstellt werden.");
     }
@@ -143,59 +129,20 @@ function ReportsView({ orgId }: { orgId: string }) {
         {formatDate(range.from)} – {formatDate(range.to)}{filtered ? " · gefiltert" : ""} · Ist-Werte aus bezahlten Buchungen
       </p>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label="Einnahmen" value={currency(r.totals.income)} badge="Ist" />
-        <Stat label="Ausgaben" value={currency(r.totals.expense)} badge="Ist" />
-        <Stat label="Saldo" value={currency(r.totals.balance)} tone={!r.totals.count ? "default" : r.totals.balance >= 0 ? "good" : "bad"} hint={`${r.totals.count} Buchungen`} />
-        <Stat label="Offen / überfällig" value={currency(r.rcvSum.openTotal)} badge="erwartet" hint={`davon überfällig ${currency(r.rcvSum.overdueTotal)}`} />
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Stat accent="violet" label="Einnahmen" value={currency(r.totals.income)} badge="Ist" />
+        <Stat accent="pink" label="Ausgaben" value={currency(r.totals.expense)} badge="Ist" />
+        <Stat accent="turquoise" label="Differenz" value={currency(r.totals.balance)} tone={!r.totals.count ? "default" : r.totals.balance >= 0 ? "good" : "bad"} hint={`${r.totals.count} Buchungen`} />
       </div>
 
-      <Panel title="Berichte & Export" action={<span className="text-xs text-muted-foreground">nur aktuelles Unternehmen</span>}>
+      <Panel title="Export">
         <div className="flex flex-wrap gap-2">
-          <button type="button" className={btnSecondary} onClick={exportPdf}><FileDown className="h-4 w-4" /> Geschäftsbericht (PDF)</button>
+          <button type="button" className={btnSecondary} onClick={exportPdf}><FileDown className="h-4 w-4" /> Bericht (PDF)</button>
           <button type="button" className={btnSecondary} onClick={exportTx}><Download className="h-4 w-4" /> Buchungen (CSV)</button>
           <button type="button" className={btnSecondary} onClick={exportMonths}><Download className="h-4 w-4" /> Monatsübersicht (CSV)</button>
-          <button type="button" className={btnSecondary} onClick={exportRcv}><Download className="h-4 w-4" /> Forderungen (CSV)</button>
         </div>
-        <p className="mt-2 text-xs text-muted-foreground">Der PDF-Bericht umfasst das gesamte Unternehmen im Zeitraum (ohne Filter). Betriebliche Übersicht – ersetzt keine steuerliche Prüfung.</p>
+        <p className="mt-2 text-xs text-muted-foreground">PDF: Einnahmen, Ausgaben, Differenz und Kategorien im Zeitraum (ohne Filter). Ersetzt keine steuerliche Prüfung.</p>
       </Panel>
-
-      {r.totals.count === 0 ? (
-        <Panel title="Entwicklung"><Empty>Keine bezahlten Buchungen im gewählten Zeitraum.</Empty></Panel>
-      ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
-          <Panel title="Einnahmen und Ausgaben je Monat">
-            <div className="h-64">
-              <ResponsiveContainer>
-                <BarChart data={r.months.map((m) => ({ ...m, label: monthLabel(m.month) }))}>
-                  <CartesianGrid vertical={false} stroke="var(--border)" />
-                  <XAxis dataKey="label" tick={axis} tickLine={false} axisLine={false} />
-                  <YAxis tick={axis} tickFormatter={short} tickLine={false} axisLine={false} width={40} />
-                  <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => currency(v)} />
-                  <Legend wrapperStyle={{ fontSize: 12 }} />
-                  <Bar dataKey="income" name="Einnahmen" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="expense" name="Ausgaben" fill="var(--chart-7)" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </Panel>
-          <Panel title="Saldoentwicklung (kumuliert)">
-            <div className="h-64">
-              <ResponsiveContainer>
-                <LineChart data={r.months.map((m) => ({ ...m, label: monthLabel(m.month) }))}>
-                  <CartesianGrid vertical={false} stroke="var(--border)" />
-                  <XAxis dataKey="label" tick={axis} tickLine={false} axisLine={false} />
-                  <YAxis tick={axis} tickFormatter={short} tickLine={false} axisLine={false} width={40} />
-                  <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => currency(v)} />
-                  <Legend wrapperStyle={{ fontSize: 12 }} />
-                  <Line dataKey="cumulative" name="Saldo kumuliert" stroke="var(--chart-1)" strokeWidth={2} dot={false} />
-                  <Line dataKey="balance" name="Monatssaldo" stroke="var(--chart-3)" strokeDasharray="4 3" dot={false} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </Panel>
-        </div>
-      )}
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Panel title="Ausgaben nach Kategorie"><CatTable rows={r.expenseCats} /></Panel>
@@ -224,48 +171,6 @@ function ReportsView({ orgId }: { orgId: string }) {
         </div>
       </Panel>
 
-      <Panel title="Auswertung nach Kunde">
-        {r.customers.length ? (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[480px] text-sm">
-              <thead className="text-left text-xs text-muted-foreground">
-                <tr><th className="py-2">Kunde</th><th className="text-right">Rechnungsumsatz</th><th className="text-right">Zahlungseingang</th><th className="text-right">Offen (heute)</th></tr>
-              </thead>
-              <tbody className="divide-y divide-border tabular-nums">
-                {r.customers.map((c) => (
-                  <tr key={c.id}><td className="py-1.5">{c.name}</td><td className="text-right">{currency(c.invoiced)}</td><td className="text-right">{currency(c.received)}</td><td className="text-right">{currency(c.open)}</td></tr>
-                ))}
-              </tbody>
-            </table>
-            <p className="mt-2 text-xs text-muted-foreground">Rechnungsumsatz = ausgestellte, nicht stornierte Rechnungen nach Rechnungsdatum (keine Einnahme). Zahlungseingang = erfasste Zahlungen im Zeitraum.</p>
-          </div>
-        ) : (
-          <Empty>Keine Rechnungen oder Zahlungen mit Kundenbezug im Zeitraum.</Empty>
-        )}
-      </Panel>
-
-      <Panel title="Offene und überfällige Forderungen (Stand heute)">
-        {r.rcv.length ? (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[480px] text-sm">
-              <thead className="text-left text-xs text-muted-foreground">
-                <tr><th className="py-2">Rechnung</th><th>Kunde</th><th>Fällig</th><th className="text-right">Bezahlt</th><th className="text-right">Offen</th></tr>
-              </thead>
-              <tbody className="divide-y divide-border tabular-nums">
-                {r.rcv.map((x) => (
-                  <tr key={x.id} className={x.overdue ? "text-destructive" : ""}>
-                    <td className="py-1.5">{x.number}</td><td>{x.customerName}</td>
-                    <td>{x.due_date ? formatDate(x.due_date) : "–"}{x.overdue ? ` (${x.daysOverdue} T.)` : ""}</td>
-                    <td className="text-right">{currency(x.paid)}</td><td className="text-right font-semibold">{currency(x.open)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <Empty>Keine offenen Forderungen.</Empty>
-        )}
-      </Panel>
     </div>
   );
 }
