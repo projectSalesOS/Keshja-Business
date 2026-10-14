@@ -9,6 +9,9 @@
 - [x] Design-Update: zentrale Violett-Pink-Farben und sechs pastellfarbene Dashboard-Akzentstreifen, ohne Funktions- oder Layoutumbau
 
 ## Vereinfachung (Okt 2026)
+- [ ] Gezielte Verbesserungen: KPI-Farben/Konturen, Navigation, Profilbegrüßung und Sechsmonatsdiagramm
+- [ ] Bestätigte Sprachbuchung ohne zusätzlichen kostenpflichtigen Dienst
+- [ ] OCR: korrigierbare Netto-/Steuer-/Bruttobeträge mit mehreren Steuersätzen, Speicherung und Tests
 - [x] Dashboard 3 Kennzahlen + Schnellaktionen, abgerundete Akzentbalken
 - [x] Navigation 6 Bereiche, Liquidität entfernt
 - [x] Berichte Monat/Quartal/Jahr/frei, PDF+CSV
