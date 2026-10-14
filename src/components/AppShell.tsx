@@ -2,7 +2,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { LayoutDashboard, Repeat, Users, Wallet, Settings, LogOut, FileText, FileSignature } from "lucide-react";
 import type { ReactNode } from "react";
-import logoMark from "@/assets/keshja-mark.png.asset.json";
+import logoMark from "@/assets/keshja-business-logo.png.asset.json";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/useProfile";
 import { useOrganization } from "@/hooks/useOrganization";
