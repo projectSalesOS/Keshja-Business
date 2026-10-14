@@ -32,7 +32,7 @@ export function TransactionForm({
   const save = useSaveTransaction(orgId);
   const { data: customers = [] } = useCustomers(orgId);
   const { data: receipts = [] } = useReceiptOptions(orgId);
-  const init = tx ?? preset ?? (initialVoiceResult ? { type: initialVoiceResult.type ?? undefined, amount: initialVoiceResult.amount ?? undefined, description: initialVoiceResult.description } : {});
+  const init: Partial<TransactionInput> = tx ?? preset ?? (initialVoiceResult ? { ...(initialVoiceResult.type ? { type: initialVoiceResult.type } : {}), ...(initialVoiceResult.amount !== null ? { amount: initialVoiceResult.amount } : {}), description: initialVoiceResult.description } : {});
   const [type, setType] = useState<TxType>((init.type as TxType) ?? "expense");
   const [amount, setAmount] = useState(init.amount ? String(init.amount).replace(".", ",") : "");
   const [date, setDate] = useState(init.booking_date ?? todayIso());
