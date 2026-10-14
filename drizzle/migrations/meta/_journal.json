@@ -36,6 +36,13 @@
       "when": 1791909201600,
       "tag": "0004_fix_check_doc_links",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791962865059,
+      "tag": "0005_org_logo",
+      "breakpoints": true
     }
   ]
 }
