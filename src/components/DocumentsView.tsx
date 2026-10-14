@@ -592,6 +592,7 @@ function PaymentsSection({ invoice, ctx, payments, open }: { invoice: Doc; ctx: 
   const today = todayIso();
   const [form, setForm] = useState<{ id: string; isNew: boolean; amount: string; date: string; method: string; note: string } | null>(null);
   const canAdd = invoice.status === "issued";
+  const [markPaidForm, setMarkPaidForm] = useState<{ id: string; date: string } | null>(null);
 
   async function submit(): Promise<void> {
     if (!form) return;
@@ -610,8 +611,36 @@ function PaymentsSection({ invoice, ctx, payments, open }: { invoice: Doc; ctx: 
     }
   }
 
+  async function markPaid(): Promise<void> {
+    if (!markPaidForm || open <= 0) return;
+    if (!markPaidForm.date || markPaidForm.date > today) { toast.error("Das Zahlungsdatum darf nicht in der Zukunft liegen."); return; }
+    try {
+      await a.savePayment.mutateAsync({ id: markPaidForm.id, isNew: true, invoice_id: invoice.id, amount: open, payment_date: markPaidForm.date, method: "Überweisung", note: "Als bezahlt markiert" });
+      toast.success("Rechnung als bezahlt markiert und Einnahme gebucht.");
+      setMarkPaidForm(null);
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  }
+
   return (
     <section className="mt-6 border-t border-border pt-4">
+      {canAdd && open > 0 && !form ? (
+        markPaidForm ? (
+          <div className="mb-4 flex flex-wrap items-end gap-2 rounded-lg border border-border p-3">
+            <Field label="Zahlungsdatum"><input type="date" className={inputClass} value={markPaidForm.date} max={today} onChange={(e) => setMarkPaidForm({ ...markPaidForm, date: e.target.value })} /></Field>
+            <button type="button" disabled={a.savePayment.isPending} className="rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60" onClick={markPaid}>
+              {currency(open)} als bezahlt buchen
+            </button>
+            <button type="button" className="rounded-lg px-3 py-2 text-sm text-muted-foreground" onClick={() => setMarkPaidForm(null)}>Abbrechen</button>
+          </div>
+        ) : (
+          <button type="button" className="mb-4 w-full rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
+            onClick={() => setMarkPaidForm({ id: crypto.randomUUID(), date: today })}>
+            Als bezahlt markieren
+          </button>
+        )
+      ) : null}
       <div className="mb-2 flex items-center justify-between">
         <h3 className="text-sm font-semibold">Zahlungen</h3>
         {canAdd && !form ? (
