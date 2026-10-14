@@ -3,9 +3,11 @@ import { Camera, FileText, Loader2, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { OrgGate } from "@/components/OrgGate";
-import { Empty, Panel, PeriodPicker, Stat } from "@/components/AnalyticsUi";
+import { Empty, Panel, PeriodPicker, Stat, tooltipStyle } from "@/components/AnalyticsUi";
+import { useProfile } from "@/hooks/useProfile";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useAnalyticsData } from "@/hooks/useAnalytics";
-import { actualTotals, rangeFor, receivables, type Preset, type Range } from "@/lib/analytics";
+import { actualTotals, monthlySeries, rangeFor, receivables, type Preset, type Range } from "@/lib/analytics";
 import { todayIso } from "@/lib/business";
 import { currency, formatDate } from "@/lib/finance";
 
@@ -23,18 +25,23 @@ export const Route = createFileRoute("/_authenticated/")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: () => (
+  component: DashboardPage,
+});
+
+function DashboardPage() {
+  const { data: profile } = useProfile();
+  return (
     <AppShell>
       <div className="space-y-6">
         <PageHeader
           title="Dashboard"
-          description="Deine Zahlen auf einen Blick."
+          description={profile ? `Hallo, ${profile.displayName}!` : undefined}
         />
         <OrgGate>{({ orgId }) => <DashboardView orgId={orgId} />}</OrgGate>
       </div>
     </AppShell>
-  ),
-});
+  );
+}
 
 function DashboardView({ orgId }: { orgId: string }) {
   const today = todayIso();
@@ -42,6 +49,12 @@ function DashboardView({ orgId }: { orgId: string }) {
   const [custom, setCustom] = useState<Range>(rangeFor("monat", today));
   const range = rangeFor(preset, today, custom);
   const d = useAnalyticsData(orgId);
+  const series = useMemo(() => {
+    const date = new Date(`${today}T12:00:00Z`);
+    date.setUTCDate(1);
+    date.setUTCMonth(date.getUTCMonth() - 5);
+    return monthlySeries(d.transactions, { from: date.toISOString().slice(0, 10), to: today });
+  }, [d.transactions, today]);
 
   const m = useMemo(() => {
     const cur = actualTotals(d.transactions, range);
@@ -68,10 +81,11 @@ function DashboardView({ orgId }: { orgId: string }) {
       </p>
 
       <div className="grid gap-3 sm:grid-cols-3">
-        <Stat accent="violet" label="Einnahmen" value={currency(m.cur.income)} />
-        <Stat accent="pink" label="Ausgaben" value={currency(m.cur.expense)} />
+        <Stat accent="green" valueColor="income" label="Einnahmen" value={currency(m.cur.income)} />
+        <Stat accent="orange" valueColor="expense" label="Ausgaben" value={currency(m.cur.expense)} />
         <Stat
-          accent="turquoise"
+          accent="blue"
+          valueColor="balance"
           label="Differenz"
           value={currency(m.cur.balance)}
           tone={m.cur.count === 0 ? "default" : m.cur.balance >= 0 ? "good" : "bad"}
@@ -90,6 +104,23 @@ function DashboardView({ orgId }: { orgId: string }) {
           <FileText className="h-5 w-5 text-primary" /> Rechnung erstellen
         </Link>
       </div>
+
+      <section aria-label="Einnahmen und Ausgaben der letzten sechs Monate" className="space-y-3">
+        <h2 className="text-sm font-semibold">Einnahmen & Ausgaben · letzte sechs Monate</h2>
+        <div className="h-64 w-full min-w-0">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={series} margin={{ top: 8, right: 12, bottom: 8, left: 0 }} accessibilityLayer>
+              <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="month" tickFormatter={(v: string) => new Date(`${v}-01T12:00:00Z`).toLocaleDateString("de-DE", { month: "short" })} tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />
+              <YAxis width={54} tickFormatter={(v: number) => v.toLocaleString("de-DE", { notation: "compact" })} tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />
+              <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => currency(v)} labelFormatter={(v: string) => new Date(`${v}-01T12:00:00Z`).toLocaleDateString("de-DE", { month: "long", year: "numeric" })} />
+              <Legend />
+              <Line type="linear" dataKey="income" name="Einnahmen" stroke="var(--finance-income)" strokeWidth={2} dot={{ r: 3 }} isAnimationActive={false} />
+              <Line type="linear" dataKey="expense" name="Ausgaben" stroke="var(--finance-expense)" strokeWidth={2} dot={{ r: 3 }} isAnimationActive={false} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </section>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Panel title="Letzte Buchungen" action={<Link to="/finanzen" className="text-xs font-medium text-primary">Alle</Link>}>

@@ -9,9 +9,9 @@ import { useOrganization } from "@/hooks/useOrganization";
 
 const NAV = [
   { to: "/", label: "Dashboard", short: "Start", icon: LayoutDashboard, match: [] as string[] },
-  { to: "/finanzen", label: "Einnahmen & Ausgaben", short: "Buchungen", icon: Wallet, match: ["/kassenbons", "/auswertungen"] },
   { to: "/rechnungen", label: "Rechnungen", short: "Rechnungen", icon: FileText, match: [] as string[] },
   { to: "/angebote", label: "Angebote", short: "Angebote", icon: FileSignature, match: [] as string[] },
+  { to: "/finanzen", label: "Einnahmen & Ausgaben", short: "Buchungen", icon: Wallet, match: ["/kassenbons", "/auswertungen"] },
   { to: "/fixkosten", label: "Wiederkehrende Kosten", short: "Fixkosten", icon: Repeat, match: [] as string[] },
   { to: "/kunden", label: "Kunden", short: "Kunden", icon: Users, match: [] as string[] },
   { to: "/einstellungen", label: "Einstellungen", short: "Mehr", icon: Settings, match: [] as string[] },
