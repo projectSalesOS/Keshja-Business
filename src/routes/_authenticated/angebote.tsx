@@ -15,13 +15,16 @@ export const Route = createFileRoute("/_authenticated/angebote")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: () => (
+  component: function Page() {
+    const { neu } = Route.useSearch();
+    return (
     <AppShell>
       <div className="space-y-6">
         <PageHeader title="Angebote & Rechnungen" description="Angebote erstellen, versenden und in Rechnungen umwandeln." />
         <SectionTabs tabs={[{ to: "/rechnungen", label: "Rechnungen" }, { to: "/angebote", label: "Angebote" }]} />
-        <OrgGate>{(ctx) => <DocumentsView kind="quote" ctx={ctx} startNew={Route.useSearch().neu === "1"} />}</OrgGate>
+        <OrgGate>{(ctx) => <DocumentsView kind="quote" ctx={ctx} startNew={neu === "1"} />}</OrgGate>
       </div>
     </AppShell>
-  ),
+  );
+  },
 });
