@@ -81,7 +81,23 @@ export function Stat({
   valueColor?: "income" | "expense" | "balance" | "dashboardIncome" | "dashboardExpense" | "profitPositive" | "profitNegative" | "profitNeutral";
   matchAccent?: boolean;
 }) {
-  const toneCls = valueColor ? { income: "text-finance-income", expense: "text-finance-expense", balance: "text-finance-balance", dashboardIncome: "text-dashboard-income", dashboardExpense: "text-dashboard-expense", profitPositive: "text-profit-positive", profitNegative: "text-profit-negative", profitNeutral: "text-profit-neutral" }[valueColor] : tone === "good" ? "text-primary" : tone === "bad" ? "text-destructive" : "text-card-foreground";
+  const toneCls = valueColor ? { income: "text-finance-income", expense: "text-finance-expense", balance: "text-finance-balance", dashboardIncome: "text-dashboard-income", dashboardExpense: "text-dashboard-expense", profitPositive: "text-primary", profitNegative: "text-profit-negative", profitNeutral: "text-primary" }[valueColor] : tone === "good" ? "text-primary" : tone === "bad" ? "text-destructive" : "text-card-foreground";
+  const tintCls = accent
+    ? `glass-tint-accent-${accent}`
+    : valueColor
+      ? {
+          income: "glass-tint-green",
+          expense: "glass-tint-red",
+          balance: "glass-tint-violet",
+          dashboardIncome: "glass-tint-green",
+          dashboardExpense: "glass-tint-red",
+          profitPositive: "glass-tint-violet",
+          profitNegative: "glass-tint-destructive",
+          profitNeutral: "glass-tint-violet",
+        }[valueColor]
+      : tone === "bad"
+        ? "glass-tint-destructive"
+        : "glass-tint-default";
   const accentCls = {
     violet: "bg-kpi-violet",
     blue: "bg-kpi-blue",
@@ -91,7 +107,7 @@ export function Stat({
     pink: "bg-kpi-pink",
   };
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-card">
+    <div className={`relative overflow-hidden rounded-2xl p-4 glass-tile ${tintCls}`}>
       {(accent || matchAccent) && <span aria-hidden="true" className={`kpi-contour absolute inset-0 pointer-events-none ${matchAccent ? `bg-current ${toneCls}` : accent ? accentCls[accent] : ""}`} />}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</span>
