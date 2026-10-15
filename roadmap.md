@@ -1,5 +1,7 @@
 # Keshja Business – Roadmap
 
+- [ ] Globales Design vereinheitlichen: Soft-Pastell-Farben, dezente Glasflächen, gemeinsame Konturen und Kontrollzustände; Desktop/Mobil sowie Formulare und Dialoge prüfen.
+
 - [x] Etappe 1: Organisationen, Mitglieder, Rollen (Inhaber/Admin/Mitarbeiter), RLS, Unternehmensdaten in Einstellungen
 - [x] Etappe 1b: Nummernkreise (automatisch, AN-/RE-Jahr-laufende Nr.)
 - [x] Etappe 2: Kunden, Finanzen (Einnahmen/Ausgaben, wiederkehrend – Fixkosten übernehmen), Belege (Upload, privater Speicher, KI-Scan aus bestehendem Kassenbon-Scan)
