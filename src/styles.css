@@ -86,14 +86,14 @@
 }
 
 :root {
-  --dashboard-income: oklch(0.38 0.10 150);
-  --dashboard-expense: oklch(0.39 0.13 12);
-  --profit-positive: oklch(0.57 0.13 145);
-  --profit-negative: oklch(0.61 0.15 20);
-  --profit-neutral: var(--muted-foreground);
-  --radius: 0.875rem;
-  --background: oklch(0.985 0.004 315);
-  --foreground: oklch(0.235 0.035 305);
+  --dashboard-income: oklch(0.39 0.065 158);
+  --dashboard-expense: oklch(0.43 0.10 22);
+  --profit-positive: oklch(0.45 0.12 300);
+  --profit-negative: oklch(0.43 0.10 22);
+  --profit-neutral: oklch(0.48 0.065 300);
+  --radius: 0.75rem;
+  --background: oklch(0.982 0.005 305);
+  --foreground: oklch(0.26 0.024 300);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.235 0.035 305);
   --popover: oklch(1 0 0);
@@ -103,25 +103,37 @@
   --primary-end: oklch(0.52 0.215 350);
   --primary-foreground: oklch(1 0 0);
   --gradient-primary: linear-gradient(115deg, var(--primary), var(--primary-mid) 52%, var(--primary-end));
-  --kpi-violet: oklch(0.74 0.12 302);
-  --kpi-blue: oklch(0.75 0.11 255);
-  --kpi-turquoise: oklch(0.76 0.1 190);
-  --kpi-green: oklch(0.78 0.12 150);
-  --kpi-orange: oklch(0.79 0.12 65);
-  --kpi-pink: oklch(0.76 0.12 350);
-  --finance-income: oklch(0.46 0.13 150);
-  --finance-expense: oklch(0.53 0.17 35);
-  --finance-balance: oklch(0.49 0.17 255);
-  --secondary: oklch(0.955 0.022 300);
+  --kpi-violet: oklch(0.82 0.065 300);
+  --kpi-blue: oklch(0.83 0.055 255);
+  --kpi-turquoise: oklch(0.85 0.055 185);
+  --kpi-green: oklch(0.84 0.055 158);
+  --kpi-orange: oklch(0.84 0.065 35);
+  --kpi-pink: oklch(0.85 0.055 350);
+  --finance-income: var(--dashboard-income);
+  --finance-expense: var(--dashboard-expense);
+  --finance-balance: var(--profit-positive);
+  --secondary: oklch(0.958 0.016 300);
   --secondary-foreground: oklch(0.36 0.14 292);
-  --muted: oklch(0.958 0.008 310);
-  --muted-foreground: oklch(0.5 0.025 305);
-  --accent: oklch(0.945 0.035 325);
+  --muted: oklch(0.963 0.009 305);
+  --muted-foreground: oklch(0.49 0.02 305);
+  --accent: oklch(0.95 0.021 320);
   --accent-foreground: oklch(0.40 0.18 310);
   --destructive: oklch(0.567 0.183 24);
   --destructive-foreground: oklch(0.99 0.005 190);
-  --border: oklch(0.915 0.014 310);
-  --input: oklch(0.885 0.021 310);
+  --border: oklch(0.917 0.012 305);
+  --input: oklch(0.86 0.017 305);
+  --surface-glass: color-mix(in oklab, var(--card) 88%, transparent);
+  --surface-highlight: oklch(1 0 0 / 0.75);
+  --surface-reflection: oklch(1 0 0 / 0.52);
+  --surface-contour: color-mix(in oklab, var(--border) 65%, var(--card));
+  --surface-pastel: oklch(0.94 0.027 300);
+  --surface-rose: oklch(0.95 0.025 350);
+  --surface-mint: oklch(0.93 0.035 158);
+  --surface-coral: oklch(0.94 0.038 22);
+  --gradient-surface: linear-gradient(135deg, color-mix(in oklab, var(--surface-pastel) 28%, transparent), transparent 52%, color-mix(in oklab, var(--surface-rose) 18%, transparent));
+  --gradient-icon: linear-gradient(135deg, var(--surface-pastel), var(--surface-rose));
+  --shadow-control: 0 2px 5px oklch(0.3 0.03 300 / 0.04), inset 0 1px 0 var(--surface-reflection);
+  --shadow-brand: 0 4px 12px -5px color-mix(in oklab, var(--primary) 35%, transparent), inset 0 1px 0 oklch(1 0 0 / 0.16);
   --ring: oklch(0.52 0.235 310);
   --chart-1: oklch(0.475 0.079 191);
   --chart-2: oklch(0.62 0.088 196);
@@ -149,8 +161,8 @@
   --cat-tabak: #464f63;
   --cat-dienstleistungen: #b45309;
   --cat-sonstiges: #7a8794;
-  --shadow-soft: 0 1px 2px oklch(0.3 0.04 305 / 0.04), 0 8px 24px oklch(0.3 0.04 305 / 0.06);
-  --shadow-strong: 0 12px 40px oklch(0.3 0.04 305 / 0.12);
+  --shadow-soft: 0 2px 4px oklch(0.3 0.03 300 / 0.025), 0 10px 24px -10px oklch(0.3 0.03 300 / 0.09), inset 0 1px 0 var(--surface-highlight);
+  --shadow-strong: 0 24px 64px -18px oklch(0.25 0.04 300 / 0.22), inset 0 1px 0 var(--surface-highlight);
   --sidebar: oklch(0.995 0.003 315);
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: var(--primary);
@@ -162,14 +174,23 @@
 }
 
 .dark {
-  --dashboard-income: oklch(0.73 0.12 150);
-  --dashboard-expense: oklch(0.73 0.12 12);
-  --profit-positive: oklch(0.80 0.13 145);
-  --profit-negative: oklch(0.78 0.12 20);
-  --profit-neutral: var(--muted-foreground);
-  --finance-income: oklch(0.78 0.13 150);
-  --finance-expense: oklch(0.76 0.15 35);
-  --finance-balance: oklch(0.77 0.13 255);
+  --dashboard-income: oklch(0.80 0.075 158);
+  --dashboard-expense: oklch(0.80 0.085 22);
+  --profit-positive: oklch(0.82 0.085 300);
+  --profit-negative: oklch(0.80 0.085 22);
+  --profit-neutral: oklch(0.79 0.04 300);
+  --finance-income: var(--dashboard-income);
+  --finance-expense: var(--dashboard-expense);
+  --finance-balance: var(--profit-positive);
+  --surface-glass: color-mix(in oklab, var(--card) 92%, transparent);
+  --surface-highlight: oklch(1 0 0 / 0.08);
+  --surface-reflection: oklch(1 0 0 / 0.045);
+  --surface-contour: oklch(1 0 0 / 0.12);
+  --surface-pastel: oklch(0.38 0.05 300);
+  --surface-rose: oklch(0.37 0.045 350);
+  --surface-mint: oklch(0.37 0.045 158);
+  --surface-coral: oklch(0.37 0.045 22);
+  --shadow-control: 0 2px 6px oklch(0 0 0 / 0.12), inset 0 1px 0 var(--surface-reflection);
   --background: oklch(0.19 0.025 305);
   --foreground: oklch(0.965 0.005 210);
   --card: oklch(0.235 0.028 305);
@@ -217,8 +238,8 @@
   --cat-tabak: #8794a8;
   --cat-dienstleistungen: #e08a2e;
   --cat-sonstiges: #9aa6b2;
-  --shadow-soft: 0 1px 2px oklch(0 0 0 / 0.3), 0 8px 24px oklch(0 0 0 / 0.25);
-  --shadow-strong: 0 12px 40px oklch(0 0 0 / 0.45);
+  --shadow-soft: 0 2px 4px oklch(0 0 0 / 0.12), 0 12px 26px -10px oklch(0 0 0 / 0.26), inset 0 1px 0 var(--surface-highlight);
+  --shadow-strong: 0 24px 64px -18px oklch(0 0 0 / 0.55), inset 0 1px 0 var(--surface-highlight);
   --sidebar: oklch(0.215 0.028 305);
   --sidebar-foreground: oklch(0.965 0.005 210);
   --sidebar-primary: var(--primary);
@@ -245,30 +266,22 @@
    * (--tile-tint is set by the .glass-tint-* classes below).
    */
   .glass-tile {
-    background-color: color-mix(in oklab, var(--card) 68%, transparent);
+    background-color: var(--surface-glass);
     background-image:
-      linear-gradient(140deg, color-mix(in oklab, var(--tile-tint, var(--primary)) 16%, transparent), transparent 48%),
-      linear-gradient(168deg, oklch(1 0 0 / 0.42) 0%, oklch(1 0 0 / 0.07) 24%, transparent 40%);
-    backdrop-filter: blur(16px) saturate(150%);
-    border: 1px solid color-mix(in oklab, var(--tile-tint, var(--primary)) 20%, transparent);
-    box-shadow:
-      0 1px 2px oklch(0.3 0.04 305 / 0.05),
-      0 16px 36px -14px color-mix(in oklab, var(--tile-tint, var(--primary)) 55%, transparent),
-      inset 0 1px 0 oklch(1 0 0 / 0.5);
+      linear-gradient(135deg, color-mix(in oklab, var(--tile-tint, var(--surface-pastel)) 44%, transparent), transparent 65%),
+      linear-gradient(165deg, var(--surface-reflection), transparent 42%);
+    backdrop-filter: blur(14px) saturate(110%);
+    border: 1px solid var(--surface-contour);
+    box-shadow: var(--shadow-soft);
   }
   .dark .glass-tile {
-    background-color: color-mix(in oklab, var(--card) 60%, transparent);
-    border-color: color-mix(in oklab, var(--tile-tint, var(--primary)) 28%, transparent);
-    box-shadow:
-      0 1px 2px oklch(0 0 0 / 0.3),
-      0 16px 36px -14px color-mix(in oklab, var(--tile-tint, var(--primary)) 38%, transparent),
-      inset 0 1px 0 oklch(1 0 0 / 0.14);
+    border-color: var(--surface-contour);
   }
-  .glass-tint-default { --tile-tint: var(--primary); }
-  .glass-tint-violet { --tile-tint: var(--primary); }
-  .glass-tint-green { --tile-tint: var(--dashboard-income); }
-  .glass-tint-red { --tile-tint: var(--dashboard-expense); }
-  .glass-tint-destructive { --tile-tint: var(--destructive); }
+  .glass-tint-default { --tile-tint: var(--surface-pastel); }
+  .glass-tint-violet { --tile-tint: var(--surface-pastel); }
+  .glass-tint-green { --tile-tint: var(--surface-mint); }
+  .glass-tint-red { --tile-tint: var(--surface-coral); }
+  .glass-tint-destructive { --tile-tint: var(--surface-coral); }
   .glass-tint-accent-violet { --tile-tint: var(--kpi-violet); }
   .glass-tint-accent-blue { --tile-tint: var(--kpi-blue); }
   .glass-tint-accent-turquoise { --tile-tint: var(--kpi-turquoise); }
@@ -280,6 +293,86 @@
 .brand-selected,
 .brand-selected:hover {
   color: var(--sidebar-primary-foreground);
+}
+
+/* Shared presentation for existing business views, including portalled dialogs.
+ * Geometry, display rules and responsive grids remain owned by the components. */
+:where(.business-ui, [role="dialog"], [role="alertdialog"]) :where(.rounded-2xl) {
+  border-radius: 1rem;
+}
+:where(.business-ui, [role="dialog"], [role="alertdialog"]) :where(.rounded-xl) {
+  border-radius: 0.75rem;
+}
+.business-ui :where([class~="bg-card"][class~="border"], [class~="bg-card"][class~="shadow-card"]) {
+  background-color: var(--surface-glass);
+  background-image: var(--gradient-surface);
+  border-color: var(--surface-contour);
+  box-shadow: var(--shadow-soft);
+}
+:where([role="dialog"], [role="alertdialog"])[class~="bg-card"],
+:where([role="dialog"], [role="alertdialog"])[class~="bg-background"] {
+  background-color: var(--card);
+  background-image: var(--gradient-surface);
+  border-color: var(--surface-contour);
+  box-shadow: var(--shadow-strong);
+}
+:where(.business-ui, [role="dialog"], [role="alertdialog"]) :where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea)[class~="border"] {
+  border-radius: 0.75rem;
+  background-color: color-mix(in oklab, var(--card) 94%, var(--surface-pastel));
+  box-shadow: inset 0 1px 2px color-mix(in oklab, var(--foreground) 3%, transparent);
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+:where(.business-ui, [role="dialog"], [role="alertdialog"]) :where(input, select, textarea):focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--ring) 35%, transparent);
+  outline-offset: 2px;
+  border-color: var(--ring);
+}
+:where(.business-ui, [role="dialog"], [role="alertdialog"]) :where(button, a[role="button"])[class*="rounded-"] {
+  border-radius: 0.625rem;
+}
+:where(.business-ui, [role="dialog"], [role="alertdialog"]) :where(button, a, [role="button"]) {
+  transition-duration: 180ms;
+}
+:where(.business-ui, [role="dialog"], [role="alertdialog"]) :where(button, a):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+:where(button, a)[class~="bg-primary"][class~="text-primary-foreground"], .brand-selected {
+  box-shadow: var(--shadow-brand);
+}
+:where(.business-ui, [role="dialog"], [role="alertdialog"]) :where(button[class~="border"], a[class~="border"]) {
+  box-shadow: var(--shadow-control);
+}
+.business-ui :where(thead, [data-slot="table-header"]) {
+  background-color: var(--muted);
+  color: var(--muted-foreground);
+}
+.business-ui :where(tbody tr, ul[class~="bg-card"] > li) {
+  transition: background-color 180ms ease;
+}
+.business-ui .quick-icon {
+  background-image: var(--gradient-icon);
+  color: var(--primary-mid);
+  border: 1px solid var(--surface-contour);
+  box-shadow: var(--shadow-control);
+}
+@media (hover: hover) {
+  .business-ui :where(tbody tr, ul[class~="bg-card"] > li):hover {
+    background-color: color-mix(in oklab, var(--accent) 45%, transparent);
+  }
+  .business-ui a.glass-tile:hover {
+    border-color: color-mix(in oklab, var(--primary) 24%, var(--border));
+    box-shadow: var(--shadow-soft), 0 6px 16px -12px var(--primary);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.business-ui, [role="dialog"], [role="alertdialog"]) *,
+  :where(.business-ui, [role="dialog"], [role="alertdialog"]) *::before,
+  :where(.business-ui, [role="dialog"], [role="alertdialog"]) *::after {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+  }
+  .business-ui a.glass-tile:hover { transform: none; }
 }
 
 @layer base {
@@ -298,6 +391,6 @@
   h2,
   h3 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
   }
 }

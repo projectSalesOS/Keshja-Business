@@ -105,7 +105,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const isActive = useActive();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="business-ui min-h-screen bg-background">
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-sidebar-border bg-sidebar px-4 py-6 lg:flex">
         <Logo className="px-2" />
         <nav className="mt-8 flex flex-col gap-1">

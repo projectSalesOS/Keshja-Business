@@ -81,7 +81,7 @@ export function Stat({
   valueColor?: "income" | "expense" | "balance" | "dashboardIncome" | "dashboardExpense" | "profitPositive" | "profitNegative" | "profitNeutral";
   matchAccent?: boolean;
 }) {
-  const toneCls = valueColor ? { income: "text-finance-income", expense: "text-finance-expense", balance: "text-finance-balance", dashboardIncome: "text-dashboard-income", dashboardExpense: "text-dashboard-expense", profitPositive: "text-primary", profitNegative: "text-profit-negative", profitNeutral: "text-primary" }[valueColor] : tone === "good" ? "text-primary" : tone === "bad" ? "text-destructive" : "text-card-foreground";
+  const toneCls = valueColor ? { income: "text-finance-income", expense: "text-finance-expense", balance: "text-finance-balance", dashboardIncome: "text-dashboard-income", dashboardExpense: "text-dashboard-expense", profitPositive: "text-profit-positive", profitNegative: "text-profit-negative", profitNeutral: "text-profit-neutral" }[valueColor] : tone === "good" ? "text-primary" : tone === "bad" ? "text-destructive" : "text-card-foreground";
   const tintCls = accent
     ? `glass-tint-accent-${accent}`
     : valueColor

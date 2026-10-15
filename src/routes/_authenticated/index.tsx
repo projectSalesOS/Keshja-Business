@@ -72,7 +72,7 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
 
   const recent = d.transactions.slice(0, 6);
   const quick = "glass-tile glass-tint-default flex flex-col items-center gap-2 rounded-2xl p-4 text-center text-xs font-medium transition-transform duration-200 hover:-translate-y-0.5";
-  const quickIcon = "flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary via-primary-mid to-primary-end text-primary-foreground shadow-card";
+  const quickIcon = "quick-icon flex h-10 w-10 items-center justify-center rounded-xl";
 
   return (
     <div className="space-y-5">
@@ -143,7 +143,7 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
                       {formatDate(t.booking_date)} · {t.category}{t.status === "offen" ? " · offen" : ""}
                     </span>
                   </span>
-                  <span className={`shrink-0 font-semibold tabular-nums ${t.type === "income" ? "text-primary" : ""}`}>
+                  <span className={`shrink-0 font-semibold tabular-nums ${t.type === "income" ? "text-finance-income" : "text-finance-expense"}`}>
                     {t.type === "income" ? "+" : "−"}{currency(t.amount)}
                   </span>
                 </li>
