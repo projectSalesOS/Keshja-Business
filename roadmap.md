@@ -1,5 +1,7 @@
 # Keshja Business – Roadmap
 
+- [x] Globales Design vereinheitlicht: Soft-Pastell-Farben, dezente Glasflächen, gemeinsame Konturen und Kontrollzustände; neun Bereiche und drei Erfassungsdialoge bei 1280/411 px ohne Überbreite geprüft, Dunkelmodus kontrolliert, keine Laufzeitfehler, 42 bestehende Finanz-/Dokumenttests bestanden. Funktionen, Daten und Navigation unverändert.
+
 - [x] Etappe 1: Organisationen, Mitglieder, Rollen (Inhaber/Admin/Mitarbeiter), RLS, Unternehmensdaten in Einstellungen
 - [x] Etappe 1b: Nummernkreise (automatisch, AN-/RE-Jahr-laufende Nr.)
 - [x] Etappe 2: Kunden, Finanzen (Einnahmen/Ausgaben, wiederkehrend – Fixkosten übernehmen), Belege (Upload, privater Speicher, KI-Scan aus bestehendem Kassenbon-Scan)
