@@ -71,7 +71,8 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
   if (d.error) return <p className="text-sm text-destructive">Daten konnten nicht geladen werden: {d.error.message}</p>;
 
   const recent = d.transactions.slice(0, 6);
-  const quick = "flex flex-col items-center gap-1.5 rounded-2xl bg-card p-3 text-center text-xs font-medium shadow-card transition-colors hover:bg-accent";
+  const quick = "glass-tile glass-tint-default flex flex-col items-center gap-2 rounded-2xl p-4 text-center text-xs font-medium transition-transform duration-200 hover:-translate-y-0.5";
+  const quickIcon = "flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary via-primary-mid to-primary-end text-primary-foreground shadow-card";
 
   return (
     <div className="space-y-5">
@@ -96,16 +97,20 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
 
       <div aria-label="Schnellaktionen" className="grid grid-cols-2 gap-3">
         <Link to="/kassenbons" search={{ capture: "1" as const }} className={quick}>
-          <Camera className="h-5 w-5 text-primary" /> Beleg erfassen
+          <span className={quickIcon}><Camera className="h-5 w-5" strokeWidth={1.75} /></span>
+          Beleg erfassen
         </Link>
         <Link to="/finanzen" search={{ neu: "1" as const }} className={quick}>
-          <Plus className="h-5 w-5 text-primary" /> Buchung erfassen
+          <span className={quickIcon}><Plus className="h-5 w-5" strokeWidth={1.75} /></span>
+          Buchung erfassen
         </Link>
         <Link to="/angebote" search={{ neu: "1" as const }} className={quick}>
-          <FileSignature className="h-5 w-5 text-primary" /> Angebot erstellen
+          <span className={quickIcon}><FileSignature className="h-5 w-5" strokeWidth={1.75} /></span>
+          Angebot erstellen
         </Link>
         <Link to="/rechnungen" search={{ neu: "1" as const }} className={quick}>
-          <FileText className="h-5 w-5 text-primary" /> Rechnung erstellen
+          <span className={quickIcon}><FileText className="h-5 w-5" strokeWidth={1.75} /></span>
+          Rechnung erstellen
         </Link>
       </div>
 

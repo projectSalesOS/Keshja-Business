@@ -36,6 +36,7 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
+  --color-primary-mid: var(--primary-mid);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-end: var(--primary-end);
   --color-kpi-violet: var(--kpi-violet);
@@ -238,6 +239,42 @@
   .brand-selected {
     background-image: var(--gradient-primary);
   }
+
+  /*
+   * Glass KPI tiles: translucent gradient glass with a per-metric tint
+   * (--tile-tint is set by the .glass-tint-* classes below).
+   */
+  .glass-tile {
+    background-color: color-mix(in oklab, var(--card) 68%, transparent);
+    background-image:
+      linear-gradient(140deg, color-mix(in oklab, var(--tile-tint, var(--primary)) 16%, transparent), transparent 48%),
+      linear-gradient(168deg, oklch(1 0 0 / 0.42) 0%, oklch(1 0 0 / 0.07) 24%, transparent 40%);
+    backdrop-filter: blur(16px) saturate(150%);
+    border: 1px solid color-mix(in oklab, var(--tile-tint, var(--primary)) 20%, transparent);
+    box-shadow:
+      0 1px 2px oklch(0.3 0.04 305 / 0.05),
+      0 16px 36px -14px color-mix(in oklab, var(--tile-tint, var(--primary)) 55%, transparent),
+      inset 0 1px 0 oklch(1 0 0 / 0.5);
+  }
+  .dark .glass-tile {
+    background-color: color-mix(in oklab, var(--card) 60%, transparent);
+    border-color: color-mix(in oklab, var(--tile-tint, var(--primary)) 28%, transparent);
+    box-shadow:
+      0 1px 2px oklch(0 0 0 / 0.3),
+      0 16px 36px -14px color-mix(in oklab, var(--tile-tint, var(--primary)) 38%, transparent),
+      inset 0 1px 0 oklch(1 0 0 / 0.14);
+  }
+  .glass-tint-default { --tile-tint: var(--primary); }
+  .glass-tint-violet { --tile-tint: var(--primary); }
+  .glass-tint-green { --tile-tint: var(--dashboard-income); }
+  .glass-tint-red { --tile-tint: var(--dashboard-expense); }
+  .glass-tint-destructive { --tile-tint: var(--destructive); }
+  .glass-tint-accent-violet { --tile-tint: var(--kpi-violet); }
+  .glass-tint-accent-blue { --tile-tint: var(--kpi-blue); }
+  .glass-tint-accent-turquoise { --tile-tint: var(--kpi-turquoise); }
+  .glass-tint-accent-green { --tile-tint: var(--kpi-green); }
+  .glass-tint-accent-orange { --tile-tint: var(--kpi-orange); }
+  .glass-tint-accent-pink { --tile-tint: var(--kpi-pink); }
 }
 
 .brand-selected,
