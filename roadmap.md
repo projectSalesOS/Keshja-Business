@@ -24,3 +24,4 @@
 - [x] Firmenlogo (Upload, PDFs)
 - [x] E-Mail-Versand mit PDF-Anhang (Code fertig)
 - [x] E-Mail-Dienst (Resend) verbunden; eigene Absenderdomain in Resend noch offen
+- [x] Futuristic-Premium-Fintech-Design nach Referenzbild: Lavendel-Weiß-Verlauf, Glasflächen, Violett-Magenta-Akzente (2026-10-18)
