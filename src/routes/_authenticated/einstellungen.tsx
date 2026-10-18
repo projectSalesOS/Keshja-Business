@@ -7,13 +7,13 @@ import { OrganizationCard } from "@/components/OrganizationCard";
 export const Route = createFileRoute("/_authenticated/einstellungen")({
   head: () => ({
     meta: [
-      { title: "Einstellungen – KESHJA" },
+      { title: "Einstellungen – KESHJA Business" },
       {
         name: "description",
-        content: "Darstellung, Währung und KI-Analyse von KESHJA anpassen.",
+        content: "Unternehmen, Profil und Darstellung in KESHJA Business verwalten.",
       },
-      { property: "og:title", content: "Einstellungen – KESHJA" },
-      { property: "og:description", content: "Grundeinstellungen des KI-Finanzassistenten." },
+      { property: "og:title", content: "Einstellungen – KESHJA Business" },
+      { property: "og:description", content: "Unternehmens- und Kontoeinstellungen von KESHJA Business." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -31,8 +31,8 @@ function Row({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-border px-5 py-4 last:border-0">
-      <div>
+    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b border-border px-5 py-4 last:border-0">
+      <div className="min-w-0">
         <p className="text-sm font-medium">{title}</p>
         <p className="text-xs text-muted-foreground">{description}</p>
       </div>
@@ -64,20 +64,22 @@ function EinstellungenPage() {
 
         <div className="rounded-2xl border border-border bg-card shadow-card">
           <Row title="Dark Mode" description="Dunkle Darstellung aktivieren">
-            <input
+            <label className="flex h-11 w-11 shrink-0 items-center justify-center"><input
+              aria-label="Dark Mode"
               type="checkbox"
               checked={dark}
               onChange={(e) => setDark(e.target.checked)}
               className={toggleClass}
-            />
+            /></label>
           </Row>
           <Row title="KI-Kommentare" description="Zusammenfassungen in Berichten und Dashboard">
-            <input
+            <label className="flex h-11 w-11 shrink-0 items-center justify-center"><input
+              aria-label="KI-Kommentare"
               type="checkbox"
               checked={aiComments}
               onChange={(e) => setAiComments(e.target.checked)}
               className={toggleClass}
-            />
+            /></label>
           </Row>
           <Row title="Währung" description="Anzeigewährung der Auswertungen">
             <span className="text-sm font-medium">EUR (€)</span>

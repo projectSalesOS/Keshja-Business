@@ -360,7 +360,7 @@ function DocumentEditor({
             {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </Field>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           <Field label={kind === "quote" ? "Angebotsdatum" : "Rechnungsdatum"}>
             <input type="date" className={inputClass} value={docDate} onChange={(e) => setDocDate(e.target.value)} required />
           </Field>
@@ -375,7 +375,7 @@ function DocumentEditor({
           )}
         </div>
         {kind === "invoice" ? (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             <Field label="Leistungsdatum / -beginn *">
               <input type="date" className={inputClass} value={serviceDate} onChange={(e) => setServiceDate(e.target.value)} />
             </Field>
@@ -398,7 +398,7 @@ function DocumentEditor({
                   <X className="h-4 w-4" />
                 </button>
               </div>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <input className={inputClass} inputMode="decimal" placeholder="Menge" value={it.quantity} onChange={(e) => setItem(idx, { quantity: e.target.value })} aria-label="Menge" />
                 <input className={inputClass} placeholder="Einheit" value={it.unit} onChange={(e) => setItem(idx, { unit: e.target.value })} aria-label="Einheit" />
                 <input className={inputClass} inputMode="decimal" placeholder="Preis €" value={it.unit_price} onChange={(e) => setItem(idx, { unit_price: e.target.value })} aria-label="Einzelpreis netto" />

@@ -9,16 +9,16 @@ export const Route = createFileRoute("/auth")({
   
   head: () => ({
     meta: [
-      { title: "Anmelden – KESHJA KI-Finanzassistent" },
+      { title: "Anmelden – KESHJA Business" },
       {
         name: "description",
         content:
-          "Melde dich bei KESHJA an oder erstelle ein Konto, um Kassenbons zu erfassen und deine Ausgaben auszuwerten.",
+          "Melde dich bei KESHJA Business an, um deine Geschäftsfinanzen, Rechnungen und Belege zu verwalten.",
       },
-      { property: "og:title", content: "Anmelden – KESHJA KI-Finanzassistent" },
+      { property: "og:title", content: "Anmelden – KESHJA Business" },
       {
         property: "og:description",
-        content: "Konto erstellen oder anmelden und Kassenbons automatisch erfassen.",
+        content: "Anmelden und Geschäftsfinanzen mit KESHJA Business verwalten.",
       },
       { name: "robots", content: "noindex" },
       { property: "og:type", content: "website" },
@@ -105,20 +105,20 @@ function AuthPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
+    <main className="business-ui flex min-h-screen items-center justify-center bg-background px-5 py-10">
       <div className="w-full max-w-sm">
         <div className="flex justify-center">
           <Logo />
         </div>
 
         <div className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-card">
-          <h1 className="text-lg font-semibold">
+          <h1 className="text-2xl font-semibold">
             {mode === "login" ? "Willkommen zurück" : "Konto erstellen"}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {mode === "login"
-              ? "Melde dich an, um deine Kassenbons und Auswertungen zu sehen."
-              : "Ein Konto genügt – Kassenbon fotografieren und loslegen."}
+               ? "Melde dich bei deinem Unternehmen an."
+              : "Erstelle dein KESHJA Business-Konto."}
           </p>
 
           <form className="mt-6 space-y-4" onSubmit={handleSubmit}>

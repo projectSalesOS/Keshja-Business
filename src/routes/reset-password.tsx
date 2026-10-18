@@ -9,10 +9,10 @@ export const Route = createFileRoute("/reset-password")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Neues Passwort – KESHJA" },
+      { title: "Neues Passwort – KESHJA Business" },
       { name: "description", content: "Lege ein neues Passwort für dein KESHJA-Konto fest." },
-      { property: "og:title", content: "Neues Passwort – KESHJA" },
-      { property: "og:description", content: "Passwort für den KI-Finanzassistenten neu setzen." },
+      { property: "og:title", content: "Neues Passwort – KESHJA Business" },
+      { property: "og:description", content: "Passwort für dein KESHJA Business-Konto neu setzen." },
       { name: "robots", content: "noindex" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -40,7 +40,7 @@ function ResetPasswordPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
+    <main className="business-ui flex min-h-screen items-center justify-center bg-background px-5 py-10">
       <div className="w-full max-w-sm">
         <div className="flex justify-center">
           <Logo />

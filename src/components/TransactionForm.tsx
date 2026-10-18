@@ -103,7 +103,7 @@ export function TransactionForm({
             </button>
           ))}
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Betrag (€) *">
             <input className={inputClass} inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0,00" />
           </Field>
@@ -123,7 +123,7 @@ export function TransactionForm({
         <Field label="Beschreibung">
           <input className={inputClass} value={description} onChange={(e) => setDescription(e.target.value)} />
         </Field>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Zahlungsstatus">
             <select className={inputClass} value={status} onChange={(e) => setStatus(e.target.value as TxStatus)}>
               <option value="bezahlt">Bezahlt</option>
