@@ -466,6 +466,8 @@
   --dash-brand: oklch(0.49 0.21 295);
   --dash-income: oklch(0.46 0.115 177);
   --dash-expense: oklch(0.51 0.185 355);
+  --dash-income-accent: oklch(0.72 0.14 177);
+  --dash-expense-accent: oklch(0.70 0.19 355);
   --dash-category-muted: oklch(0.76 0.023 290);
   --dash-line: oklch(0.93 0.008 285);
   --dash-contour: oklch(0.935 0.011 285);
@@ -506,9 +508,97 @@
 .dashboard-view .dash-category { display: grid; grid-template-columns: 8px minmax(0,1fr) auto; gap: 12px; align-items: center; padding-block: 10px; }
 .dashboard-view .dash-comparison { font-size: 12px; color: var(--muted-foreground); line-height: 1.6; }
 .dashboard-view .dash-title { font-family: var(--font-sans); font-size: 15px; font-weight: 600; }
+.business-ui:has(.dashboard-view) > header { display: none; }
+.business-ui:has(.dashboard-view) .app-main { max-width: 1440px; padding-top: 24px; }
+.dashboard-view { display: flex; flex-direction: column; gap: 16px; }
+.dashboard-view > :where(*) { margin-block: 0; }
+.dashboard-view .dash-secondary-section { order: 20; }
+.dashboard-view .dash-topbar { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 12px; }
+.dashboard-view .dash-topbar > span > span { display: flex; flex-direction: column; align-items: flex-start; gap: 0; }
+.dashboard-view .dash-top-controls { display: flex; align-items: center; gap: 10px; }
+.dashboard-view .dash-header-period { border: 1px solid var(--dash-contour); border-radius: 12px; padding: 10px; box-shadow: var(--dash-shadow); background: var(--dash-surface); }
+.dashboard-view .dash-header-period input { width: 145px; font-size: 13px; color: var(--foreground); background: transparent; }
+.dashboard-view .dash-notifications { position: relative; }
+.dashboard-view .dash-notifications summary { display: grid; position: relative; place-items: center; width: 44px; height: 44px; cursor: pointer; list-style: none; border: 1px solid var(--dash-contour); border-radius: 12px; background: var(--dash-surface); box-shadow: var(--dash-shadow); }
+.dashboard-view .dash-notifications summary::-webkit-details-marker, .dash-more summary::-webkit-details-marker { display: none; }
+.dashboard-view .dash-notification-dot { position: absolute; right: 8px; top: 7px; width: 6px; height: 6px; border-radius: 50%; background: var(--dash-brand); }
+.dashboard-view .dash-notification-list, .business-ui:has(.dashboard-view) .dash-more-menu { position: absolute; z-index: 40; right: 0; top: calc(100% + 8px); width: 250px; padding: 14px; border: 1px solid var(--dash-contour); border-radius: 12px; background: var(--dash-surface); box-shadow: var(--dash-shadow); font-size: 13px; }
+.dashboard-view .dash-notification-list a { display: block; padding-block: 10px; }
+.dashboard-view .dash-voice-card { border: 1px solid var(--dash-contour); border-left: 4px solid var(--dash-brand); border-radius: 14px; padding: 12px 18px; background: linear-gradient(110deg, var(--dash-surface), color-mix(in oklab, var(--dash-brand) 12%, var(--dash-surface)), color-mix(in oklab, var(--dash-expense) 6%, var(--dash-surface))); box-shadow: var(--dash-shadow); }
+.dashboard-view .dash-voice-button { display: grid; grid-template-columns: auto minmax(0,1fr) auto auto; gap: 18px; width: 100%; height: auto; padding: 0; white-space: normal; text-align: left; background: transparent; color: var(--foreground); }
+.dashboard-view .dash-voice-button:disabled { opacity: 1; }
+.dashboard-view .dash-microphone { display: grid; place-items: center; width: 50px; height: 50px; border-radius: 12px; background: var(--gradient-primary); color: var(--primary-foreground); box-shadow: var(--shadow-brand); }
+.dashboard-view .dash-microphone svg { width: 28px; height: 28px; }
+.dashboard-view .dash-voice-copy { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.dashboard-view .dash-voice-copy strong { font-size: 16px; font-weight: 650; }
+.dashboard-view .dash-voice-copy > span { font-size: 12px; color: var(--muted-foreground); }
+.dashboard-view .dash-voice-card > p { margin-left: 68px; font-size: 10px; }
+.dashboard-view .dash-voice-arrow { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--dash-surface); }
+.dashboard-view .dash-waveform { display: flex; align-items: center; gap: 6px; color: var(--dash-brand); opacity: .2; }
+.dashboard-view .dash-waveform i { width: 6px; height: 12px; border-radius: 4px; background: currentColor; }
+.dashboard-view .dash-waveform i:nth-child(2n) { height: 25px; }
+.dashboard-view .dash-waveform i:nth-child(3n) { height: 36px; }
+.dashboard-view .dash-waveform.is-listening { opacity: .7; }
+.dashboard-view .dash-kpi { position: relative; border-left: 5px solid var(--dash-brand); border-radius: 14px; }
+.dashboard-view .dash-profit-card { grid-column: 1 / -1; min-height: 145px; display: grid; grid-template-columns: 64px minmax(0,1fr); gap: 6px 18px; padding: 20px 28px; }
+.dashboard-view .dash-profit-card > .dash-icon { position: absolute; top: 20px; left: 28px; width: 56px; height: 56px; }
+.dashboard-view .dash-profit-card > h2 { grid-column: 2; }
+.dashboard-view .dash-profit-card .dash-metric { grid-column: 1 / -1; font-size: 42px; text-align: center; position: relative; z-index: 1; }
+.dashboard-view .dash-profit-card > p:last-child { grid-column: 1 / -1; text-align: center; position: relative; z-index: 1; }
+.dashboard-view .dash-profit-card::after { content: ""; position: absolute; right: 0; bottom: 0; width: 38%; height: 78%; border-radius: 90% 0 0 0; background: linear-gradient(135deg, transparent, color-mix(in oklab, var(--dash-brand) 9%, transparent), color-mix(in oklab, var(--dash-expense) 10%, transparent)); pointer-events: none; }
+.dashboard-view :is(.dash-income-card,.dash-expense-card) { display: grid; grid-template-columns: 50px minmax(0,1fr); gap: 5px 16px; min-height: 112px; padding: 16px 24px; }
+.dashboard-view .dash-income-card { border-left-color: var(--dash-income-accent); }
+.dashboard-view .dash-expense-card { border-left-color: var(--dash-expense-accent); }
+.dashboard-view :is(.dash-income-card,.dash-expense-card) > .dash-icon { grid-row: 1 / 4; align-self: start; width: 50px; height: 50px; }
+.dashboard-view .dash-chart-heading { display: grid; grid-template-columns: auto minmax(0,1fr); align-items: center; gap: 14px; margin-bottom: 12px; }
+.dashboard-view .dash-line-chart { height: 200px; }
+.dashboard-view .dash-bar-chart { height: 160px; }
+.dashboard-view .dash-action { display: grid; grid-template-columns: auto minmax(0,1fr) auto; gap: 12px; text-align: left; min-height: 72px; padding: 12px; font-size: 12px; }
+.dashboard-view .dash-action small { display: block; margin-top: 3px; font-size: 10px; font-weight: 400; color: var(--muted-foreground); }
+.business-ui:has(.dashboard-view) .mobile-nav { overflow: visible; }
+.business-ui:has(.dashboard-view) .mobile-nav > a, .business-ui:has(.dashboard-view) .dash-more { flex: 1; min-width: 0; width: auto; }
+.business-ui:has(.dashboard-view) .dash-more { position: relative; }
+.business-ui:has(.dashboard-view) .dash-more-trigger { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 8px 0; min-height: 60px; list-style: none; cursor: pointer; font-size: 12px; color: var(--muted-foreground); }
+.business-ui:has(.dashboard-view) .dash-more-menu { top: auto; bottom: calc(100% + 16px); }
+.business-ui:has(.dashboard-view) .dash-more-menu a { display: flex; align-items: center; gap: 10px; padding: 12px 4px; }
 @media (max-width: 639px) {
   .dashboard-view .dash-card { padding: 18px; }
   .dashboard-view .dash-metric { font-size: 28px; }
   .dashboard-view .dash-kpi { padding: 16px 18px; gap: 6px; }
   .dashboard-view .dash-action { padding: 14px 8px; font-size: 12px; }
+  .business-ui:has(.dashboard-view) .app-main { padding: 18px 16px 100px; }
+  .dashboard-view { gap: 12px; }
+  .dashboard-view .dash-topbar > span { gap: 6px; }
+  .dashboard-view .dash-topbar .font-display { font-size: 16px; }
+  .dashboard-view .dash-top-controls { gap: 5px; }
+  .dashboard-view .dash-top-controls > button { display: none; }
+  .dashboard-view .dash-header-period { padding: 8px 6px; }
+  .dashboard-view .dash-header-period input { width: 110px; font-size: 11px; }
+  .dashboard-view .dash-notifications summary { width: 36px; height: 36px; }
+  .dashboard-view .dash-voice-card { padding: 12px; }
+  .dashboard-view .dash-voice-button { grid-template-columns: auto minmax(0,1fr) auto; gap: 10px; }
+  .dashboard-view .dash-microphone { width: 42px; height: 46px; }
+  .dashboard-view .dash-voice-copy strong { font-size: 13px; }
+  .dashboard-view .dash-voice-copy > span { font-size: 10px; }
+  .dashboard-view .dash-waveform { display: none; }
+  .dashboard-view .dash-voice-card > p { margin-left: 52px; }
+  .dashboard-view .dash-voice-arrow { width: 30px; height: 30px; }
+  .dashboard-view .dash-profit-card { min-height: 136px; grid-template-columns: 40px minmax(0,1fr); gap: 8px 10px; padding: 18px 14px; }
+  .dashboard-view .dash-profit-card > .dash-icon { top: 18px; left: 14px; width: 38px; height: 42px; }
+  .dashboard-view .dash-profit-card .dash-metric { font-size: 32px; }
+  .dashboard-view :is(.dash-income-card,.dash-expense-card) { grid-template-columns: minmax(0,1fr); min-height: 118px; gap: 6px; padding: 13px 12px; }
+  .dashboard-view :is(.dash-income-card,.dash-expense-card) > .dash-icon { position: absolute; right: 10px; top: 10px; width: 24px; height: 24px; background: transparent; }
+  .dashboard-view :is(.dash-income-card,.dash-expense-card) .dash-title { font-size: 12px; padding-right: 21px; }
+  .dashboard-view :is(.dash-income-card,.dash-expense-card) .dash-metric { font-size: 22px; }
+  .dashboard-view .dash-title { font-size: 13px; }
+  .dashboard-view .dash-line-chart { height: 185px; }
+  .dashboard-view .dash-bar-chart { height: 155px; }
+  .dashboard-view .dash-action { display: flex; flex-direction: column; gap: 7px; min-height: 92px; text-align: center; font-size: 10px; }
+  .dashboard-view .dash-action > svg, .dashboard-view .dash-action small { display: none; }
+  .dashboard-view .dash-action .dash-icon { width: 30px; height: 30px; }
+  .business-ui:has(.dashboard-view) .mobile-nav > a, .business-ui:has(.dashboard-view) .dash-more-trigger { font-size: 10px; }
+}
+@media (max-width: 359px) {
+  .dashboard-view :is(.dash-income-card,.dash-expense-card) .dash-metric { font-size: 18px; }
+  .dashboard-view :is(.dash-income-card,.dash-expense-card) > .dash-icon { width: 18px; height: 18px; }
 }
