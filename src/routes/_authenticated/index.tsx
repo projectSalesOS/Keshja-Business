@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowDownLeft, ArrowUpRight, Camera, ChartNoAxesColumnIncreasing, FileText, Loader2, PieChart as PieIcon, Plus } from "lucide-react";
+import { Camera, ChartNoAxesColumnIncreasing, FileText, Loader2, PieChart as PieIcon, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { OrgGate } from "@/components/OrgGate";
 import { Empty, Panel, PeriodPicker } from "@/components/AnalyticsUi";
-import { BalanceChart, categoryColors, ExpenseRing, IncomeExpenseChart, MiniBars } from "@/components/DashboardCharts";
+import { categoryColors, ExpenseRing, IncomeExpenseChart, MonthlyBars } from "@/components/DashboardCharts";
 import { useProfile } from "@/hooks/useProfile";
 import { useAnalyticsData } from "@/hooks/useAnalytics";
 import { rangeFor, receivables, type Preset, type Range } from "@/lib/analytics";
@@ -37,9 +37,6 @@ function sixMonths(today: string): Range {
   start.setUTCDate(1); start.setUTCMonth(start.getUTCMonth() - 5);
   return { from: start.toISOString().slice(0, 10), to: end };
 }
-function Comparison({ value, previous }: { value: number | null; previous: Range }) {
-  return <p className="dash-comparison">{value === null ? "Vergleich nicht berechenbar" : `${value > 0 ? "+" : ""}${value.toLocaleString("de-DE")} %`}<br /><span>ggü. {formatDate(previous.from)} – {formatDate(previous.to)}</span></p>;
-}
 function DashboardView({ orgId, greeting }: { orgId: string; greeting: string }) {
   const [voiceResult, setVoiceResult] = useState<ReturnType<typeof parseVoiceBooking> | null>(null);
   const today = todayIso();
@@ -62,24 +59,16 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
       <p className="text-xs text-muted-foreground">{formatDate(range.from)} – {formatDate(range.to)} · bezahlte Buchungen</p>
     </div>
 
-    <section aria-label="Gewinn und Verlust" className="dash-card grid items-center gap-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)]">
-      <div className="min-w-0">
-        <div className="mb-5 flex items-center gap-3"><span className="dash-icon dash-brand"><ChartNoAxesColumnIncreasing size={21} /></span><h2 className="dash-title">Gewinn / Verlust</h2></div>
-        <p data-testid="dashboard-balance" className={`dash-metric dash-profit ${m.totals.balance < 0 ? "dash-expense" : "dash-brand"}`}>{currency(m.totals.balance)}</p>
-        <p className="mt-2 mb-3 text-xs text-muted-foreground">{m.totals.count} {m.totals.count === 1 ? "Buchung" : "Buchungen"} im Zeitraum</p>
-        <Comparison value={m.deltas.balance} previous={m.previous} />
-      </div>
-      <div className="min-w-0"><div className="h-40 sm:h-48" aria-label="Monatlicher Gewinnverlauf"><BalanceChart data={m.series} /></div>{!m.totals.count && <p className="text-xs text-muted-foreground">Keine bezahlten Buchungen im Zeitraum.</p>}</div>
-    </section>
-
-    <div className="grid gap-4 sm:grid-cols-2">
-      {(["income", "expense"] as const).map((type) => <section key={type} className="dash-card" aria-label={type === "income" ? "Einnahmen" : "Ausgaben"}>
-        <div className="mb-5 flex items-center gap-3"><span className={`dash-icon dash-${type}`}>{type === "income" ? <ArrowUpRight size={21} /> : <ArrowDownLeft size={21} />}</span><h2 className="dash-title">{type === "income" ? "Einnahmen" : "Ausgaben"}</h2></div>
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div className="min-w-0"><p data-testid={`dashboard-${type}`} className={`dash-metric dash-${type}`}>{currency(m.totals[type])}</p><p className="mt-2 text-xs text-muted-foreground">{type === "income" ? m.incomeCount : m.expenseCount} Buchungen</p></div>
-          <Comparison value={m.deltas[type]} previous={m.previous} />
-        </div>
-        <div className="mt-4 h-24" aria-label={`Monatliche ${type === "income" ? "Einnahmen" : "Ausgaben"}`}><MiniBars data={m.series} type={type} /></div>
+    <div className="grid gap-3 md:grid-cols-3" aria-label="Kennzahlen">
+      <section aria-label="Gewinn und Verlust" className="dash-card dash-kpi dash-profit-card">
+        <h2 className="dash-title">Gewinn / Verlust</h2>
+        <p data-testid="dashboard-balance" className={`dash-metric ${m.totals.balance < 0 ? "dash-expense" : "dash-brand"}`}>{currency(m.totals.balance)}</p>
+        <p className="text-xs text-muted-foreground">{m.totals.count} {m.totals.count === 1 ? "Buchung" : "Buchungen"} im Zeitraum</p>
+      </section>
+      {(["income", "expense"] as const).map((type) => <section key={type} className={`dash-card dash-kpi dash-${type}-card`} aria-label={type === "income" ? "Einnahmen" : "Ausgaben"}>
+        <h2 className="dash-title">{type === "income" ? "Einnahmen" : "Ausgaben"}</h2>
+        <p data-testid={`dashboard-${type}`} className={`dash-metric dash-${type}`}>{currency(m.totals[type])}</p>
+        <p className="text-xs text-muted-foreground">{type === "income" ? m.incomeCount : m.expenseCount} Buchungen</p>
       </section>)}
     </div>
 
@@ -99,6 +88,11 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
       <div className="mb-5 flex items-center gap-3"><span className="dash-icon dash-brand"><ChartNoAxesColumnIncreasing size={21} /></span><div><h2 className="dash-title">Einnahmen & Ausgaben</h2><p className="mt-1 text-xs text-muted-foreground">Sechs Monate bis {formatDate(range.to)} · Werte nur im gewählten Zeitraum</p></div></div>
       <div className="h-56 min-w-0 sm:h-64"><IncomeExpenseChart data={m.trend} /></div>
       <p className="mt-3 text-xs text-muted-foreground">Monate außerhalb der Auswahl bleiben ohne Werte. Für den vollständigen Verlauf: 6 Monate.</p>
+    </section>
+
+    <section className="dash-card" aria-label="Monatliche Einnahmen und Ausgaben als Balken">
+      <div className="mb-5 flex items-center gap-3"><span className="dash-icon dash-brand"><ChartNoAxesColumnIncreasing size={21} /></span><div><h2 className="dash-title">Monatliche Einnahmen & Ausgaben</h2><p className="mt-1 text-xs text-muted-foreground">Sechs Monate bis {formatDate(range.to)}</p></div></div>
+      <div className="h-56 min-w-0 sm:h-64"><MonthlyBars data={m.trend} /></div>
     </section>
 
     <div aria-label="Schnellaktionen" className="grid grid-cols-3 gap-3">

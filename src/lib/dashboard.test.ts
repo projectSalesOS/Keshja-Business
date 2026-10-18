@@ -26,6 +26,14 @@ describe("Synchronized dashboard data", () => {
     expect(d.trend.slice(0, 5).map((r) => r.income)).toEqual([null, null, null, null, null]);
     expect(d.trend.at(-1)?.income).toBe(300);
   });
+  it("provides filtered monthly income and expenses for both six-month charts", () => {
+    const d = dashboardData(rows, { from: "2026-05-01", to: "2026-10-31" });
+    expect(d.trend.map(({ income, expense }) => [income, expense])).toEqual([
+      [0, 0], [0, 0], [0, 0], [0, 0], [200, 0], [300, 100],
+    ]);
+    expect(d.trend.reduce((sum, row) => sum + (row.income ?? 0), 0)).toBe(d.totals.income);
+    expect(d.trend.reduce((sum, row) => sum + (row.expense ?? 0), 0)).toBe(d.totals.expense);
+  });
   it("uses real categories whose sum matches selected expenses", () => {
     const d = dashboardData(rows, october);
     expect(d.categories).toEqual([{ name: "Software", value: 80 }, { name: "Material", value: 20 }]);

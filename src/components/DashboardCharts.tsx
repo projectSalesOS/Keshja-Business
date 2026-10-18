@@ -24,13 +24,16 @@ export function BalanceChart({ data }: { data: Data["series"] }) {
   </ResponsiveContainer>;
 }
 
-export function MiniBars({ data, type }: { data: Data["series"]; type: "income" | "expense" }) {
+export function MonthlyBars({ data }: { data: Data["trend"] }) {
   return <ResponsiveContainer width="100%" height="100%">
-    <BarChart data={data} margin={{ top: 8, right: 2, left: 2, bottom: 0 }} accessibilityLayer>
+    <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barGap={3} accessibilityLayer>
       <CartesianGrid stroke="var(--dash-line)" strokeDasharray="3 4" vertical={false} />
       <XAxis dataKey="month" tickFormatter={monthTick} tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} tickLine={false} axisLine={false} minTickGap={20} />
+      <YAxis width={46} tickFormatter={moneyTick} tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} tickLine={false} axisLine={false} />
       <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => currency(v)} labelFormatter={monthTick} cursor={{ fill: "var(--dash-line)" }} />
-      <Bar dataKey={type} name={type === "income" ? "Einnahmen" : "Ausgaben"} fill={`var(--dash-${type})`} fillOpacity={0.65} maxBarSize={28} radius={[4, 4, 0, 0]} isAnimationActive={false} />
+      <Legend content={() => <div className="mt-3 flex justify-center gap-5 text-xs"><span className="dash-income">● Einnahmen</span><span className="dash-expense">● Ausgaben</span></div>} />
+      <Bar dataKey="income" name="Einnahmen" fill="var(--dash-income)" fillOpacity={0.85} maxBarSize={28} radius={[4, 4, 0, 0]} isAnimationActive={false} />
+      <Bar dataKey="expense" name="Ausgaben" fill="var(--dash-expense)" fillOpacity={0.85} maxBarSize={28} radius={[4, 4, 0, 0]} isAnimationActive={false} />
     </BarChart>
   </ResponsiveContainer>;
 }
