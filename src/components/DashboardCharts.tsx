@@ -17,6 +17,7 @@ export function BalanceChart({ data }: { data: Data["series"] }) {
       <defs><linearGradient id={`balance-${id}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--dash-brand)" stopOpacity={0.2} /><stop offset="100%" stopColor="var(--dash-brand)" stopOpacity={0.01} /></linearGradient></defs>
       <CartesianGrid stroke="var(--dash-line)" strokeDasharray="3 4" vertical={false} />
       <XAxis dataKey="month" tickFormatter={monthTick} tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} tickLine={false} axisLine={false} minTickGap={20} />
+      <YAxis width={42} tickFormatter={moneyTick} tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} tickLine={false} axisLine={false} />
       <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => currency(v)} labelFormatter={monthTick} />
       <Area type="linear" dataKey="balance" name="Gewinn / Verlust" stroke="var(--dash-brand)" strokeWidth={2.5} fill={`url(#balance-${id})`} dot={data.length === 1 ? { r: 4 } : false} isAnimationActive={false} />
     </AreaChart>
@@ -50,7 +51,7 @@ export function IncomeExpenseChart({ data }: { data: Data["trend"] }) {
     <XAxis dataKey="month" tickFormatter={monthTick} tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} tickLine={false} axisLine={false} minTickGap={14} />
     <YAxis width={46} tickFormatter={moneyTick} tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} tickLine={false} axisLine={false} />
     <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => currency(v)} labelFormatter={monthTick} />
-    <Legend iconType="circle" iconSize={7} wrapperStyle={{ fontSize: 12, paddingTop: 14 }} />
+    <Legend content={() => <div className="mt-3 flex justify-center gap-5 text-xs"><span className="dash-income">● Einnahmen</span><span className="dash-expense">● Ausgaben</span></div>} />
     {(["income", "expense"] as const).map((type) => <Area key={type} type="linear" dataKey={type} fill={`url(#${type}-${id})`} stroke="none" legendType="none" tooltipType="none" isAnimationActive={false} />)}
     <Line type="linear" dataKey="income" name="Einnahmen" stroke="var(--dash-income)" strokeWidth={2.5} dot={{ r: 3, strokeWidth: 2 }} isAnimationActive={false} />
     <Line type="linear" dataKey="expense" name="Ausgaben" stroke="var(--dash-expense)" strokeWidth={2.5} strokeDasharray="6 3" dot={{ r: 3, strokeWidth: 2 }} isAnimationActive={false} />
