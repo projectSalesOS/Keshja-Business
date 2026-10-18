@@ -175,6 +175,9 @@
 
 .dark {
   color-scheme: dark;
+  --brand-on-light: oklch(0.22 0.035 300);
+  --brand-selection: oklch(0.29 0.035 305);
+  --brand-selection-text: oklch(0.85 0.1 300);
   --dashboard-income: oklch(0.80 0.075 158);
   --dashboard-expense: oklch(0.80 0.085 22);
   --profit-positive: oklch(0.82 0.085 300);
@@ -385,9 +388,9 @@
 }
 .app-sidebar .brand-selected { border-left: 3px solid var(--primary); padding-left: 9px; }
 .dark :where(.business-ui, [role="dialog"]) .text-muted-foreground { color: var(--muted-foreground); }
-.dark :where(button, a)[class~="bg-primary"][class~="text-primary-foreground"] { color: var(--primary-foreground); }
+.dark :where(button, a)[class~="bg-primary"][class~="text-primary-foreground"] { color: var(--brand-on-light); }
 .dark .period-picker button[aria-pressed="true"],
-.dark .app-nav .brand-selected { background-color: var(--secondary); color: var(--primary); }
+.dark .app-nav .brand-selected { background-color: var(--brand-selection); color: var(--brand-selection-text); }
 .mobile-nav { scrollbar-width: thin; scrollbar-color: var(--input) transparent; scroll-snap-type: x proximity; }
 .mobile-nav a { scroll-snap-align: center; }
 .section-tabs a { min-height: 48px; }
