@@ -6,6 +6,7 @@ import { AppShell, PageHeader, SectionTabs } from "@/components/AppShell";
 import { OrgGate, btnPrimary, inputClass } from "@/components/OrgGate";
 import { useCustomers, useDeleteTransaction, useTransactions, type Transaction } from "@/hooks/useBusiness";
 import { TransactionForm } from "@/components/TransactionForm";
+import { Stat } from "@/components/AnalyticsUi";
 import { useFixedCosts } from "@/hooks/useFixedCosts";
 import {
   EXPENSE_CATEGORIES,
@@ -86,17 +87,10 @@ function FinanceView({ orgId, isAdmin }: { orgId: string; isAdmin: boolean }) {
           </button>
         </div>
       ) : null}
-      <div className="grid grid-cols-3 gap-3">
-        {[
-          ["Einnahmen", sums.income],
-          ["Ausgaben", sums.expense],
-          ["Saldo", sums.balance],
-        ].map(([label, value]) => (
-          <div key={label as string} className="rounded-2xl border border-border bg-card p-4 shadow-card">
-            <p className="text-xs text-muted-foreground">{label}</p>
-            <p className="mt-1 text-base font-semibold tabular-nums sm:text-xl">{currency(value as number)}</p>
-          </div>
-        ))}
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Stat label="Einnahmen" value={currency(sums.income)} valueColor="income" matchAccent />
+        <Stat label="Ausgaben" value={currency(sums.expense)} valueColor="expense" matchAccent />
+        <Stat label="Saldo" value={currency(sums.balance)} valueColor={sums.balance < 0 ? "profitNegative" : "balance"} matchAccent />
       </div>
 
       <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-6">
@@ -142,7 +136,7 @@ function FinanceView({ orgId, isAdmin }: { orgId: string; isAdmin: boolean }) {
           </li>
         ) : (
           list.map((t) => (
-            <li key={t.id} className="flex items-center justify-between gap-3 border-b border-border px-5 py-3.5 last:border-0">
+            <li key={t.id} className="grid grid-cols-1 items-center gap-3 border-b border-border px-5 py-4 last:border-0 sm:grid-cols-[minmax(0,1fr)_auto]">
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium">{t.description || t.category}</p>
                 <p className="truncate text-xs text-muted-foreground">
@@ -152,13 +146,13 @@ function FinanceView({ orgId, isAdmin }: { orgId: string; isAdmin: boolean }) {
                   {t.recurring_expense_id ? " · wiederkehrend" : ""}
                 </p>
               </div>
-              <div className="flex shrink-0 items-center gap-2">
+              <div className="flex shrink-0 flex-wrap items-center gap-2">
                 <span
                   className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${t.status === "offen" ? "bg-destructive/10 text-destructive" : "bg-accent text-accent-foreground"}`}
                 >
                   {TX_STATUS_LABEL[t.status]}
                 </span>
-                <span className={`text-sm font-semibold tabular-nums ${t.type === "income" ? "text-primary" : ""}`}>
+                <span className={`mr-auto text-sm font-semibold tabular-nums ${t.type === "income" ? "text-finance-income" : "text-finance-expense"}`}>
                   {t.type === "income" ? "+" : "−"}
                   {currency(t.amount)}
                 </span>
@@ -193,7 +187,7 @@ function FinanceView({ orgId, isAdmin }: { orgId: string; isAdmin: boolean }) {
         <TransactionForm
           orgId={orgId}
           tx={editing === "new" ? null : editing}
-          linkedReceipts={new Set(data.filter((t) => t.receipt_id).map((t) => t.receipt_id!))}
+          linkedReceipts={new Set(data.flatMap((t) => t.receipt_id ? [t.receipt_id] : []))}
           onClose={() => setEditing(null)}
         />
       ) : null}

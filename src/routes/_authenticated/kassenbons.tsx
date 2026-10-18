@@ -258,8 +258,8 @@ function ReceiptBusinessPanel({
       <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
         Erkannte Daten prüfen und zuordnen
       </p>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="col-span-2">
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="sm:col-span-2">
           <Field label="Händler / Aussteller">
             <input className={inputClass} value={merchant} onChange={(e) => setMerchant(e.target.value)} />
           </Field>
@@ -270,7 +270,7 @@ function ReceiptBusinessPanel({
         <Field label="Betrag (€)">
           <input className={inputClass} inputMode="decimal" value={total} onChange={(e) => setTotal(e.target.value)} />
         </Field>
-        <div className="col-span-2">
+        <div className="sm:col-span-2">
           <Field label="Kunde (optional)">
             <select className={inputClass} value={customerId} onChange={(e) => setCustomerId(e.target.value)}>
               <option value="">Kein Kunde</option>

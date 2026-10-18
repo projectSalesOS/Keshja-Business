@@ -6,6 +6,7 @@ import logoMark from "@/assets/keshja-business-logo.png.asset.json";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/useProfile";
 import { useOrganization } from "@/hooks/useOrganization";
+import { Button } from "@/components/ui/button";
 
 const NAV = [
   { to: "/", label: "Dashboard", short: "Start", icon: LayoutDashboard, match: [] as string[] },
@@ -26,13 +27,13 @@ function useActive() {
 /** Unterbereiche innerhalb eines Hauptmenüpunkts (z. B. Buchungen / Belege / Berichte). */
 export function SectionTabs({ tabs }: { tabs: { to: "/finanzen" | "/kassenbons" | "/auswertungen" | "/rechnungen" | "/angebote"; label: string }[] }) {
   return (
-    <div className="flex gap-1 overflow-x-auto rounded-xl bg-muted p-1">
+    <div className="section-tabs flex gap-1 overflow-x-auto border-b border-border" aria-label="Unterbereiche">
       {tabs.map((t) => (
         <Link
           key={t.to}
           to={t.to}
-          className="flex-1 whitespace-nowrap rounded-lg px-3 py-2 text-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-          activeProps={{ className: "flex-1 whitespace-nowrap rounded-lg px-3 py-2 text-center text-sm font-medium bg-card text-foreground shadow-card" }}
+          className="shrink-0 whitespace-nowrap border-b-2 border-transparent px-4 py-3 text-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          activeProps={{ className: "shrink-0 whitespace-nowrap border-b-2 border-primary px-4 py-3 text-center text-sm font-semibold text-primary" }}
         >
           {t.label}
         </Link>
@@ -52,12 +53,11 @@ export function Logo({ className = "" }: { className?: string }) {
         className="h-9 w-9 object-contain"
       />
       <span className="flex flex-col justify-center gap-0.5 sm:flex-row sm:items-center sm:gap-2 lg:flex-col lg:items-start lg:gap-0.5">
-        <span className="font-display text-lg font-semibold leading-tight tracking-[0.18em] text-foreground">
+        <span className="font-display text-lg font-semibold leading-tight text-foreground">
           KESHJA
         </span>
-        <span className="hidden sm:flex text-[10px] leading-tight font-sans font-medium tracking-wide text-foreground/70 sm:flex-row sm:items-center sm:gap-2 lg:flex-col lg:items-start lg:gap-0">
-          <span className="sm:inline lg:block">Deine Finanzen.</span>
-          <span className="sm:inline lg:block">Einfach im Griff.</span>
+        <span className="text-xs leading-tight font-sans font-medium text-muted-foreground">
+          BUSINESS
         </span>
       </span>
     </span>
@@ -74,9 +74,9 @@ export function PageHeader({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <h1 className="text-2xl font-semibold sm:text-3xl">{title}</h1>
+    <div className="page-header grid min-w-0 grid-cols-1 items-start gap-5 sm:grid-cols-[minmax(0,1fr)_auto]">
+      <div className="min-w-0">
+        <h1 className="text-2xl font-semibold leading-tight sm:text-3xl">{title}</h1>
         {description ? (
           <p className="mt-1.5 max-w-2xl text-sm text-muted-foreground">{description}</p>
         ) : null}
@@ -106,9 +106,9 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="business-ui min-h-screen bg-background">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-sidebar-border bg-sidebar px-4 py-6 lg:flex">
+      <aside className="app-sidebar fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-sidebar-border bg-sidebar px-4 py-7 lg:flex">
         <Logo className="px-2" />
-        <nav className="mt-8 flex flex-col gap-1">
+        <nav aria-label="Hauptnavigation" className="app-nav mt-10 flex flex-col gap-1.5">
           {NAV.map((item) => {
             const { to, label, icon: Icon } = item;
             return (
@@ -138,7 +138,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                   {org?.organization?.name ?? "Kein Unternehmen"}
                 </p>
               </div>
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 type="button"
                 onClick={signOut}
                 aria-label="Abmelden"
@@ -146,30 +148,32 @@ export function AppShell({ children }: { children: ReactNode }) {
                 className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
               >
                 <LogOut className="h-4 w-4" />
-              </button>
+              </Button>
             </div>
           ) : null}
-          <p className="px-3 pt-1 text-xs text-muted-foreground">KI-Finanzassistent · v1.0</p>
+          <p className="px-3 pt-2 text-xs text-muted-foreground">KESHJA Business</p>
         </div>
       </aside>
 
-      <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-border bg-background/85 px-4 backdrop-blur lg:hidden">
+      <header className="sticky top-0 z-20 grid h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-card/90 px-5 backdrop-blur-lg lg:hidden">
         <Logo />
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           type="button"
           onClick={signOut}
           aria-label="Abmelden"
           className="rounded-lg p-2 text-muted-foreground transition-colors hover:text-foreground"
         >
           <LogOut className="h-4 w-4" />
-        </button>
+        </Button>
       </header>
 
-      <main className="mx-auto w-full max-w-6xl px-4 pb-28 pt-6 sm:px-6 lg:pb-12 lg:pl-72 lg:pr-8 lg:pt-10">
+      <main className="app-main mx-auto w-full min-w-0 px-5 pb-28 pt-6 sm:px-8 lg:pb-16 lg:pl-80 lg:pr-16 lg:pt-12">
         {children}
       </main>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex overflow-x-auto border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
+      <nav aria-label="Mobile Hauptnavigation" className="mobile-nav app-nav fixed inset-x-0 bottom-0 z-30 flex overflow-x-auto border-t border-border bg-card/95 px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur-xl lg:hidden">
         {NAV.map((item) => {
           const { to, short, icon: Icon } = item;
           return (
@@ -178,12 +182,12 @@ export function AppShell({ children }: { children: ReactNode }) {
             to={to}
             className={
               isActive(item)
-                ? "brand-selected flex min-w-0 flex-1 flex-col items-center gap-1 py-2.5 text-[10px] font-medium bg-sidebar-primary text-sidebar-primary-foreground"
-                : "flex min-w-0 flex-1 flex-col items-center gap-1 py-2.5 text-[10px] font-medium text-muted-foreground"
+                ? "brand-selected flex w-24 shrink-0 flex-col items-center gap-1.5 rounded-lg px-1 py-2 text-xs font-semibold"
+                : "flex w-24 shrink-0 flex-col items-center gap-1.5 rounded-lg px-1 py-2 text-xs font-medium text-muted-foreground"
             }
           >
             <Icon className="h-5 w-5" strokeWidth={1.75} />
-            <span className="max-w-full truncate px-0.5">{short}</span>
+            <span className="whitespace-nowrap">{short === "Mehr" ? "Einstellungen" : short}</span>
           </Link>
           );
         })}
