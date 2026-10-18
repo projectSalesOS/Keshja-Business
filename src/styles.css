@@ -458,3 +458,54 @@
     letter-spacing: 0;
   }
 }
+
+/* Dashboard-only premium palette: other business pages keep their existing theme. */
+.business-ui:has(.dashboard-view) {
+  --dash-background: oklch(0.982 0.003 285);
+  --dash-surface: oklch(0.997 0.002 285);
+  --dash-brand: oklch(0.49 0.16 295);
+  --dash-income: oklch(0.43 0.075 191);
+  --dash-expense: oklch(0.49 0.105 355);
+  --dash-category-muted: oklch(0.76 0.023 290);
+  --dash-line: oklch(0.93 0.008 285);
+  --dash-contour: oklch(0.935 0.011 285);
+  --dash-reflection: linear-gradient(135deg, oklch(0.966 0.018 295 / 0.45), transparent 65%);
+  --dash-shadow: 0 2px 3px oklch(0.3 0.02 290 / 0.02), 0 8px 28px -12px oklch(0.4 0.06 290 / 0.10);
+  background: var(--dash-background);
+}
+.dark .business-ui:has(.dashboard-view) {
+  --dash-background: var(--background);
+  --dash-surface: var(--card);
+  --dash-brand: oklch(0.80 0.10 295);
+  --dash-income: oklch(0.78 0.08 191);
+  --dash-expense: oklch(0.78 0.10 355);
+  --dash-category-muted: oklch(0.6 0.025 290);
+  --dash-line: var(--border);
+  --dash-contour: var(--border);
+  --dash-reflection: var(--gradient-surface);
+  --dash-shadow: var(--shadow-soft);
+}
+.dashboard-view .dash-card {
+  min-width: 0; overflow: hidden; border-radius: 12px;
+  background-color: var(--dash-surface); background-image: var(--dash-reflection);
+  border: 1px solid var(--dash-contour); box-shadow: var(--dash-shadow);
+  padding: 24px;
+}
+.dashboard-view .dash-metric { font-family: var(--font-sans); font-size: 32px; font-weight: 650; line-height: 1.25; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.dashboard-view .dash-profit { font-size: 40px; }
+.dashboard-view .dash-income { color: var(--dash-income); }
+.dashboard-view .dash-expense { color: var(--dash-expense); }
+.dashboard-view .dash-brand { color: var(--dash-brand); }
+.dashboard-view .dash-icon { display: flex; width: 40px; height: 40px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 10px; background: color-mix(in oklab, currentColor 8%, var(--dash-surface)); }
+.dashboard-view .dash-voice button { background-image: none; background-color: var(--dash-brand); box-shadow: var(--dash-shadow); }
+.dashboard-view .dash-action { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; min-height: 106px; text-align: center; font-size: 13px; font-weight: 500; transition: border-color 180ms ease; }
+.dashboard-view .dash-action:hover { border-color: var(--dash-brand); }
+.dashboard-view .dash-category { display: grid; grid-template-columns: 8px minmax(0,1fr) auto; gap: 12px; align-items: center; padding-block: 10px; }
+.dashboard-view .dash-comparison { font-size: 12px; color: var(--muted-foreground); line-height: 1.6; }
+.dashboard-view .dash-title { font-family: var(--font-sans); font-size: 15px; font-weight: 600; }
+@media (max-width: 639px) {
+  .dashboard-view .dash-card { padding: 18px; }
+  .dashboard-view .dash-metric { font-size: 28px; }
+  .dashboard-view .dash-profit { font-size: 36px; }
+  .dashboard-view .dash-action { padding: 14px 8px; font-size: 12px; }
+}
