@@ -6,7 +6,7 @@ import type { dashboardData } from "@/lib/dashboard";
 import { tooltipStyle } from "./AnalyticsUi";
 
 type Data = ReturnType<typeof dashboardData>;
-const monthTick = (month: string) => monthLabel(month);
+const monthTick = (month: string) => monthLabel(month).replace(/\s\d{2}$/, "");
 const moneyTick = (n: number) => n.toLocaleString("de-DE", { notation: "compact" });
 export const categoryColors = ["var(--dash-expense)", "var(--dash-brand)", "var(--dash-income)", "var(--dash-category-muted)"];
 
@@ -32,8 +32,8 @@ export function MonthlyBars({ data }: { data: Data["trend"] }) {
       <YAxis width={46} tickFormatter={moneyTick} tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} tickLine={false} axisLine={false} />
       <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => currency(v)} labelFormatter={monthTick} cursor={{ fill: "var(--dash-line)" }} />
       <Legend content={() => <div className="mt-3 flex justify-center gap-5 text-xs"><span className="dash-income">● Einnahmen</span><span className="dash-expense">● Ausgaben</span></div>} />
-      <Bar dataKey="income" name="Einnahmen" fill="var(--dash-income)" fillOpacity={0.85} maxBarSize={28} radius={[4, 4, 0, 0]} isAnimationActive={false} />
-      <Bar dataKey="expense" name="Ausgaben" fill="var(--dash-expense)" fillOpacity={0.85} maxBarSize={28} radius={[4, 4, 0, 0]} isAnimationActive={false} />
+      <Bar dataKey="income" name="Einnahmen" fill="var(--dash-income-accent)" fillOpacity={0.65} maxBarSize={28} radius={[3, 3, 0, 0]} isAnimationActive={false} />
+      <Bar dataKey="expense" name="Ausgaben" fill="var(--dash-expense-accent)" fillOpacity={0.75} maxBarSize={28} radius={[3, 3, 0, 0]} isAnimationActive={false} />
     </BarChart>
   </ResponsiveContainer>;
 }
@@ -56,7 +56,7 @@ export function IncomeExpenseChart({ data }: { data: Data["trend"] }) {
     <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => currency(v)} labelFormatter={monthTick} />
     <Legend content={() => <div className="mt-3 flex justify-center gap-5 text-xs"><span className="dash-income">● Einnahmen</span><span className="dash-expense">● Ausgaben</span></div>} />
     {(["income", "expense"] as const).map((type) => <Area key={type} type="linear" dataKey={type} fill={`url(#${type}-${id})`} stroke="none" legendType="none" tooltipType="none" isAnimationActive={false} />)}
-    <Line type="linear" dataKey="income" name="Einnahmen" stroke="var(--dash-income)" strokeWidth={2.5} dot={{ r: 3, strokeWidth: 2 }} isAnimationActive={false} />
-    <Line type="linear" dataKey="expense" name="Ausgaben" stroke="var(--dash-expense)" strokeWidth={2.5} strokeDasharray="6 3" dot={{ r: 3, strokeWidth: 2 }} isAnimationActive={false} />
+    <Line type="monotone" dataKey="income" name="Einnahmen" stroke="var(--dash-income-accent)" strokeWidth={2.5} dot={{ r: 3, strokeWidth: 2 }} isAnimationActive={false} />
+    <Line type="monotone" dataKey="expense" name="Ausgaben" stroke="var(--dash-expense-accent)" strokeWidth={2.5} dot={{ r: 3, strokeWidth: 2 }} isAnimationActive={false} />
   </ComposedChart></ResponsiveContainer>;
 }
