@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/rechnungen")({
     return (
     <AppShell>
       <div className="space-y-6">
-        <PageHeader title="Angebote & Rechnungen" description="Rechnungen schreiben, versenden und Zahlungen erfassen." />
+        <PageHeader title="Rechnungen" description="Rechnungen schreiben, versenden und Zahlungen erfassen." />
         <SectionTabs tabs={[{ to: "/rechnungen", label: "Rechnungen" }, { to: "/angebote", label: "Angebote" }]} />
         <OrgGate>{(ctx) => <DocumentsView kind="invoice" ctx={ctx} startNew={neu === "1"} />}</OrgGate>
       </div>

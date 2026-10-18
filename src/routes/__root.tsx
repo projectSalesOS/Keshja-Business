@@ -80,17 +80,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "KESHJA – KI-Finanzassistent" },
+      { title: "KESHJA Business – Deine Geschäftsfinanzen" },
       {
         name: "description",
         content:
-          "KESHJA ist das KI-gestützte Haushaltsbuch: Kassenbons fotografieren, automatisch kategorisieren und Ausgaben auswerten.",
+          "Geschäftsfinanzen, Rechnungen, Angebote und Belege für dein Unternehmen mit KESHJA Business verwalten.",
       },
       { name: "author", content: "KESHJA" },
-      { property: "og:title", content: "KESHJA – KI-Finanzassistent" },
+      { property: "og:title", content: "KESHJA Business – Deine Geschäftsfinanzen" },
       {
         property: "og:description",
-        content: "Kassenbons fotografieren, KI kategorisiert, Ausgaben im Blick.",
+        content: "Geschäftsfinanzen, Rechnungen und Belege übersichtlich verwalten.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -117,7 +117,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="de">
       <head>
         <HeadContent />
       </head>

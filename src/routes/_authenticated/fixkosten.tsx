@@ -193,7 +193,7 @@ function RecurringForm({
         <Field label="Beschreibung">
           <input className={inputClass} value={description} onChange={(e) => setDescription(e.target.value)} />
         </Field>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Betrag (€) *">
             <input className={inputClass} inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0,00" />
           </Field>
@@ -212,7 +212,7 @@ function RecurringForm({
             ))}
           </select>
         </Field>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Startdatum (erste Fälligkeit) *">
             <input type="date" className={inputClass} value={startDate} onChange={(e) => setStartDate(e.target.value)} />
           </Field>

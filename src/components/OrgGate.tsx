@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import { Building2, Loader2 } from "lucide-react";
+import { Building2, Loader2, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { ReactNode } from "react";
 import { useOrganization, type OrgRole } from "@/hooks/useOrganization";
 
@@ -76,19 +77,22 @@ export function Modal({
     >
       <div
         role="dialog"
+        aria-modal="true"
         aria-label={title}
-        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-3xl border border-border bg-card p-6 shadow-elevated sm:rounded-3xl"
+        className="max-h-[90dvh] w-full max-w-lg overflow-y-auto overscroll-contain rounded-t-2xl border border-border bg-card p-5 shadow-elevated sm:rounded-xl sm:p-7"
       >
         <div className="mb-4 flex items-center justify-between gap-4">
           <h2 className="text-lg font-semibold">{title}</h2>
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             type="button"
             onClick={onClose}
             aria-label="Schließen"
             className="rounded-lg px-2 py-1 text-muted-foreground hover:bg-accent"
           >
-            ✕
-          </button>
+            <X className="h-5 w-5" />
+          </Button>
         </div>
         {children}
       </div>

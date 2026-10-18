@@ -286,11 +286,11 @@ function CustomerForm({
         <Field label="Straße und Hausnummer">
           <input className={inputClass} value={v.street} onChange={set("street")} />
         </Field>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid gap-3 sm:grid-cols-3">
           <Field label="PLZ">
             <input className={inputClass} value={v.postal_code} onChange={set("postal_code")} />
           </Field>
-          <div className="col-span-2">
+          <div className="sm:col-span-2">
             <Field label="Ort">
               <input className={inputClass} value={v.city} onChange={set("city")} />
             </Field>

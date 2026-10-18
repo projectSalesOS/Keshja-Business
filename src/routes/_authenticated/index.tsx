@@ -71,11 +71,11 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
   if (d.error) return <p className="text-sm text-destructive">Daten konnten nicht geladen werden: {d.error.message}</p>;
 
   const recent = d.transactions.slice(0, 6);
-  const quick = "glass-tile glass-tint-default flex flex-col items-center gap-2 rounded-2xl p-4 text-center text-xs font-medium transition-transform duration-200 hover:-translate-y-0.5";
-  const quickIcon = "quick-icon flex h-10 w-10 items-center justify-center rounded-xl";
+  const quick = "quick-action glass-tile glass-tint-default grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-xl p-4 text-left text-sm font-medium transition-transform duration-200 hover:-translate-y-0.5";
+  const quickIcon = "quick-icon flex h-10 w-10 shrink-0 items-center justify-center rounded-lg";
 
   return (
-    <div className="space-y-5">
+    <div className="dashboard-view space-y-6 sm:space-y-8">
       <PageHeader title="Dashboard" description={greeting} action={<VoiceBooking prominent onResult={setVoiceResult} />} />
       <PeriodPicker preset={preset} custom={custom} today={today} onChange={(p, c) => (setPreset(p), setCustom(c))} />
       <p className="-mt-2 text-xs text-muted-foreground">
@@ -114,18 +114,18 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
         </Link>
       </div>
 
-      <section aria-label="Einnahmen und Ausgaben der letzten sechs Monate" className="space-y-3">
-        <h2 className="text-sm font-semibold">Einnahmen & Ausgaben · letzte sechs Monate</h2>
-        <div className="h-64 w-full min-w-0">
+      <section aria-label="Einnahmen und Ausgaben der letzten sechs Monate" className="space-y-5 border-t border-border pt-6">
+        <div><h2 className="text-base font-semibold">Einnahmen & Ausgaben</h2><p className="mt-1 text-xs text-muted-foreground">Letzte sechs Monate</p></div>
+        <div className="h-64 w-full min-w-0 sm:h-72">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={series} margin={{ top: 8, right: 12, bottom: 8, left: 0 }} accessibilityLayer>
               <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="month" tickFormatter={(v: string) => new Date(`${v}-01T12:00:00Z`).toLocaleDateString("de-DE", { month: "short" })} tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />
               <YAxis width={54} tickFormatter={(v: number) => v.toLocaleString("de-DE", { notation: "compact" })} tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />
               <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => currency(v)} labelFormatter={(v: string) => new Date(`${v}-01T12:00:00Z`).toLocaleDateString("de-DE", { month: "long", year: "numeric" })} />
-              <Legend />
-              <Line type="linear" dataKey="income" name="Einnahmen" stroke="var(--finance-income)" strokeWidth={2} dot={{ r: 3 }} isAnimationActive={false} />
-              <Line type="linear" dataKey="expense" name="Ausgaben" stroke="var(--finance-expense)" strokeWidth={2} dot={{ r: 3 }} isAnimationActive={false} />
+              <Legend iconType="circle" iconSize={7} wrapperStyle={{ fontSize: 12, paddingTop: 16 }} />
+              <Line type="linear" dataKey="income" name="Einnahmen" stroke="var(--finance-income)" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} isAnimationActive={false} />
+              <Line type="linear" dataKey="expense" name="Ausgaben" stroke="var(--finance-expense)" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} isAnimationActive={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>

@@ -92,15 +92,15 @@
   --profit-negative: oklch(0.43 0.10 22);
   --profit-neutral: oklch(0.48 0.065 300);
   --radius: 0.75rem;
-  --background: oklch(0.982 0.005 305);
-  --foreground: oklch(0.26 0.024 300);
+  --background: oklch(0.982 0.002 280);
+  --foreground: oklch(0.25 0.014 280);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.235 0.035 305);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.235 0.035 305);
-  --primary: oklch(0.45 0.255 292);
-  --primary-mid: oklch(0.48 0.235 321);
-  --primary-end: oklch(0.52 0.215 350);
+  --primary: oklch(0.46 0.21 295);
+  --primary-mid: oklch(0.48 0.20 315);
+  --primary-end: oklch(0.50 0.19 337);
   --primary-foreground: oklch(1 0 0);
   --gradient-primary: linear-gradient(115deg, var(--primary), var(--primary-mid) 52%, var(--primary-end));
   --kpi-violet: oklch(0.82 0.065 300);
@@ -114,23 +114,23 @@
   --finance-balance: var(--profit-positive);
   --secondary: oklch(0.958 0.016 300);
   --secondary-foreground: oklch(0.36 0.14 292);
-  --muted: oklch(0.963 0.009 305);
-  --muted-foreground: oklch(0.49 0.02 305);
+  --muted: oklch(0.963 0.003 280);
+  --muted-foreground: oklch(0.46 0.013 280);
   --accent: oklch(0.95 0.021 320);
   --accent-foreground: oklch(0.40 0.18 310);
   --destructive: oklch(0.567 0.183 24);
   --destructive-foreground: oklch(0.99 0.005 190);
-  --border: oklch(0.917 0.012 305);
-  --input: oklch(0.86 0.017 305);
+  --border: oklch(0.918 0.005 280);
+  --input: oklch(0.855 0.008 280);
   --surface-glass: color-mix(in oklab, var(--card) 88%, transparent);
   --surface-highlight: oklch(1 0 0 / 0.75);
   --surface-reflection: oklch(1 0 0 / 0.52);
-  --surface-contour: color-mix(in oklab, var(--border) 65%, var(--card));
+  --surface-contour: color-mix(in oklab, var(--border) 85%, var(--card));
   --surface-pastel: oklch(0.94 0.027 300);
   --surface-rose: oklch(0.95 0.025 350);
   --surface-mint: oklch(0.93 0.035 158);
   --surface-coral: oklch(0.94 0.038 22);
-  --gradient-surface: linear-gradient(135deg, color-mix(in oklab, var(--surface-pastel) 28%, transparent), transparent 52%, color-mix(in oklab, var(--surface-rose) 18%, transparent));
+  --gradient-surface: linear-gradient(165deg, var(--surface-reflection), transparent 60%);
   --gradient-icon: linear-gradient(135deg, var(--surface-pastel), var(--surface-rose));
   --shadow-control: 0 2px 5px oklch(0.3 0.03 300 / 0.04), inset 0 1px 0 var(--surface-reflection);
   --shadow-brand: 0 4px 12px -5px color-mix(in oklab, var(--primary) 35%, transparent), inset 0 1px 0 oklch(1 0 0 / 0.16);
@@ -161,9 +161,9 @@
   --cat-tabak: #464f63;
   --cat-dienstleistungen: #b45309;
   --cat-sonstiges: #7a8794;
-  --shadow-soft: 0 2px 4px oklch(0.3 0.03 300 / 0.025), 0 10px 24px -10px oklch(0.3 0.03 300 / 0.09), inset 0 1px 0 var(--surface-highlight);
+  --shadow-soft: 0 2px 3px oklch(0.3 0.015 280 / 0.02), 0 8px 22px -12px oklch(0.3 0.015 280 / 0.08), inset 0 1px 0 var(--surface-highlight);
   --shadow-strong: 0 24px 64px -18px oklch(0.25 0.04 300 / 0.22), inset 0 1px 0 var(--surface-highlight);
-  --sidebar: oklch(0.995 0.003 315);
+  --sidebar: oklch(0.996 0.001 280);
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: var(--primary-foreground);
@@ -174,6 +174,10 @@
 }
 
 .dark {
+  color-scheme: dark;
+  --brand-on-light: oklch(0.22 0.035 300);
+  --brand-selection: oklch(0.29 0.035 305);
+  --brand-selection-text: oklch(0.85 0.1 300);
   --dashboard-income: oklch(0.80 0.075 158);
   --dashboard-expense: oklch(0.80 0.085 22);
   --profit-positive: oklch(0.82 0.085 300);
@@ -253,7 +257,7 @@
 @layer components {
   .kpi-contour {
     border-radius: inherit;
-    clip-path: inset(0 calc(100% - 6px) 0 0);
+    clip-path: inset(0 calc(100% - 3px) 0 0);
   }
   /* Existing primary controls share the gradient without altering their structure. */
   :where(button, a, [role="button"])[class~="bg-primary"][class~="text-primary-foreground"],
@@ -268,7 +272,7 @@
   .glass-tile {
     background-color: var(--surface-glass);
     background-image:
-      linear-gradient(135deg, color-mix(in oklab, var(--tile-tint, var(--surface-pastel)) 44%, transparent), transparent 65%),
+      linear-gradient(135deg, color-mix(in oklab, var(--tile-tint, var(--surface-pastel)) 28%, transparent), transparent 75%),
       linear-gradient(165deg, var(--surface-reflection), transparent 42%);
     backdrop-filter: blur(14px) saturate(110%);
     border: 1px solid var(--surface-contour);
@@ -298,14 +302,14 @@
 /* Shared presentation for existing business views, including portalled dialogs.
  * Geometry, display rules and responsive grids remain owned by the components. */
 :where(.business-ui, [role="dialog"], [role="alertdialog"]) :where(.rounded-2xl) {
-  border-radius: 1rem;
+  border-radius: 0.75rem;
 }
 :where(.business-ui, [role="dialog"], [role="alertdialog"]) :where(.rounded-xl) {
-  border-radius: 0.75rem;
+  border-radius: 0.625rem;
 }
 .business-ui :where([class~="bg-card"][class~="border"], [class~="bg-card"][class~="shadow-card"]) {
   background-color: var(--surface-glass);
-  background-image: var(--gradient-surface);
+  background-image: none;
   border-color: var(--surface-contour);
   box-shadow: var(--shadow-soft);
 }
@@ -317,8 +321,10 @@
   box-shadow: var(--shadow-strong);
 }
 :where(.business-ui, [role="dialog"], [role="alertdialog"]) :where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea)[class~="border"] {
-  border-radius: 0.75rem;
-  background-color: color-mix(in oklab, var(--card) 94%, var(--surface-pastel));
+  min-height: 44px;
+  max-width: 100%;
+  border-radius: 0.5rem;
+  background-color: var(--card);
   box-shadow: inset 0 1px 2px color-mix(in oklab, var(--foreground) 3%, transparent);
   transition: border-color 180ms ease, box-shadow 180ms ease;
 }
@@ -364,6 +370,51 @@
     border-color: color-mix(in oklab, var(--primary) 24%, var(--border));
     box-shadow: var(--shadow-soft), 0 6px 16px -12px var(--primary);
   }
+}
+
+/* Navigation and density: quiet branded selection, generous touch targets. */
+.app-main { max-width: 1536px; }
+.app-main > div { min-width: 0; }
+.business-ui { letter-spacing: 0; }
+.business-ui :where(button, [role="button"]) { min-height: 44px; }
+.business-ui :where(button[aria-label="Bearbeiten"], button[aria-label="Löschen"]) { min-width: 44px; }
+.business-ui :where(a, button) { -webkit-tap-highlight-color: transparent; }
+.app-nav .brand-selected,
+.app-nav .brand-selected:hover {
+  background-color: var(--secondary);
+  background-image: none;
+  color: var(--primary);
+  box-shadow: none;
+}
+.app-sidebar .brand-selected { border-left: 3px solid var(--primary); padding-left: 9px; }
+.dark :where(.business-ui, [role="dialog"]) .text-muted-foreground { color: var(--muted-foreground); }
+.dark :where(button, a)[class~="bg-primary"][class~="text-primary-foreground"] { color: var(--brand-on-light); }
+.dark .period-picker button[aria-pressed="true"],
+.dark .app-nav .brand-selected { background-color: var(--brand-selection); color: var(--brand-selection-text); }
+.mobile-nav { scrollbar-width: thin; scrollbar-color: var(--input) transparent; scroll-snap-type: x proximity; }
+.mobile-nav a { scroll-snap-align: center; }
+.section-tabs a { min-height: 48px; }
+.business-ui .quick-action { background-image: var(--gradient-surface); min-height: 80px; }
+.business-ui .quick-icon { box-shadow: none; }
+.business-ui :where(thead th) { font-weight: 500; font-size: 12px; padding-top: 14px; padding-bottom: 14px; }
+.business-ui :where(tbody td) { padding-top: 16px; padding-bottom: 16px; }
+.business-ui :where(table) { width: 100%; font-size: 14px; }
+:where(.business-ui, [role="dialog"]) :where(form.space-y-3) > :not(:last-child) { margin-bottom: 16px; }
+:where([role="dialog"]) :where(button) { min-height: 44px; }
+.business-ui .kpi-stat { min-height: 132px; }
+.business-ui .kpi-stat .kpi-value { font-family: var(--font-sans); }
+@media (max-width: 639px) {
+  .business-ui .kpi-stat { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; column-gap: 12px; min-height: 76px; padding: 16px 20px; }
+  .business-ui .kpi-stat .kpi-value { margin-top: 0; font-size: 22px; }
+  .business-ui .kpi-stat > p:not(.kpi-value) { grid-column: 1 / -1; }
+  .business-ui .quick-action { grid-template-columns: minmax(0,1fr); gap: 10px; padding: 16px; min-height: 112px; }
+  .business-ui .quick-action svg { width: 20px; height: 20px; }
+  .business-ui .period-picker button { padding-inline: 10px; }
+  .business-ui :where(input,select,textarea):not([type="checkbox"]):not([type="radio"]) { font-size: 16px; }
+}
+@media (max-width: 359px) {
+  .business-ui .kpi-stat .kpi-value { font-size: 20px; }
+  .business-ui .quick-action { font-size: 13px; }
 }
 @media (prefers-reduced-motion: reduce) {
   :where(.business-ui, [role="dialog"], [role="alertdialog"]) *,

@@ -11,7 +11,7 @@
 
 ## Architecture rules
 - Brand gradients are defined centrally in CSS tokens and applied to existing primary controls and selected navigation; KPI accent props are presentation-only so calculations and page structure remain unchanged.
-- Shared business surface and control styling is scoped through the AppShell business-ui class and dialog roles in src/styles.css; reuse existing component geometry so visual refinements cannot change navigation or business behavior.
+- Shared business presentation is scoped through AppShell business-ui and dialog roles in src/styles.css; responsive navigation retains every existing destination, and reusable Stat cards and controls keep visual changes separate from business calculations and mutations.
 - Tenant isolation: every business table carries organization_id and RLS uses private.is_org_member / private.is_org_admin (security definer) — avoids policy recursion.
 - Org creation/joining goes through SECURITY DEFINER RPCs (create_organization, join_organization) because membership rows cannot be inserted directly by clients.
 

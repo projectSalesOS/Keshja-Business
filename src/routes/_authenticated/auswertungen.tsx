@@ -130,9 +130,9 @@ function ReportsView({ orgId }: { orgId: string }) {
       </p>
 
       <div className="grid gap-3 sm:grid-cols-3">
-        <Stat accent="violet" label="Einnahmen" value={currency(r.totals.income)} badge="Ist" />
-        <Stat accent="pink" label="Ausgaben" value={currency(r.totals.expense)} badge="Ist" />
-        <Stat accent="turquoise" label="Differenz" value={currency(r.totals.balance)} tone={!r.totals.count ? "default" : r.totals.balance >= 0 ? "good" : "bad"} hint={`${r.totals.count} Buchungen`} />
+        <Stat matchAccent valueColor="income" label="Einnahmen" value={currency(r.totals.income)} badge="Ist" />
+        <Stat matchAccent valueColor="expense" label="Ausgaben" value={currency(r.totals.expense)} badge="Ist" />
+        <Stat matchAccent valueColor={r.totals.balance < 0 ? "profitNegative" : "balance"} label="Differenz" value={currency(r.totals.balance)} tone={!r.totals.count ? "default" : r.totals.balance >= 0 ? "good" : "bad"} hint={`${r.totals.count} Buchungen`} />
       </div>
 
       <Panel title="Export">

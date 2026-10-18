@@ -10,13 +10,13 @@ export const Route = createFileRoute("/_authenticated/debug/ocr")({
   component: OcrDebugPage,
   head: () => ({
     meta: [
-      { title: "OCR-Vergleich | Cashya" },
+      { title: "OCR-Vergleich – KESHJA Business" },
       {
         name: "description",
         content:
           "Internes Werkzeug: dasselbe Bonfoto mehrfach analysieren und die Ergebnisse der Läufe vergleichen.",
       },
-      { property: "og:title", content: "OCR-Vergleich | Cashya" },
+      { property: "og:title", content: "OCR-Vergleich – KESHJA Business" },
       {
         property: "og:description",
         content: "Wiederholungsläufe derselben Bonaufnahme direkt gegenüberstellen.",
