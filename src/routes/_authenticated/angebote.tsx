@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/angebote")({
     return (
     <AppShell>
       <div className="space-y-6">
-        <PageHeader title="Angebote & Rechnungen" description="Angebote erstellen, versenden und in Rechnungen umwandeln." />
+        <PageHeader title="Angebote" description="Angebote erstellen, versenden und in Rechnungen umwandeln." />
         <SectionTabs tabs={[{ to: "/rechnungen", label: "Rechnungen" }, { to: "/angebote", label: "Angebote" }]} />
         <OrgGate>{(ctx) => <DocumentsView kind="quote" ctx={ctx} startNew={neu === "1"} />}</OrgGate>
       </div>
