@@ -165,9 +165,9 @@
   --cat-tabak: #464f63;
   --cat-dienstleistungen: #b45309;
   --cat-sonstiges: #7a8794;
-  --shadow-soft: 0 2px 3px oklch(0.3 0.015 280 / 0.02), 0 8px 22px -12px oklch(0.3 0.015 280 / 0.08), inset 0 1px 0 var(--surface-highlight);
-  --shadow-strong: 0 24px 64px -18px oklch(0.25 0.04 300 / 0.22), inset 0 1px 0 var(--surface-highlight);
-  --sidebar: oklch(0.996 0.001 280);
+  --shadow-soft: 0 1px 2px oklch(0.45 0.06 295 / 0.04), 0 12px 32px -16px oklch(0.5 0.10 295 / 0.14), inset 0 1px 0 var(--surface-highlight);
+  --shadow-strong: 0 24px 64px -18px oklch(0.45 0.10 295 / 0.28), inset 0 1px 0 var(--surface-highlight);
+  --sidebar: oklch(0.985 0.008 295);
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: var(--primary-foreground);
@@ -440,6 +440,11 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+  }
+
+  body:not(:has(.dark)) {
+    background-image: var(--gradient-page, none);
+    background-attachment: fixed;
   }
 
   h1,
