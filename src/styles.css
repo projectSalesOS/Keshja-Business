@@ -463,9 +463,9 @@
 .business-ui:has(.dashboard-view) {
   --dash-background: oklch(0.982 0.003 285);
   --dash-surface: oklch(0.997 0.002 285);
-  --dash-brand: oklch(0.49 0.16 295);
-  --dash-income: oklch(0.43 0.075 191);
-  --dash-expense: oklch(0.49 0.105 355);
+  --dash-brand: oklch(0.49 0.21 295);
+  --dash-income: oklch(0.46 0.115 177);
+  --dash-expense: oklch(0.51 0.185 355);
   --dash-category-muted: oklch(0.76 0.023 290);
   --dash-line: oklch(0.93 0.008 285);
   --dash-contour: oklch(0.935 0.011 285);
@@ -492,7 +492,10 @@
   padding: 24px;
 }
 .dashboard-view .dash-metric { font-family: var(--font-sans); font-size: 32px; font-weight: 650; line-height: 1.25; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-.dashboard-view .dash-profit { font-size: 40px; }
+.dashboard-view .dash-kpi { display: flex; flex-direction: column; justify-content: center; gap: 8px; padding: 18px 20px; }
+.dashboard-view .dash-profit-card { background-image: linear-gradient(115deg, color-mix(in oklab, var(--dash-brand) 9%, var(--dash-surface)), color-mix(in oklab, var(--dash-expense) 7%, var(--dash-surface))); }
+.dashboard-view .dash-income-card { background-image: linear-gradient(135deg, color-mix(in oklab, var(--dash-income) 6%, var(--dash-surface)), var(--dash-surface)); }
+.dashboard-view .dash-expense-card { background-image: linear-gradient(135deg, color-mix(in oklab, var(--dash-expense) 6%, var(--dash-surface)), var(--dash-surface)); }
 .dashboard-view .dash-income { color: var(--dash-income); }
 .dashboard-view .dash-expense { color: var(--dash-expense); }
 .dashboard-view .dash-brand { color: var(--dash-brand); }
@@ -506,6 +509,6 @@
 @media (max-width: 639px) {
   .dashboard-view .dash-card { padding: 18px; }
   .dashboard-view .dash-metric { font-size: 28px; }
-  .dashboard-view .dash-profit { font-size: 36px; }
+  .dashboard-view .dash-kpi { padding: 16px 18px; gap: 6px; }
   .dashboard-view .dash-action { padding: 14px 8px; font-size: 12px; }
 }

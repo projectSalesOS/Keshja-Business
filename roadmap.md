@@ -1,5 +1,7 @@
 # Keshja Business – Roadmap
 
+- [ ] Dashboard: kompakte Kennzahlen ohne Minidiagramme, separates gruppiertes Sechsmonats-Balkendiagramm mit derselben gefilterten Datenreihe wie der Linienverlauf, kräftigere bestehende Marken-/Kennzahlenfarben; Daten und mobile Darstellung prüfen.
+
 - [x] Dashboard nach Referenz: ruhige Glasflächen, Gewinnverlauf, Einnahmen-/Ausgaben-Minigrafiken, reale Ausgabenkategorien, synchronisierte Zeitraumfilter und drei bestehende Schnellaktionen. 36 Tests bestanden; echte Kontodaten für Monat/Vormonat/6 Monate/leeren Zeitraum abgeglichen, drei Aktionen geöffnet, 320/411/1280 px ohne Überbreite, simulierte Spracherkennung mit Bestätigung gespeichert/zurückgelesen und Testbuchung entfernt; Build OK, keine Laufzeitfehler. Sprachgesteuerte Belegerstellung existiert nicht: bestehende Spracheingabe erstellt bestätigte Buchungen; Belege bleiben foto-/uploadbasiert. Echte Mikrofonaufnahme weiter geräteabhängig offen.
 
 - [x] Premium-Fintech-UI: neutrales Designsystem, gezielte Markenverläufe, lesbare horizontal scrollbare Mobilnavigation, kompakte Kennzahlen, gemeinsame Formulare und semantische Berichtskarten. Zehn angemeldete Seiten bei 320/411/1280 px und fünf Erfassungsdialoge ohne Überbreite geprüft; vier Schnellaktionen, Anmeldeseiten und dunkle Darstellung geprüft, keine Laufzeitfehler, 78 bestehende Tests bestanden. Keine Daten oder Geschäftslogik geändert; reale Mikrofonaufnahme, E-Mail und PDF-Inhalte nicht erneut getestet.
