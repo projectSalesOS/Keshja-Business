@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Mic, Square } from "lucide-react";
+import { ChevronRight, Mic, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { parseVoiceBooking } from "@/lib/voice-booking";
 
@@ -12,7 +12,7 @@ type Recognition = {
 };
 type SpeechWindow = Window & { SpeechRecognition?: new () => Recognition; webkitSpeechRecognition?: new () => Recognition };
 
-export function VoiceBooking({ onResult, prominent = false }: { onResult: (result: ReturnType<typeof parseVoiceBooking>) => void; prominent?: boolean }) {
+export function VoiceBooking({ onResult, prominent = false, dashboard = false }: { onResult: (result: ReturnType<typeof parseVoiceBooking>) => void; prominent?: boolean; dashboard?: boolean }) {
   const recognition = useRef<Recognition | null>(null);
   const [supported, setSupported] = useState(false);
   const [listening, setListening] = useState(false);
@@ -59,9 +59,9 @@ export function VoiceBooking({ onResult, prominent = false }: { onResult: (resul
     try { r.start(); setListening(true); } catch { setError("Mikrofon konnte nicht gestartet werden."); }
   }
   return (
-    <div className={`space-y-2 ${prominent ? "w-full sm:w-64" : ""}`}>
-      <Button type="button" variant={prominent ? "default" : "outline"} className={prominent ? "min-h-14 w-full whitespace-normal rounded-xl px-4 text-base [&_svg]:size-6" : ""} disabled={!supported} onClick={() => listening ? recognition.current?.stop() : start()} aria-label={listening ? "Sprachaufnahme stoppen" : prominent ? "Buchung erfassen" : "Sprachbuchung starten"} aria-pressed={listening}>
-        {listening ? <Square /> : <Mic />} {listening ? "Aufnahme stoppen" : prominent ? "Buchung erfassen" : "Sprachbuchung"}
+    <div className={`space-y-2 ${dashboard ? "dash-voice-card" : prominent ? "w-full sm:w-64" : ""}`}>
+      <Button type="button" variant={dashboard ? "ghost" : prominent ? "default" : "outline"} className={dashboard ? "dash-voice-button" : prominent ? "min-h-14 w-full whitespace-normal rounded-xl px-4 text-base [&_svg]:size-6" : ""} disabled={!supported} onClick={() => listening ? recognition.current?.stop() : start()} aria-label={listening ? "Sprachaufnahme stoppen" : dashboard ? "Buchung per Sprache erfassen" : prominent ? "Buchung erfassen" : "Sprachbuchung starten"} aria-pressed={listening}>
+        {dashboard ? <><span className="dash-microphone">{listening ? <Square /> : <Mic />}</span><span className="dash-voice-copy"><strong>{listening ? "Aufnahme stoppen" : "Buchung per Sprache erfassen"}</strong><span>Buchungsdaten erkennen und prüfen</span></span><span className={`dash-waveform ${listening ? "is-listening" : ""}`} aria-hidden="true">{[0,1,2,3,4,5,6].map(i => <i key={i} />)}</span><span className="dash-voice-arrow"><ChevronRight /></span></> : <>{listening ? <Square /> : <Mic />} {listening ? "Aufnahme stoppen" : prominent ? "Buchung erfassen" : "Sprachbuchung"}</>}
       </Button>
       {!supported && <p className="text-xs text-muted-foreground">Dieser Browser unterstützt keine Spracherkennung.</p>}
       {supported && <p className="text-xs text-muted-foreground" role="status">{listening ? "Mikrofon aktiv – bitte Buchung sprechen." : "Spracherkennung durch deinen Browser; Audio kann an dessen Anbieter übertragen werden."}</p>}

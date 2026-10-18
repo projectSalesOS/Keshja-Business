@@ -1,6 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { LayoutDashboard, Repeat, Users, Wallet, Settings, LogOut, FileText, FileSignature } from "lucide-react";
+import { LayoutDashboard, Repeat, Users, Wallet, Settings, LogOut, FileText, FileSignature, Ellipsis } from "lucide-react";
 import type { ReactNode } from "react";
 import logoMark from "@/assets/keshja-business-logo.png.asset.json";
 import { supabase } from "@/integrations/supabase/client";
@@ -98,7 +98,7 @@ export function useSignOut() {
   };
 }
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({ children, dashboard = false }: { children: ReactNode; dashboard?: boolean }) {
   const { data: profile } = useProfile();
   const { data: org } = useOrganization();
   const signOut = useSignOut();
@@ -174,7 +174,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </main>
 
       <nav aria-label="Mobile Hauptnavigation" className="mobile-nav app-nav fixed inset-x-0 bottom-0 z-30 flex overflow-x-auto border-t border-border bg-card/95 px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur-xl lg:hidden">
-        {NAV.map((item) => {
+        {(dashboard ? NAV.slice(0, 4) : NAV).map((item) => {
           const { to, short, icon: Icon } = item;
           return (
           <Link
@@ -191,6 +191,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </Link>
           );
         })}
+        {dashboard && <details className="dash-more"><summary aria-label="Mehr" className="dash-more-trigger"><Ellipsis size={22} /><span>Mehr</span></summary><div className="dash-more-menu">{NAV.slice(4).map(item => <Link key={item.to} to={item.to}><item.icon size={18} />{item.label}</Link>)}<Button variant="ghost" onClick={signOut}><LogOut size={18} />Abmelden</Button></div></details>}
       </nav>
     </div>
   );
