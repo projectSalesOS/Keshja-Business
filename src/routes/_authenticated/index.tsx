@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowDownLeft, ArrowUpRight, Camera, ChartNoAxesColumnIncreasing, FileText, Loader2, PieChart as PieIcon, Plus } from "lucide-react";
+import { Camera, ChartNoAxesColumnIncreasing, FileText, Loader2, PieChart as PieIcon, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { OrgGate } from "@/components/OrgGate";
