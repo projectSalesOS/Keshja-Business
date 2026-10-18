@@ -94,9 +94,9 @@ export function OrganizationCard() {
 
   return (
     <div className="space-y-6 rounded-2xl border border-border bg-card p-5 shadow-card lg:col-span-2">
-      <div className="flex items-center justify-between">
+      <div className="grid grid-cols-1 items-center gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
         <Header />
-        <span className="rounded-full bg-accent px-3 py-1 text-xs text-accent-foreground">
+        <span className="justify-self-start rounded-full bg-accent px-3 py-1 text-xs text-accent-foreground">
           Deine Rolle: {data.role ? ROLE_LABEL[data.role] : "–"}
         </span>
       </div>
