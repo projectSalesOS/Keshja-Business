@@ -442,9 +442,13 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  body:not(:has(.dark)) {
+  body {
     background-image: var(--gradient-page, none);
     background-attachment: fixed;
+  }
+
+  .dark body {
+    background-image: none;
   }
 
   h1,
