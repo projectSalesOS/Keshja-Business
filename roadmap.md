@@ -1,5 +1,7 @@
 # Keshja Business – Roadmap
 
+- [ ] Premium-Fintech-UI: globales Designsystem, Navigation, Dashboard und sämtliche Bereiche vereinheitlichen; reale angemeldete Ansichten, Formulare und mobile Darstellung prüfen, bestehende Tests ausführen.
+
 - [x] Globales Design vereinheitlicht: Soft-Pastell-Farben, dezente Glasflächen, gemeinsame Konturen und Kontrollzustände; neun Bereiche und drei Erfassungsdialoge bei 1280/411 px ohne Überbreite geprüft, Dunkelmodus kontrolliert, keine Laufzeitfehler, 42 bestehende Finanz-/Dokumenttests bestanden. Funktionen, Daten und Navigation unverändert.
 
 - [x] Etappe 1: Organisationen, Mitglieder, Rollen (Inhaber/Admin/Mitarbeiter), RLS, Unternehmensdaten in Einstellungen
