@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Camera, ChartNoAxesColumnIncreasing, FileText, Loader2, PieChart as PieIcon, Plus } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Bell, CalendarDays, Camera, ChartNoAxesColumnIncreasing, ChevronRight, FileText, Loader2, PieChart as PieIcon, Plus, TrendingUp } from "lucide-react";
 import { useMemo, useState } from "react";
-import { AppShell, PageHeader } from "@/components/AppShell";
+import { AppShell, Logo, PageHeader } from "@/components/AppShell";
 import { OrgGate } from "@/components/OrgGate";
 import { Empty, Panel, PeriodPicker } from "@/components/AnalyticsUi";
 import { categoryColors, ExpenseRing, IncomeExpenseChart, MonthlyBars } from "@/components/DashboardCharts";
@@ -29,7 +29,7 @@ export const Route = createFileRoute("/_authenticated/")({
 
 function DashboardPage() {
   const { data: profile } = useProfile();
-  return <AppShell><OrgGate>{({ orgId }) => <DashboardView orgId={orgId} greeting={profile ? `Hallo, ${profile.displayName}!` : "Hallo!"} />}</OrgGate></AppShell>;
+  return <AppShell dashboard><OrgGate>{({ orgId }) => <DashboardView orgId={orgId} greeting={profile ? `Hallo, ${profile.displayName}!` : "Hallo!"} />}</OrgGate></AppShell>;
 }
 function sixMonths(today: string): Range {
   const end = rangeFor("monat", today).to;
@@ -49,9 +49,11 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
   const recent = d.transactions.filter((t) => t.booking_date >= range.from && t.booking_date <= range.to).slice(0, 6);
   if (d.isLoading) return <p className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Kennzahlen werden geladen …</p>;
   if (d.error) return <p className="text-sm text-destructive">Daten konnten nicht geladen werden: {d.error.message}</p>;
-  return <div className="dashboard-view space-y-5 sm:space-y-6">
-    <PageHeader title="Dashboard" description={greeting} action={<div className="dash-voice"><VoiceBooking prominent onResult={setVoiceResult} /></div>} />
-    <div className="space-y-3">
+  return <div className="dashboard-view space-y-4">
+    <header className="dash-topbar"><Logo /><div className="dash-top-controls"><Button variant="outline" size="icon" aria-label="Zeitraum auswählen" onClick={() => document.getElementById("dashboard-filters")?.scrollIntoView({ behavior: "smooth", block: "center" })}><CalendarDays size={20} /></Button><label className="dash-header-period"><span className="sr-only">Zeitraum im Kopfbereich</span><input type="month" value={range.to.slice(0, 7)} onChange={e => { if (!e.target.value) return; const from = `${e.target.value}-01`; setPreset("frei"); setCustom(rangeFor("monat", from)); }} /></label><details className="dash-notifications"><summary aria-label="Offene Rechnungen"><Bell size={20} />{outstanding.length > 0 && <span className="dash-notification-dot" />}</summary><div className="dash-notification-list"><strong>Offene Rechnungen</strong>{outstanding.length ? outstanding.slice(0, 5).map(r => <Link key={r.id} to="/rechnungen">{r.number} · {currency(r.open)}</Link>) : <p>Keine offenen Rechnungen.</p>}</div></details></div></header>
+    <PageHeader title="Dashboard" description={`Deine Geschäftszahlen im Überblick · ${greeting}`} />
+    <VoiceBooking dashboard onResult={setVoiceResult} />
+    <div id="dashboard-filters" className="dash-filters space-y-3">
       <div className="flex flex-wrap items-start gap-2">
         <PeriodPicker preset={preset} custom={custom} today={today} onChange={(p, c) => { setPreset(p); setCustom(c); }} />
         <Button variant="outline" onClick={() => { setPreset("frei"); setCustom(sixMonths(today)); }}>6 Monate</Button>
@@ -59,20 +61,21 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
       <p className="text-xs text-muted-foreground">{formatDate(range.from)} – {formatDate(range.to)} · bezahlte Buchungen</p>
     </div>
 
-    <div className="grid gap-3 md:grid-cols-3" aria-label="Kennzahlen">
+    <div className="dash-kpis grid grid-cols-2 gap-3" aria-label="Kennzahlen">
       <section aria-label="Gewinn und Verlust" className="dash-card dash-kpi dash-profit-card">
-        <h2 className="dash-title">Gewinn / Verlust</h2>
+        <span className="dash-icon dash-brand"><ChartNoAxesColumnIncreasing size={25} /></span><h2 className="dash-title">Gewinn / Verlust</h2>
         <p data-testid="dashboard-balance" className={`dash-metric ${m.totals.balance < 0 ? "dash-expense" : "dash-brand"}`}>{currency(m.totals.balance)}</p>
         <p className="text-xs text-muted-foreground">{m.totals.count} {m.totals.count === 1 ? "Buchung" : "Buchungen"} im Zeitraum</p>
       </section>
       {(["income", "expense"] as const).map((type) => <section key={type} className={`dash-card dash-kpi dash-${type}-card`} aria-label={type === "income" ? "Einnahmen" : "Ausgaben"}>
+        <span className={`dash-icon dash-${type}`}>{type === "income" ? <ArrowUpRight size={25} /> : <ArrowDownRight size={25} />}</span>
         <h2 className="dash-title">{type === "income" ? "Einnahmen" : "Ausgaben"}</h2>
         <p data-testid={`dashboard-${type}`} className={`dash-metric dash-${type}`}>{currency(m.totals[type])}</p>
         <p className="text-xs text-muted-foreground">{type === "income" ? m.incomeCount : m.expenseCount} Buchungen</p>
       </section>)}
     </div>
 
-    <section className="dash-card" aria-label="Ausgabenübersicht">
+    <section className="dash-card dash-secondary-section" aria-label="Ausgabenübersicht">
       <div className="mb-5 flex items-center gap-3"><span className="dash-icon dash-brand"><PieIcon size={21} /></span><div><h2 className="dash-title">Ausgabenübersicht</h2><p className="mt-1 text-xs text-muted-foreground">Kategorien im gewählten Zeitraum</p></div></div>
       {m.categories.length > 0 ? <div className="grid items-center gap-6 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
         <div className="relative mx-auto h-52 w-52"><ExpenseRing data={m.categories} /><div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-10 text-center"><strong className="break-all text-xl tabular-nums">{currency(m.totals.expense)}</strong><span className="mt-1 text-[11px] text-muted-foreground">Gesamtausgaben</span></div></div>
@@ -85,22 +88,21 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
     </section>
 
     <section className="dash-card" aria-label="Einnahmen und Ausgaben der letzten sechs Monate">
-      <div className="mb-5 flex items-center gap-3"><span className="dash-icon dash-brand"><ChartNoAxesColumnIncreasing size={21} /></span><div><h2 className="dash-title">Einnahmen & Ausgaben</h2><p className="mt-1 text-xs text-muted-foreground">Sechs Monate bis {formatDate(range.to)} · Werte nur im gewählten Zeitraum</p></div></div>
-      <div className="h-56 min-w-0 sm:h-64"><IncomeExpenseChart data={m.trend} /></div>
-      <p className="mt-3 text-xs text-muted-foreground">Monate außerhalb der Auswahl bleiben ohne Werte. Für den vollständigen Verlauf: 6 Monate.</p>
+      <div className="dash-chart-heading"><span className="dash-icon dash-brand"><TrendingUp size={21} /></span><div><h2 className="dash-title">Einnahmen & Ausgaben</h2><p className="mt-1 text-xs text-muted-foreground">Sechs Monate bis {formatDate(range.to)}</p></div></div>
+      <div className="dash-line-chart min-w-0"><IncomeExpenseChart data={m.trend} /></div>
     </section>
 
     <section className="dash-card" aria-label="Monatliche Einnahmen und Ausgaben als Balken">
-      <div className="mb-5 flex items-center gap-3"><span className="dash-icon dash-brand"><ChartNoAxesColumnIncreasing size={21} /></span><div><h2 className="dash-title">Monatliche Einnahmen & Ausgaben</h2><p className="mt-1 text-xs text-muted-foreground">Sechs Monate bis {formatDate(range.to)}</p></div></div>
-      <div className="h-56 min-w-0 sm:h-64"><MonthlyBars data={m.trend} /></div>
+      <div className="dash-chart-heading"><span className="dash-icon dash-brand"><ChartNoAxesColumnIncreasing size={21} /></span><div><h2 className="dash-title">Monatliche Einnahmen & Ausgaben</h2><p className="mt-1 text-xs text-muted-foreground">Vergleich der letzten sechs Monate</p></div></div>
+      <div className="dash-bar-chart min-w-0"><MonthlyBars data={m.trend} /></div>
     </section>
 
     <div aria-label="Schnellaktionen" className="grid grid-cols-3 gap-3">
-      <Link to="/kassenbons" search={{ capture: "1" }} className="dash-card dash-action"><span className="dash-icon dash-brand"><Camera size={21} /></span>Beleg erfassen</Link>
-      <Link to="/finanzen" search={{ neu: "1" }} className="dash-card dash-action"><span className="dash-icon dash-brand"><Plus size={21} /></span>Buchung erfassen</Link>
-      <Link to="/rechnungen" search={{ neu: "1" }} className="dash-card dash-action"><span className="dash-icon dash-brand"><FileText size={21} /></span>Rechnung erstellen</Link>
+      <Link to="/kassenbons" search={{ capture: "1" }} className="dash-card dash-action"><span className="dash-icon dash-brand"><Camera size={21} /></span><span>Beleg erfassen<small>Foto oder Galerie</small></span><ChevronRight size={16} /></Link>
+      <Link to="/finanzen" search={{ neu: "1" }} className="dash-card dash-action"><span className="dash-icon dash-brand"><Plus size={21} /></span><span>Buchung erfassen<small>Einnahme oder Ausgabe</small></span><ChevronRight size={16} /></Link>
+      <Link to="/rechnungen" search={{ neu: "1" }} className="dash-card dash-action"><span className="dash-icon dash-brand"><FileText size={21} /></span><span>Rechnung erstellen<small>Schnell & einfach</small></span><ChevronRight size={16} /></Link>
     </div>
-    <div className="grid gap-6 lg:grid-cols-2">
+    <div className="dash-secondary-section grid gap-6 lg:grid-cols-2">
       <Panel title="Letzte Buchungen" action={<Link to="/finanzen" className="text-xs font-medium text-primary">Alle</Link>}>
         {recent.length ? <ul className="divide-y divide-border text-sm">{recent.map((t) => <li key={t.id} className="flex items-center justify-between gap-3 py-3"><span className="min-w-0"><span className="block truncate font-medium">{t.description || t.category}</span><span className="text-xs text-muted-foreground">{formatDate(t.booking_date)} · {t.category}{t.status === "offen" ? " · offen" : ""}</span></span><span className={`shrink-0 font-medium tabular-nums dash-${t.type}`}>{t.type === "income" ? "+" : "−"}{currency(t.amount)}</span></li>)}</ul> : <Empty>Keine Buchungen im gewählten Zeitraum.</Empty>}
       </Panel>
