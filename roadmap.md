@@ -60,3 +60,12 @@
 - [x] Umsatzsteuerübersicht: USt aus Rechnungen (Stornos abgezogen), Vorsteuer aus Beleg-Aufschlüsselung, Zahllast/Erstattung, Hinweise bei fehlenden Daten, §19-Hinweis
 - [x] Fußzeile mit Trennlinie und Seitenzahlen; „Saldo" bleibt Saldo
 - [x] Geprüft: 89 Tests, tsgo, PDF-Download mit echtem Konto, Layout/Seitenumbruch per Rendering
+
+## Tarifumschalter & Registrierungs-Benachrichtigung (19.10.2026)
+- [x] Getrennte Monats-/Jahrespreise in der Datenbank (Basic 12,90/118,80 €, Premium 19,90/202,80 €, Free 0 €), altes Preisfeld als veraltet markiert
+- [x] Umschalter jährlich/monatlich auf Landingpage und Preisseite (Standard jährlich, Effektivpreis + Jahresbetrag, Hinweis inkl. 19 % USt.)
+- [x] Adminbereich pflegt beide Preise auditiert
+- [x] Zahlungsintervall wird zur Registrierung weitergereicht und dort angezeigt
+- [x] Betreiber-E-Mail bei Neuregistrierung (duplikatgeschützt, blockiert Registrierung nie); OPERATOR_NOTIFICATION_EMAIL hinterlegt
+- [ ] RESEND_FROM_EMAIL mit verifizierter Absenderdomain (sonst Zustellung nur an Resend-Kontoinhaber)
+- [ ] Impressum/Datenschutz/Kontakt/USt-Angabe weiterhin offen
