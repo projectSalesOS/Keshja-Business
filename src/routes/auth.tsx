@@ -4,9 +4,14 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Logo } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
+import { notifyRegistration } from "@/lib/notifications.functions";
+import type { BillingInterval } from "@/lib/tariffs";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (s: Record<string, unknown>): {mode?: "login" | "register"} => ({ mode: s["mode"] === "register" ? "register" : "login" }),
+  validateSearch: (s: Record<string, unknown>): {mode?: "login" | "register"; interval?: BillingInterval | undefined} => ({
+    mode: s["mode"] === "register" ? "register" : "login",
+    interval: s["interval"] === "monthly" ? "monthly" : s["interval"] === "annual" ? "annual" : undefined,
+  }),
   
   head: () => ({
     meta: [
@@ -36,6 +41,7 @@ function AuthPage() {
   const navigate = useNavigate();
   const search = Route.useSearch();
   const [mode, setMode] = useState<"login" | "register">(search.mode ?? "login");
+  const [interval] = useState<BillingInterval>(search.interval ?? "annual");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -65,6 +71,8 @@ function AuthPage() {
           },
         });
         if (error) throw error;
+        // Betreiber über die Neuregistrierung benachrichtigen (duplikatgeschützt, blockiert nie).
+        void notifyRegistration({ data: { email: email.trim() } }).catch(() => undefined);
         if (!data.session) {
           setInfo(
             "Fast geschafft: Wir haben dir eine E-Mail geschickt. Bestätige den Link, um dein Konto zu aktivieren.",
@@ -122,6 +130,11 @@ function AuthPage() {
                ? "Melde dich bei deinem Unternehmen an."
               : "Erstelle dein KESHJA Business-Konto."}
           </p>
+          {mode === "register" && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              Gewählter Zahlungsrhythmus: {interval === "annual" ? "Jährliche Zahlung" : "Monatliche Zahlung"}
+            </p>
+          )}
 
           <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
             {mode === "register" && (

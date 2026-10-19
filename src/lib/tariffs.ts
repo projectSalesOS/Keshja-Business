@@ -1,8 +1,12 @@
 export type PlanId = "free" | "basic" | "premium";
+export type BillingInterval = "monthly" | "annual";
 export type TariffPlan = {
   id: PlanId;
   name: string;
+  /** @deprecated Ersetzt durch price_cents_monthly und price_cents_annual. */
   price_cents: number;
+  price_cents_monthly: number;
+  price_cents_annual: number;
   manual_limit: number | null;
   ocr_limit: number;
   documents: boolean;
@@ -46,6 +50,14 @@ export function effectivePlan(s: Subscription, now: Date): PlanId {
     ? s.plan_id
     : "free";
 }
+export function formatCents(cents: number) {
+  return (cents / 100).toLocaleString("de-DE", { style: "currency", currency: "EUR" });
+}
+/** @deprecated Nutze formatCents mit price_cents_monthly / price_cents_annual. */
 export function price(p: TariffPlan) {
-  return (p.price_cents / 100).toLocaleString("de-DE", { style: "currency", currency: "EUR" });
+  return formatCents(p.price_cents);
+}
+/** Effektiver Monatspreis je nach Zahlungsintervall (bei jährlich: Jahrespreis / 12). */
+export function monthlyPriceCents(p: TariffPlan, interval: BillingInterval) {
+  return interval === "annual" ? Math.round(p.price_cents_annual / 12) : p.price_cents_monthly;
 }

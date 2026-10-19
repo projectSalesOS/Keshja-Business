@@ -19,7 +19,7 @@ export function usePlans() {
   return useQuery({
     queryKey: ["tariff-plans"],
     queryFn: async (): Promise<TariffPlan[]> => {
-      const r = await supabase.from("tariff_plans").select("*").order("price_cents");
+      const r = await supabase.from("tariff_plans").select("*").order("price_cents_monthly");
       if (r.error) throw r.error;
       return (r.data ?? []).map((p) => {
         if (p.id !== "free" && p.id !== "basic" && p.id !== "premium")
