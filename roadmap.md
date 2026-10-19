@@ -1,5 +1,14 @@
 # Keshja Business – Roadmap
 
+## Tarife, Landingpage und Betreiberverwaltung (19.10.2026)
+- [x] Zentrale Tarife (Free 0 €, Basic 9,90 €, Premium 19,90 €), Abonnements und protokollierte manuelle Freischaltungen; additive Migrationen 0007/0008. Free-Startwerte: 50 aktive reine Handbuchungen, 3 OCR/UTC-Kalendermonat; Angebote/Rechnungen zunächst in allen Tarifen.
+- [x] Atomare Buchungs-/OCR-Limits, wiederholbare Scan-IDs, sichere Erstattungen, Tarifrechte und Mandanten-/Betreiberschutz; Sprache/Logo/erweiterte Reportfilter Premium, bestehende Daten und Standardberichte erhalten.
+- [x] Öffentliche Landingpage unter /, Tarifvergleich /preise, persönliche Tarifseite /tarif, angemeldeter Bereich /dashboard, bestehende übrige URLs erhalten; /rechtliches benennt echte Lücken.
+- [x] Betreiberbereich /admin samt Regeln, Abonnements, Nutzern, Nutzung und Audit; kontrolliertes Ersteinrichtungsskript und docs/tariffs-operations.md, keine dauerhafte Betreiberfreigabe automatisch gesetzt.
+- [x] 101 Vitest-Tests, 12 zurückgerollte Datenbanktests, 28 echte API-Integrationstests einschließlich paralleler letzter Buchungs-/OCR-Slots, 10 direkte unberechtigte API-Aufrufe; echte Admin-UI-Freischaltung, simulierte Sprachbuchung mit Bestätigung/Speicherung/Rücklesen, Premium-Filter und PDF-Download. Öffentliche Seiten 320/411 px und Desktop, zehn angemeldete Seiten mobil, kein Überlauf/Laufzeitfehler, Build OK. Temporäre Organisationen/Freigaben entfernt. Kein echter kostenpflichtiger KI-Aufruf, kein echter Mikrofontest, keine neue Registrierung/Passwortanmeldung, kein neuer echter E-Mail-Versand oder Rechnungsausgabe-/Zahlungs-End-to-End-Test; bestehende Tests für deren Logik bestanden.
+- [ ] Dauerhafte Betreiberfreigabe: wartet auf explizit bestätigtes Betreiberkonto durch den Projektinhaber.
+- [ ] Rechtliche Veröffentlichungsvoraussetzungen: wartet auf Impressum/Anschrift, freigegebene Datenschutzerklärung, öffentlichen Kontaktweg und Umsatzsteuerbehandlung der Preise.
+
 ## Menüführung (19.10.2026)
 - [x] Bisherige Seitenleiste und untere Navigation durch einen Menü-Button und linkes Seitenmenü auf allen Bildschirmgrößen ersetzt; sieben vorhandene Hauptziele, Unterbereiche, Profil und Abmelden erhalten.
 - [x] Mit echtem Konto geprüft: sieben Zielwechsel, aktive Markierung und Neuladen, Belege-/Berichte-Unterbereiche, X/Overlay/Escape und scrollbares Menü bei 320/411/768/1280 px sowie kurzem Querformat. Keine Überbreite oder Laufzeitfehler; 89 bestehende Tests bestanden, Build OK. Keine Daten-, Berechtigungs- oder Geschäftslogikänderungen.

@@ -1,28 +1,30 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { LayoutDashboard, Repeat, Users, Wallet, Settings, LogOut, FileText, FileSignature, Menu } from "lucide-react";
+import { LayoutDashboard, Repeat, Users, Wallet, Settings, LogOut, FileText, FileSignature, Menu, CreditCard, ShieldCheck } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import logoMark from "@/assets/keshja-business-logo.png.asset.json";
 import { supabase } from "@/integrations/supabase/client";
+import { useOperator } from "@/hooks/useTariff";
 import { useProfile } from "@/hooks/useProfile";
 import { useOrganization } from "@/hooks/useOrganization";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetTrigger, SheetContent, SheetTitle } from "@/components/ui/sheet";
 
 const NAV = [
-  { to: "/", label: "Dashboard", tone: "brand", icon: LayoutDashboard, match: [] as string[] },
+  { to: "/dashboard", label: "Dashboard", tone: "brand", icon: LayoutDashboard, match: [] as string[] },
   { to: "/rechnungen", label: "Rechnungen", tone: "blue", icon: FileText, match: [] as string[] },
   { to: "/angebote", label: "Angebote", tone: "orange", icon: FileSignature, match: [] as string[] },
   { to: "/finanzen", label: "Einnahmen & Ausgaben", tone: "income", icon: Wallet, match: ["/kassenbons", "/auswertungen"] },
   { to: "/fixkosten", label: "Wiederkehrende Kosten", tone: "expense", icon: Repeat, match: [] as string[] },
   { to: "/kunden", label: "Kunden", tone: "amber", icon: Users, match: [] as string[] },
   { to: "/einstellungen", label: "Einstellungen", tone: "neutral", icon: Settings, match: [] as string[] },
+  { to: "/tarif", label: "Tarif & Nutzung", tone: "brand", icon: CreditCard, match: [] as string[] },
 ] as const;
 
 function useActive() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   return (item: (typeof NAV)[number]) =>
-    item.to === "/" ? path === "/" : path.startsWith(item.to) || item.match.some((m) => path.startsWith(m));
+    path.startsWith(item.to) || item.match.some((m) => path.startsWith(m));
 }
 
 /** Unterbereiche innerhalb eines Hauptmenüpunkts (z. B. Buchungen / Belege / Berichte). */
@@ -104,6 +106,7 @@ export function AppShell({ children }: { children: ReactNode; dashboard?: boolea
   const { data: org } = useOrganization();
   const signOut = useSignOut();
   const isActive = useActive();
+  const { data: operator } = useOperator();
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -144,6 +147,7 @@ export function AppShell({ children }: { children: ReactNode; dashboard?: boolea
                 <span>{item.label}</span>
               </Link>;
             })}
+            {operator && <Link to="/admin" className="navigation-link" onClick={() => setMenuOpen(false)}><span className="navigation-icon navigation-icon-brand"><ShieldCheck size={21}/></span><span>Betreiberverwaltung</span></Link>}
           </nav>
           <div className="navigation-account">
             {profile && <div className="min-w-0"><p className="truncate text-sm font-semibold">{profile.displayName}</p><p className="truncate text-xs text-muted-foreground">{org?.organization?.name ?? "Kein Unternehmen"}</p></div>}

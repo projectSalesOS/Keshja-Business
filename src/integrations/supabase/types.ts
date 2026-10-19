@@ -421,6 +421,53 @@ export type Database = {
           },
         ]
       }
+      ocr_usage: {
+        Row: {
+          created_at: string
+          id: string
+          image_hash: string
+          organization_id: string
+          period_start: string
+          reason: string | null
+          result: Json | null
+          state: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          image_hash: string
+          organization_id: string
+          period_start: string
+          reason?: string | null
+          result?: Json | null
+          state?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_hash?: string
+          organization_id?: string
+          period_start?: string
+          reason?: string | null
+          result?: Json | null
+          state?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ocr_usage_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organization_members: {
         Row: {
           created_at: string
@@ -575,6 +622,29 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      platform_operators: {
+        Row: {
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "platform_operators_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -768,10 +838,142 @@ export type Database = {
           },
         ]
       }
+      subscription_audit: {
+        Row: {
+          administrator: string
+          after_value: Json
+          before_value: Json | null
+          created_at: string
+          id: string
+          organization_id: string | null
+          reason: string
+        }
+        Insert: {
+          administrator: string
+          after_value: Json
+          before_value?: Json | null
+          created_at?: string
+          id?: string
+          organization_id?: string | null
+          reason: string
+        }
+        Update: {
+          administrator?: string
+          after_value?: Json
+          before_value?: Json | null
+          created_at?: string
+          id?: string
+          organization_id?: string | null
+          reason?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_audit_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscriptions: {
+        Row: {
+          external_customer_ref: string | null
+          external_subscription_ref: string | null
+          organization_id: string
+          period_end: string | null
+          plan_id: string
+          renews_at: string | null
+          source: string
+          starts_at: string
+          status: string
+          trial_used: boolean
+          updated_at: string
+        }
+        Insert: {
+          external_customer_ref?: string | null
+          external_subscription_ref?: string | null
+          organization_id: string
+          period_end?: string | null
+          plan_id?: string
+          renews_at?: string | null
+          source?: string
+          starts_at?: string
+          status?: string
+          trial_used?: boolean
+          updated_at?: string
+        }
+        Update: {
+          external_customer_ref?: string | null
+          external_subscription_ref?: string | null
+          organization_id?: string
+          period_end?: string | null
+          plan_id?: string
+          renews_at?: string | null
+          source?: string
+          starts_at?: string
+          status?: string
+          trial_used?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "tariff_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tariff_plans: {
+        Row: {
+          advanced_reports: boolean
+          documents: boolean
+          id: string
+          logo: boolean
+          manual_limit: number | null
+          name: string
+          ocr_limit: number
+          price_cents: number
+          voice: boolean
+        }
+        Insert: {
+          advanced_reports?: boolean
+          documents?: boolean
+          id: string
+          logo?: boolean
+          manual_limit?: number | null
+          name: string
+          ocr_limit?: number
+          price_cents?: number
+          voice?: boolean
+        }
+        Update: {
+          advanced_reports?: boolean
+          documents?: boolean
+          id?: string
+          logo?: boolean
+          manual_limit?: number | null
+          name?: string
+          ocr_limit?: number
+          price_cents?: number
+          voice?: boolean
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           amount: number
           booking_date: string
+          capture_source: string
           category: string
           created_at: string
           created_by: string
@@ -790,6 +992,7 @@ export type Database = {
         Insert: {
           amount: number
           booking_date?: string
+          capture_source?: string
           category: string
           created_at?: string
           created_by?: string
@@ -808,6 +1011,7 @@ export type Database = {
         Update: {
           amount?: number
           booking_date?: string
+          capture_source?: string
           category?: string
           created_at?: string
           created_by?: string
@@ -874,12 +1078,51 @@ export type Database = {
       create_household: { Args: { _name: string }; Returns: string }
       create_invoice_from_quote: { Args: { _quote: string }; Returns: string }
       create_organization: { Args: { _name: string }; Returns: string }
+      finish_ocr: {
+        Args: {
+          _reason?: string
+          _request: string
+          _result?: Json
+          _state: string
+        }
+        Returns: undefined
+      }
       issue_document: { Args: { _doc: string }; Returns: string }
       join_household: { Args: { _code: string }; Returns: string }
       join_organization: { Args: { _code: string }; Returns: string }
       leave_household: { Args: never; Returns: undefined }
       leave_organization: { Args: { _org: string }; Returns: undefined }
+      operator_dashboard: { Args: never; Returns: Json }
+      operator_ocr_reservations: { Args: never; Returns: Json }
+      operator_refund_ocr: {
+        Args: { _reason: string; _request: string }
+        Returns: undefined
+      }
+      operator_set_plan: {
+        Args: { _plan: string; _reason: string; _values: Json }
+        Returns: undefined
+      }
+      operator_set_subscription: {
+        Args: {
+          _end: string
+          _org: string
+          _plan: string
+          _reason: string
+          _start: string
+          _status: string
+        }
+        Returns: undefined
+      }
       regenerate_org_invite_code: { Args: { _org: string }; Returns: string }
+      reserve_ocr: {
+        Args: { _hash: string; _org: string; _request: string; _user: string }
+        Returns: Json
+      }
+      tariff_feature: {
+        Args: { _feature: string; _org: string }
+        Returns: boolean
+      }
+      tariff_overview: { Args: { _org: string }; Returns: Json }
     }
     Enums: {
       org_role: "owner" | "admin" | "member"

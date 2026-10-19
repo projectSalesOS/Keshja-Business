@@ -27,6 +27,11 @@ function readImage(blob: Blob): Promise<HTMLImageElement> {
 /** Lädt das Logo (nur für Mitglieder des Unternehmens lesbar) und wandelt es in PNG für das PDF um. */
 export async function loadPdfLogo(path: string | null | undefined): Promise<PdfLogo | null> {
   if (!path) return null;
+  const orgId=path.split("/")[0];
+  if(!orgId) return null;
+  const feature=await supabase.rpc("tariff_feature",{_org:orgId,_feature:"logo"});
+  if(feature.error) throw new Error("Logo-Tarifprüfung fehlgeschlagen.");
+  if(!feature.data) return null;
   const { data, error } = await supabase.storage.from(LOGO_BUCKET).download(path);
   if (error || !data) throw new Error("Firmenlogo konnte nicht geladen werden.");
   const img = await readImage(data);
@@ -37,7 +42,10 @@ export async function loadPdfLogo(path: string | null | undefined): Promise<PdfL
   const canvas = document.createElement("canvas");
   canvas.width = w;
   canvas.height = h;
-  canvas.getContext("2d")!.drawImage(img, 0, 0, w, h);
+  const context=canvas.getContext("2d");
+  if(!context) throw new Error("Logo konnte nicht verarbeitet werden.");
+  context.drawImage(img, 0, 0, w, h);
+  URL.revokeObjectURL(img.src);
   return { dataUrl: canvas.toDataURL("image/png"), width: w, height: h };
 }
 

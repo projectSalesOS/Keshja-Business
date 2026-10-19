@@ -1,4 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
+import { useTariff } from "@/hooks/useTariff";
+import { getAdvancedReport } from "@/lib/tariffs.functions";
+import { TariffNotice } from "@/components/TariffNotice";
 import { useMemo, useState } from "react";
 import { Download, FileDown, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -52,11 +57,17 @@ function ReportsView({ orgId }: { orgId: string }) {
   const [category, setCategory] = useState("");
   const [customerId, setCustomerId] = useState("");
   const range = rangeFor(preset, today, custom);
+  const tariff=useTariff(orgId);
+  const advanced=Boolean(tariff.data?.plan.advanced_reports);
+  const getAdvanced=useServerFn(getAdvancedReport);
+  const filteredCategory=advanced?category:"";
+  const filteredCustomer=advanced?customerId:"";
+  const advancedReport=useQuery({queryKey:["advanced-report",orgId,range.from,range.to,filteredCategory,filteredCustomer],queryFn:()=>getAdvanced({data:{orgId,range,...(filteredCategory?{category:filteredCategory}:{}),...(filteredCustomer?{customerId:filteredCustomer}:{})}}),enabled:advanced});
   const d = useAnalyticsData(orgId);
   const { data: org } = useOrganization();
 
-  const r = useMemo(() => {
-    const f = { category: category || undefined, customerId: customerId || undefined };
+  const baseReport = useMemo(() => {
+    const f = {};
     return {
       totals: actualTotals(d.transactions, range, f),
       months: monthlySeries(d.transactions, range, f),
@@ -65,6 +76,7 @@ function ReportsView({ orgId }: { orgId: string }) {
     };
   }, [d.transactions, d.invoices, d.payments, d.items, range.from, range.to, category, customerId, today]);
 
+  const r = advanced && advancedReport.data ? advancedReport.data : baseReport;
   if (d.isLoading)
     return <p className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Auswertungen werden geladen …</p>;
   if (d.error) return <p className="text-sm text-destructive">Daten konnten nicht geladen werden: {d.error.message}</p>;
@@ -72,7 +84,7 @@ function ReportsView({ orgId }: { orgId: string }) {
   const tag = `${range.from}_${range.to}`;
   const exportTx = () => {
     const rows = d.transactions
-      .filter((t) => t.booking_date >= range.from && t.booking_date <= range.to && (!category || t.category === category) && (!customerId || t.customer_id === customerId))
+      .filter((t) => t.booking_date >= range.from && t.booking_date <= range.to && (!filteredCategory || t.category === filteredCategory) && (!filteredCustomer || t.customer_id === filteredCustomer))
       .sort((a, b) => a.booking_date.localeCompare(b.booking_date));
     const names = new Map(d.customers.map((c) => [c.id, c.name]));
     downloadCsv(
@@ -148,24 +160,26 @@ function ReportsView({ orgId }: { orgId: string }) {
     }
   };
 
-  const filtered = !!(category || customerId);
+  const filtered = !!(filteredCategory || filteredCustomer);
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <PeriodPicker preset={preset} custom={custom} today={today} onChange={(p, c) => (setPreset(p), setCustom(c))} />
         <div className="flex flex-wrap gap-2">
-          <select aria-label="Kategorie" className={`${inputClass} w-auto py-1.5`} value={category} onChange={(e) => setCategory(e.target.value)}>
+          <select disabled={!advanced} aria-label="Kategorie" className={`${inputClass} w-auto py-1.5`} value={category} onChange={(e) => setCategory(e.target.value)}>
             <option value="">Alle Kategorien</option>
             <optgroup label="Einnahmen">{INCOME_CATEGORIES.map((c) => <option key={c}>{c}</option>)}</optgroup>
             <optgroup label="Ausgaben">{EXPENSE_CATEGORIES.map((c) => <option key={c}>{c}</option>)}</optgroup>
           </select>
-          <select aria-label="Kunde" className={`${inputClass} w-auto py-1.5`} value={customerId} onChange={(e) => setCustomerId(e.target.value)}>
+          <select disabled={!advanced} aria-label="Kunde" className={`${inputClass} w-auto py-1.5`} value={customerId} onChange={(e) => setCustomerId(e.target.value)}>
             <option value="">Alle Kunden</option>
             {d.customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </div>
       </div>
+      {!advanced && <TariffNotice feature="Erweiterte Auswertungen nach Kategorie und Kunde" />}
+      {advancedReport.error && <p role="alert" className="text-sm text-destructive">{advancedReport.error.message}</p>}
       <p className="-mt-3 text-xs text-muted-foreground">
         {formatDate(range.from)} – {formatDate(range.to)}{filtered ? " · gefiltert" : ""} · Ist-Werte aus bezahlten Buchungen
       </p>

@@ -1,6 +1,8 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Building2, Copy, ImageUp, Loader2, LogOut, RefreshCw, Trash2 } from "lucide-react";
+import { useTariff } from "@/hooks/useTariff";
+import { TariffNotice } from "@/components/TariffNotice";
 import { LOGO_BUCKET, LOGO_TYPES, validateLogoFile } from "@/lib/orgLogo";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -218,20 +220,22 @@ function Header() {
 }
 
 function LogoSection({ orgId, path, isAdmin, onChanged }: { orgId: string; path: string | null; isAdmin: boolean; onChanged: () => Promise<unknown> }) {
+  const tariff=useTariff(orgId);
   const [url, setUrl] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     let revoke: string | null = null;
     setUrl(null);
-    if (!path) return;
+    if (!path || !tariff.data?.plan.logo) return;
     supabase.storage.from(LOGO_BUCKET).download(path).then(({ data }) => {
       if (data) { revoke = URL.createObjectURL(data); setUrl(revoke); }
     });
     return () => { if (revoke) URL.revokeObjectURL(revoke); };
-  }, [path]);
+  }, [path, tariff.data?.plan.logo]);
 
   async function upload(file: File) {
+    if(!tariff.data?.plan.logo) {toast.error("Firmenlogo ist im Premium-Tarif verfügbar.");return;}
     const err = validateLogoFile(file);
     if (err) { toast.error(err); return; }
     setBusy(true);
@@ -263,6 +267,7 @@ function LogoSection({ orgId, path, isAdmin, onChanged }: { orgId: string; path:
     return undefined;
   }
 
+  if(!tariff.data?.plan.logo) return <TariffNotice feature="Firmenlogo auf Dokumenten" />;
   return (
     <div className="space-y-3">
       <h3 className="text-sm font-semibold">Firmenlogo</h3>
