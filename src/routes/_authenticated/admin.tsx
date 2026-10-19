@@ -15,6 +15,7 @@ import {
   type OcrReservation,
 } from "@/lib/tariffs.functions";
 import { usePlans } from "@/hooks/useTariff";
+import { supabase } from "@/integrations/supabase/client";
 import { STATUS_LABEL, type TariffPlan, type Subscription } from "@/lib/tariffs";
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -39,7 +40,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
 });
 function Admin() {
   const get = useServerFn(getOperatorDashboard);
-  const q = useQuery({ queryKey: ["operator-dashboard"], queryFn: () => get() });
+  const q = useQuery({ queryKey: ["operator-dashboard"], queryFn: () => get(), retry: false });
   return (
     <AppShell>
       <div className="space-y-7">
@@ -54,9 +55,9 @@ function Admin() {
             <h2 className="font-semibold">Kein Betreiberzugriff</h2>
             <p className="mt-2 text-sm text-muted-foreground">{q.error.message}</p>
             <p className="mt-2 text-sm text-muted-foreground">
-              Die Erstfreigabe muss kontrolliert durch den Projektinhaber erfolgen;
               Unternehmensrollen geben keinen Betreiberzugriff.
             </p>
+            <Bootstrap />
           </div>
         ) : (
           <AdminContent data={q.data} />
@@ -65,16 +66,95 @@ function Admin() {
     </AppShell>
   );
 }
+function Bootstrap() {
+  const qc = useQueryClient();
+  const status = useQuery({
+    queryKey: ["operator-bootstrap"],
+    queryFn: async () => {
+      const r = await supabase.rpc("operator_bootstrap_status");
+      if (r.error) throw r.error;
+      return r.data as { open: boolean; eligible: boolean };
+    },
+  });
+  const [reason, setReason] = useState("");
+  const [error, setError] = useState("");
+  if (!status.data?.open) return null;
+  if (!status.data.eligible)
+    return (
+      <p className="mt-3 text-sm text-muted-foreground">
+        Die Ersteinrichtung kann nur das zuerst registrierte, bestätigte Konto durchführen.
+      </p>
+    );
+  return (
+    <form
+      className="mt-5 space-y-3 rounded-lg border border-border bg-card/70 p-5"
+      onSubmit={async (e) => {
+        e.preventDefault();
+        setError("");
+        const r = await supabase.rpc("claim_initial_operator", { _reason: reason });
+        if (r.error) return setError(r.error.message);
+        await qc.invalidateQueries();
+      }}
+    >
+      <h3 className="font-semibold">Betreiberkonto einrichten</h3>
+      <p className="text-sm text-muted-foreground">
+        Noch kein Betreiber vorhanden. Als erstes registriertes Konto kannst du dich einmalig
+        freischalten; danach ist dieser Weg dauerhaft geschlossen.
+      </p>
+      <Field label="Grund">
+        <input required minLength={3} className={inputClass} value={reason} onChange={(e) => setReason(e.target.value)} />
+      </Field>
+      <Button type="submit">Als Betreiber einrichten</Button>
+      {error && <p className="text-sm text-destructive">{error}</p>}
+    </form>
+  );
+}
 function AdminContent({ data }: { data: OperatorData }) {
   const plans = usePlans();
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<"all" | "free" | "basic" | "premium">("all");
+  const term = search.trim().toLowerCase();
+  const orgs = data.organizations.filter((o) => {
+    if (filter !== "all" && o.tariff.plan.id !== filter) return false;
+    if (!term) return true;
+    const members = data.users.filter((u) => u.memberships.some((m) => m.organization_id === o.id));
+    return [o.name, o.id, ...members.flatMap((u) => [u.display_name ?? "", u.id])].some((v) =>
+      v.toLowerCase().includes(term),
+    );
+  });
   return (
     <>
       <section>
         <h2 className="mb-4 text-xl font-semibold">Organisationen & Nutzung</h2>
+        <div className="mb-5 grid gap-3 sm:grid-cols-[1fr_auto]">
+          <input
+            aria-label="Organisation oder Nutzer suchen"
+            placeholder="Organisation, Nutzername oder ID suchen …"
+            className={inputClass}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <select aria-label="Nach wirksamem Tarif filtern" className={inputClass} value={filter} onChange={(e) => setFilter(e.target.value as typeof filter)}>
+            <option value="all">Alle Tarife</option>
+            <option value="free">Free</option>
+            <option value="basic">Basic</option>
+            <option value="premium">Premium</option>
+          </select>
+        </div>
         <div className="space-y-5">
-          {data.organizations.map((o) => (
-            <SubscriptionEditor key={o.id} org={o} />
-          ))}
+          {orgs.length ? (
+            orgs.map((o) => (
+              <SubscriptionEditor
+                key={o.id + o.tariff.subscription.status + o.tariff.subscription.plan_id + o.tariff.subscription.period_end}
+                org={o}
+                members={data.users
+                  .filter((u) => u.memberships.some((m) => m.organization_id === o.id))
+                  .map((u) => u.display_name || u.id)}
+              />
+            ))
+          ) : (
+            <p className="text-sm text-muted-foreground">Keine Treffer.</p>
+          )}
         </div>
       </section>
       <section className="border-t border-border pt-7">
@@ -129,7 +209,7 @@ function AdminContent({ data }: { data: OperatorData }) {
     </>
   );
 }
-function SubscriptionEditor({ org }: { org: OperatorData["organizations"][number] }) {
+function SubscriptionEditor({ org, members }: { org: OperatorData["organizations"][number]; members: string[] }) {
   const s = org.tariff.subscription;
   const [plan, setPlanId] = useState(s.plan_id);
   const [status, setStatus] = useState(s.status);
@@ -175,6 +255,30 @@ function SubscriptionEditor({ org }: { org: OperatorData["organizations"][number
   return (
     <article className="rounded-lg border border-border bg-card/70 p-5">
       <h3 className="font-semibold">{org.name}</h3>
+      <p className="text-xs text-muted-foreground">
+        Gespeichert: {s.plan_id} · {STATUS_LABEL[s.status]}
+        {s.period_end ? ` bis ${new Date(s.period_end).toLocaleDateString("de-DE")}` : ""} ·
+        Mitglieder: {members.join(", ") || "–"}
+      </p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {([
+          ["Premium 1 Monat", "premium", 1],
+          ["Premium 1 Jahr", "premium", 12],
+          ["Basic 1 Monat", "basic", 1],
+        ] as const).map(([label, p, months]) => (
+          <Button key={label} type="button" size="sm" variant="outline" onClick={() => {
+            const now = new Date();
+            const until = new Date(now);
+            until.setUTCMonth(until.getUTCMonth() + months);
+            setPlanId(p); setStatus("active");
+            setStart(now.toISOString().slice(0, 16)); setEnd(until.toISOString().slice(0, 16));
+          }}>{label}</Button>
+        ))}
+        <Button type="button" size="sm" variant="outline" onClick={() => {
+          setPlanId("free"); setStatus("free"); setEnd("");
+          setStart(new Date().toISOString().slice(0, 16));
+        }}>Auf Free zurückstufen</Button>
+      </div>
       <p className="mt-2 text-sm text-muted-foreground">
         Wirksam: {org.tariff.plan.name} · Buchungen {org.tariff.manual_used}/
         {org.tariff.plan.manual_limit ?? "∞"} · OCR {org.tariff.ocr_used}/
