@@ -8,7 +8,7 @@ import { categoryColors, ExpenseRing, IncomeExpenseChart, MonthlyBars } from "@/
 import { useProfile } from "@/hooks/useProfile";
 import { useAnalyticsData } from "@/hooks/useAnalytics";
 import { rangeFor, receivables, type Preset, type Range } from "@/lib/analytics";
-import { dashboardData } from "@/lib/dashboard";
+import { chartSeries, dashboardData } from "@/lib/dashboard";
 import { todayIso } from "@/lib/business";
 import { currency, formatDate } from "@/lib/finance";
 import { VoiceBooking } from "@/components/VoiceBooking";
@@ -35,6 +35,16 @@ function sixMonths(today: string): Range {
   const end = rangeFor("monat", today).to;
   const start = new Date(`${end}T12:00:00Z`);
   start.setUTCDate(1); start.setUTCMonth(start.getUTCMonth() - 5);
+  return { from: start.toISOString().slice(0, 10), to: end };
+}
+type ChartPreset = "6m" | "12m" | "jahr" | "quartal";
+const CHART_PRESET_LABEL: Record<ChartPreset, string> = { "6m": "Letzte 6 Monate", "12m": "Letzte 12 Monate", jahr: "Aktuelles Kalenderjahr", quartal: "Aktuelles Quartal" };
+function chartRangeFor(preset: ChartPreset, today: string): Range {
+  if (preset === "jahr") return rangeFor("jahr", today);
+  if (preset === "quartal") return rangeFor("quartal", today);
+  const end = rangeFor("monat", today).to;
+  const start = new Date(`${end}T12:00:00Z`);
+  start.setUTCDate(1); start.setUTCMonth(start.getUTCMonth() - (preset === "12m" ? 11 : 5));
   return { from: start.toISOString().slice(0, 10), to: end };
 }
 function DashboardView({ orgId, greeting }: { orgId: string; greeting: string }) {
