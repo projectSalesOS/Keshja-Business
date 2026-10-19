@@ -57,3 +57,24 @@ describe("Synchronized dashboard data", () => {
     expect(d.trend.at(-1)?.income).toBe(0);
   });
 });
+
+describe("Chart series independent of the KPI range", () => {
+  const chartRange = { from: "2026-08-01", to: "2026-12-31" };
+  it("fills months without bookings with 0 and uses only paid bookings", () => {
+    const s = chartSeries(rows, chartRange, "2026-10-19");
+    expect(s.map((r) => r.month)).toEqual(["2026-08", "2026-09", "2026-10", "2026-11", "2026-12"]);
+    expect(s[0]).toMatchObject({ income: 0, expense: 0 });
+    expect(s[1]).toMatchObject({ income: 200, expense: 0 });
+    expect(s[2]).toMatchObject({ income: 300, expense: 100 });
+  });
+  it("shows future months as gaps, not as achieved zero values", () => {
+    const s = chartSeries(rows, chartRange, "2026-10-19");
+    expect(s[3].income).toBeNull();
+    expect(s[4].expense).toBeNull();
+    expect(s[3].balance).toBeNull();
+  });
+  it("ignores unpaid bookings entirely", () => {
+    const s = chartSeries(rows, chartRange, "2026-10-19");
+    expect(s[2]?.income).toBe(300); // offene 900 €-Buchung zählt nicht
+  });
+});
