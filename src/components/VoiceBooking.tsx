@@ -64,7 +64,8 @@ export function VoiceBooking({ onResult, prominent = false, dashboard = false }:
         {dashboard ? <><span className="dash-microphone">{listening ? <Square /> : <Mic />}</span><span className="dash-voice-copy"><strong>{listening ? "Aufnahme stoppen" : "Buchung per Sprache erfassen"}</strong><span>Buchungsdaten erkennen und prüfen</span></span><span className={`dash-waveform ${listening ? "is-listening" : ""}`} aria-hidden="true">{[0,1,2,3,4,5,6].map(i => <i key={i} />)}</span><span className="dash-voice-arrow"><ChevronRight /></span></> : <>{listening ? <Square /> : <Mic />} {listening ? "Aufnahme stoppen" : prominent ? "Buchung erfassen" : "Sprachbuchung"}</>}
       </Button>
       {!supported && <p className="text-xs text-muted-foreground">Dieser Browser unterstützt keine Spracherkennung.</p>}
-      {supported && <p className="text-xs text-muted-foreground" role="status">{listening ? "Mikrofon aktiv – bitte Buchung sprechen." : "Spracherkennung durch deinen Browser; Audio kann an dessen Anbieter übertragen werden."}</p>}
+      {supported && !dashboard && <p className="text-xs text-muted-foreground" role="status">{listening ? "Mikrofon aktiv – bitte Buchung sprechen." : "Spracherkennung durch deinen Browser; Audio kann an dessen Anbieter übertragen werden."}</p>}
+      {supported && dashboard && listening && <p className="text-xs text-muted-foreground" role="status">Mikrofon aktiv – bitte Buchung sprechen.</p>}
       {transcript && <p className="text-sm text-foreground">„{transcript}“</p>}
       {error && <p role="alert" className="text-xs text-destructive">{error}</p>}
     </div>

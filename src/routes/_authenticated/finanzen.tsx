@@ -20,7 +20,11 @@ import {
 import { currency, formatDate } from "@/lib/finance";
 
 export const Route = createFileRoute("/_authenticated/finanzen")({
-  validateSearch: (search: Record<string, unknown>): { neu?: "1" } => (search["neu"] === "1" ? { neu: "1" } : {}),
+  validateSearch: (search: Record<string, unknown>): { neu?: "1"; typ?: "income" | "expense"; monat?: string } => ({
+    ...(search["neu"] === "1" ? { neu: "1" as const } : {}),
+    ...(search["typ"] === "income" || search["typ"] === "expense" ? { typ: search["typ"] } : {}),
+    ...(typeof search["monat"] === "string" && /^\d{4}-\d{2}$/.test(search["monat"]) ? { monat: search["monat"] } : {}),
+  }),
   head: () => ({
     meta: [
       { title: "Einnahmen & Ausgaben – Keshja Business" },
@@ -56,8 +60,9 @@ function FinanceView({ orgId, isAdmin }: { orgId: string; isAdmin: boolean }) {
   const { data: customers = [] } = useCustomers(orgId);
   const del = useDeleteTransaction(orgId);
   const fixed = useFixedCosts(orgId);
-  const [filter, setFilter] = useState(DEFAULT_FILTER);
-  const [editing, setEditing] = useState<Transaction | "new" | null>(Route.useSearch().neu === "1" ? "new" : null);
+  const search = Route.useSearch();
+  const [filter, setFilter] = useState<TxFilter>(() => ({ ...DEFAULT_FILTER, type: search.typ ?? "all", month: search.monat ?? "" }));
+  const [editing, setEditing] = useState<Transaction | "new" | null>(search.neu === "1" ? "new" : null);
 
   const list = useMemo(() => filterTransactions(data, filter), [data, filter]);
   const sums = totals(list);

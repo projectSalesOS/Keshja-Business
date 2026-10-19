@@ -8,7 +8,7 @@ import { categoryColors, ExpenseRing, IncomeExpenseChart, MonthlyBars } from "@/
 import { useProfile } from "@/hooks/useProfile";
 import { useAnalyticsData } from "@/hooks/useAnalytics";
 import { rangeFor, receivables, type Preset, type Range } from "@/lib/analytics";
-import { dashboardData } from "@/lib/dashboard";
+import { chartSeries, dashboardData } from "@/lib/dashboard";
 import { todayIso } from "@/lib/business";
 import { currency, formatDate } from "@/lib/finance";
 import { VoiceBooking } from "@/components/VoiceBooking";
@@ -37,14 +37,29 @@ function sixMonths(today: string): Range {
   start.setUTCDate(1); start.setUTCMonth(start.getUTCMonth() - 5);
   return { from: start.toISOString().slice(0, 10), to: end };
 }
+type ChartPreset = "6m" | "12m" | "jahr" | "quartal";
+const CHART_PRESET_LABEL: Record<ChartPreset, string> = { "6m": "Letzte 6 Monate", "12m": "Letzte 12 Monate", jahr: "Aktuelles Kalenderjahr", quartal: "Aktuelles Quartal" };
+function chartRangeFor(preset: ChartPreset, today: string): Range {
+  if (preset === "jahr") return rangeFor("jahr", today);
+  if (preset === "quartal") return rangeFor("quartal", today);
+  const end = rangeFor("monat", today).to;
+  const start = new Date(`${end}T12:00:00Z`);
+  start.setUTCDate(1); start.setUTCMonth(start.getUTCMonth() - (preset === "12m" ? 11 : 5));
+  return { from: start.toISOString().slice(0, 10), to: end };
+}
 function DashboardView({ orgId, greeting }: { orgId: string; greeting: string }) {
   const [voiceResult, setVoiceResult] = useState<ReturnType<typeof parseVoiceBooking> | null>(null);
   const today = todayIso();
   const [preset, setPreset] = useState<Preset>("monat");
   const [custom, setCustom] = useState<Range>(rangeFor("monat", today));
   const range = rangeFor(preset, today, custom);
+  const [chartPreset, setChartPreset] = useState<ChartPreset>("6m");
+  const chartRange = chartRangeFor(chartPreset, today);
   const d = useAnalyticsData(orgId);
   const m = useMemo(() => dashboardData(d.transactions, range), [d.transactions, range.from, range.to]);
+  const chart = useMemo(() => chartSeries(d.transactions, chartRange, today), [d.transactions, chartRange.from, chartRange.to, today]);
+  const isFullMonth = range.from.slice(0, 7) === range.to.slice(0, 7) && range.from.endsWith("-01");
+  const monthSearch = isFullMonth ? { monat: range.from.slice(0, 7) } : {};
   const outstanding = useMemo(() => receivables(d.invoices, d.payments, today), [d.invoices, d.payments, today]);
   const recent = d.transactions.filter((t) => t.booking_date >= range.from && t.booking_date <= range.to).slice(0, 6);
   if (d.isLoading) return <p className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Kennzahlen werden geladen …</p>;
@@ -62,17 +77,17 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
     </div>
 
     <div className="dash-kpis grid grid-cols-2 gap-3" aria-label="Kennzahlen">
-      <section aria-label="Gewinn und Verlust" className="dash-card dash-kpi dash-profit-card">
+      <Link to="/finanzen" search={monthSearch} aria-label="Gewinn und Verlust – alle Buchungen anzeigen" className="dash-card dash-kpi dash-profit-card">
         <span className="dash-icon dash-brand"><ChartNoAxesColumnIncreasing size={25} /></span><h2 className="dash-title">Gewinn / Verlust</h2>
         <p data-testid="dashboard-balance" className={`dash-metric ${m.totals.balance < 0 ? "dash-expense" : "dash-brand"}`}>{currency(m.totals.balance)}</p>
         <p className="text-xs text-muted-foreground">{m.totals.count} {m.totals.count === 1 ? "Buchung" : "Buchungen"} im Zeitraum</p>
-      </section>
-      {(["income", "expense"] as const).map((type) => <section key={type} className={`dash-card dash-kpi dash-${type}-card`} aria-label={type === "income" ? "Einnahmen" : "Ausgaben"}>
+      </Link>
+      {(["income", "expense"] as const).map((type) => <Link key={type} to="/finanzen" search={{ typ: type, ...monthSearch }} className={`dash-card dash-kpi dash-${type}-card`} aria-label={`${type === "income" ? "Einnahmen" : "Ausgaben"} – Buchungen anzeigen`}>
         <span className={`dash-icon dash-${type}`}>{type === "income" ? <ArrowUpRight size={25} /> : <ArrowDownRight size={25} />}</span>
         <h2 className="dash-title">{type === "income" ? "Einnahmen" : "Ausgaben"}</h2>
         <p data-testid={`dashboard-${type}`} className={`dash-metric dash-${type}`}>{currency(m.totals[type])}</p>
         <p className="text-xs text-muted-foreground">{type === "income" ? m.incomeCount : m.expenseCount} Buchungen</p>
-      </section>)}
+      </Link>)}
     </div>
 
     <section className="dash-card dash-secondary-section" aria-label="Ausgabenübersicht">
@@ -87,14 +102,15 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
       </div> : <Empty>Keine bezahlten Ausgaben in diesem Zeitraum.</Empty>}
     </section>
 
-    <section className="dash-card" aria-label="Einnahmen und Ausgaben der letzten sechs Monate">
-      <div className="dash-chart-heading"><span className="dash-icon dash-brand"><TrendingUp size={21} /></span><div><h2 className="dash-title">Einnahmen & Ausgaben</h2><p className="mt-1 text-xs text-muted-foreground">Sechs Monate bis {formatDate(range.to)}</p></div></div>
-      <div className="dash-line-chart min-w-0"><IncomeExpenseChart data={m.trend} /></div>
+    <section className="dash-card" aria-label="Einnahmen und Ausgaben im Diagrammzeitraum">
+      <div className="dash-chart-heading"><span className="dash-icon dash-brand"><TrendingUp size={21} /></span><div><h2 className="dash-title">Einnahmen & Ausgaben</h2><p className="mt-1 text-xs text-muted-foreground">{formatDate(chartRange.from)} – {formatDate(chartRange.to)}</p></div>
+        <label className="ml-auto flex items-center gap-2 text-xs text-muted-foreground"><span className="sr-only">Diagrammzeitraum</span><select className="h-9 rounded-lg border border-border bg-card px-2 text-xs text-foreground" value={chartPreset} onChange={(e) => setChartPreset(e.target.value as ChartPreset)} aria-label="Diagrammzeitraum">{(["6m", "12m", "jahr", "quartal"] as const).map((p) => <option key={p} value={p}>{CHART_PRESET_LABEL[p]}</option>)}</select></label></div>
+      <div className="dash-line-chart min-w-0"><IncomeExpenseChart data={chart} /></div>
     </section>
 
     <section className="dash-card" aria-label="Monatliche Einnahmen und Ausgaben als Balken">
-      <div className="dash-chart-heading"><span className="dash-icon dash-brand"><ChartNoAxesColumnIncreasing size={21} /></span><div><h2 className="dash-title">Monatliche Einnahmen & Ausgaben</h2><p className="mt-1 text-xs text-muted-foreground">Vergleich der letzten sechs Monate</p></div></div>
-      <div className="dash-bar-chart min-w-0"><MonthlyBars data={m.trend} /></div>
+      <div className="dash-chart-heading"><span className="dash-icon dash-brand"><ChartNoAxesColumnIncreasing size={21} /></span><div><h2 className="dash-title">Monatliche Einnahmen & Ausgaben</h2><p className="mt-1 text-xs text-muted-foreground">{CHART_PRESET_LABEL[chartPreset]} · {formatDate(chartRange.from)} – {formatDate(chartRange.to)}</p></div></div>
+      <div className="dash-bar-chart min-w-0"><MonthlyBars data={chart} /></div>
     </section>
 
     <div aria-label="Schnellaktionen" className="grid grid-cols-3 gap-3">

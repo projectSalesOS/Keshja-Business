@@ -29,3 +29,17 @@ export function dashboardData(transactions: ATx[], range: Range) {
     categories: byCategory(transactions, range, "expense"),
   };
 }
+
+/**
+ * Monatswerte für die Dashboard-Diagramme, entkoppelt vom Kennzahlen-Zeitraum:
+ * bezahlte Buchungen, Monate ohne Buchungen mit 0 €, zukünftige Monate als Lücke (null).
+ */
+export function chartSeries(transactions: ATx[], range: Range, today: string) {
+  const paid = transactions.filter((t) => t.status === "bezahlt");
+  const currentMonth = today.slice(0, 7);
+  return monthlySeries(paid, range).map((row) =>
+    row.month > currentMonth
+      ? { ...row, income: null, expense: null, balance: null }
+      : row,
+  );
+}
