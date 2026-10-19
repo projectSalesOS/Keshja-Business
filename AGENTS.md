@@ -33,3 +33,9 @@
 - Document PDFs are built once by makeDocPdf (DocumentsView) and reused for download and email, so the sent attachment equals the export.
 - Document emails go through the createServerFn sendDocumentEmail (Resend connector, attachments) because Lovable app emails cannot carry attachments; no send status is shown unless the provider accepted it.
 - Company logos live in private storage bucket org-logos under <organization_id>/; storage RLS reuses private.is_org_member/is_org_admin; organizations.logo_path points to the current file.
+
+- Tariffs are organization-scoped: public tariff_plans is the single configuration authority, subscriptions has one row per organization, and all entitlement mutations use operator-authorized audited RPCs; organization roles never confer platform-operator privileges.
+- Manual transaction and OCR admission serialize on the organization row; OCR requests reserve before inference with durable request IDs, only proven not-started outcomes refund automatically, and ambiguous outcomes require an audited operator review.
+- Public / is the landing page and redirects hydrated signed-in users to protected /dashboard; existing business URLs remain protected, while /preise and /rechtliches stay public.
+- Premium report filters execute through getAdvancedReport using existing pure analytics; raw business data remains member-readable for normal bookkeeping, and browser voice checks entitlements before starting and tags saved drafts for DB enforcement.
+- Platform operator bootstrap is trusted-administration-only, requires a verified confirmed account and audit reason, and exposes no public self-grant endpoint; operational instructions live in docs/tariffs-operations.md.
