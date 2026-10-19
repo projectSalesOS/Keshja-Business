@@ -185,7 +185,8 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
           await handleWebhook(request, rawEnv);
           return Response.json({ received: true });
         } catch (e) {
-          console.error("Webhook-Fehler:", e instanceof Error ? e.message : "unbekannt");
+          const detail = e instanceof Error ? e.message : (() => { try { return JSON.stringify(e); } catch { return "unbekannt"; } })();
+          console.error("Webhook-Fehler:", detail);
           return new Response("Webhook error", { status: 400 });
         }
       },
