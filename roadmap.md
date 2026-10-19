@@ -31,3 +31,10 @@
 - [x] E-Mail-Versand mit PDF-Anhang (Code fertig)
 - [x] E-Mail-Dienst (Resend) verbunden; eigene Absenderdomain in Resend noch offen
 - [x] Futuristic-Premium-Fintech-Design nach Referenzbild: Lavendel-Weiß-Verlauf, Glasflächen, Violett-Magenta-Akzente (2026-10-18)
+
+## Dashboard-Optimierung (19.10.2026)
+- [x] Datenschutzhinweis unter Sprachbuchung entfernt
+- [x] KPI-Kacheln verlinkt auf gefilterte Buchungsübersicht (typ+monat)
+- [x] Standard-Zeitraum „Monat" bestätigt; alle Kennzahlen synchron
+- [x] Diagrammzeitraum entkoppelt (6M/12M/Jahr/Quartal), Linien- und Balkendiagramm synchron, 0-€-Monate, Zukunft als Lücke
+- [x] Geprüft: 89 Tests, tsgo, Playwright Mobil/Desktop, Filterübernahme, kein Overflow
