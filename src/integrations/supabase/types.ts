@@ -844,6 +844,27 @@ export type Database = {
           },
         ]
       }
+      stripe_events: {
+        Row: {
+          environment: string
+          event_type: string
+          id: string
+          processed_at: string
+        }
+        Insert: {
+          environment: string
+          event_type: string
+          id: string
+          processed_at?: string
+        }
+        Update: {
+          environment?: string
+          event_type?: string
+          id?: string
+          processed_at?: string
+        }
+        Relationships: []
+      }
       subscription_audit: {
         Row: {
           administrator: string
@@ -884,6 +905,7 @@ export type Database = {
       }
       subscriptions: {
         Row: {
+          billing_interval: string | null
           external_customer_ref: string | null
           external_subscription_ref: string | null
           organization_id: string
@@ -893,10 +915,12 @@ export type Database = {
           source: string
           starts_at: string
           status: string
+          stripe_environment: string | null
           trial_used: boolean
           updated_at: string
         }
         Insert: {
+          billing_interval?: string | null
           external_customer_ref?: string | null
           external_subscription_ref?: string | null
           organization_id: string
@@ -906,10 +930,12 @@ export type Database = {
           source?: string
           starts_at?: string
           status?: string
+          stripe_environment?: string | null
           trial_used?: boolean
           updated_at?: string
         }
         Update: {
+          billing_interval?: string | null
           external_customer_ref?: string | null
           external_subscription_ref?: string | null
           organization_id?: string
@@ -919,6 +945,7 @@ export type Database = {
           source?: string
           starts_at?: string
           status?: string
+          stripe_environment?: string | null
           trial_used?: boolean
           updated_at?: string
         }
@@ -951,6 +978,8 @@ export type Database = {
           price_cents: number
           price_cents_annual: number
           price_cents_monthly: number
+          stripe_price_annual: string | null
+          stripe_price_monthly: string | null
           voice: boolean
         }
         Insert: {
@@ -964,6 +993,8 @@ export type Database = {
           price_cents?: number
           price_cents_annual?: number
           price_cents_monthly?: number
+          stripe_price_annual?: string | null
+          stripe_price_monthly?: string | null
           voice?: boolean
         }
         Update: {
@@ -977,6 +1008,8 @@ export type Database = {
           price_cents?: number
           price_cents_annual?: number
           price_cents_monthly?: number
+          stripe_price_annual?: string | null
+          stripe_price_monthly?: string | null
           voice?: boolean
         }
         Relationships: []

@@ -27,6 +27,7 @@ import { Route as AuthenticatedKundenRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedRechnungenRouteImport } from './routes/_authenticated/rechnungen'
 import { Route as AuthenticatedTarifRouteImport } from './routes/_authenticated/tarif'
 import { Route as AuthenticatedDebugOcrRouteImport } from './routes/_authenticated/debug.ocr'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -119,6 +120,12 @@ const AuthenticatedDebugOcrRoute = AuthenticatedDebugOcrRouteImport.update({
   path: '/debug/ocr',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/rechnungen': typeof AuthenticatedRechnungenRoute
   '/tarif': typeof AuthenticatedTarifRoute
   '/debug/ocr': typeof AuthenticatedDebugOcrRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -157,6 +165,7 @@ export interface FileRoutesByTo {
   '/rechnungen': typeof AuthenticatedRechnungenRoute
   '/tarif': typeof AuthenticatedTarifRoute
   '/debug/ocr': typeof AuthenticatedDebugOcrRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -178,6 +187,7 @@ export interface FileRoutesById {
   '/_authenticated/rechnungen': typeof AuthenticatedRechnungenRoute
   '/_authenticated/tarif': typeof AuthenticatedTarifRoute
   '/_authenticated/debug/ocr': typeof AuthenticatedDebugOcrRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/rechnungen'
     | '/tarif'
     | '/debug/ocr'
+    | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -218,6 +229,7 @@ export interface FileRouteTypes {
     | '/rechnungen'
     | '/tarif'
     | '/debug/ocr'
+    | '/api/public/payments/webhook'
   id:
     | '__root__'
     | '/'
@@ -238,6 +250,7 @@ export interface FileRouteTypes {
     | '/_authenticated/rechnungen'
     | '/_authenticated/tarif'
     | '/_authenticated/debug/ocr'
+    | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -247,6 +260,7 @@ export interface RootRouteChildren {
   PreiseRoute: typeof PreiseRoute
   RechtlichesRoute: typeof RechtlichesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -377,6 +391,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDebugOcrRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -420,6 +441,7 @@ const rootRouteChildren: RootRouteChildren = {
   PreiseRoute: PreiseRoute,
   RechtlichesRoute: RechtlichesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
