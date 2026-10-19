@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dashboardData } from "./dashboard";
+import { chartSeries, dashboardData } from "./dashboard";
 import type { ATx } from "./analytics";
 
 const tx = (override: Partial<ATx>): ATx => ({ type: "income", amount: 100, booking_date: "2026-10-10", category: "Umsatz", status: "bezahlt", customer_id: null, ...override });
