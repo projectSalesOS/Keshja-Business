@@ -174,7 +174,7 @@ function Landing() {
           <Logo />
           <div className="flex flex-wrap gap-5 text-muted-foreground">
             <Link to="/preise">Tarife</Link>
-            <Link to="/rechtliches">Rechtliches & Kontakt · Prüfstand</Link>
+            <Link to="/rechtliches">Rechtliches & Kontakt</Link>
             <Link to="/auth" search={{ mode: "login" }}>
               Anmelden
             </Link>
