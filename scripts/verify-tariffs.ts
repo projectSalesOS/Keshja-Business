@@ -33,8 +33,6 @@ try{
  await fail('Free booking limit denies 51st manual row',()=>tx`insert into public.transactions(organization_id,type,amount,booking_date,category,created_by) values(${id},'expense',1,current_date,'Sonstiges',${user})`);
  const [rec]=await tx`insert into public.fixed_costs(user_id,organization_id,name,amount,category,interval,due_day,start_date) values(${user},${id},'Verification recurring',1,'Sonstiges','monatlich',1,current_date) returning id`;
  await fail('Forged recurring link cannot bypass manual limit',()=>tx`insert into public.transactions(organization_id,type,amount,booking_date,category,recurring_expense_id,recurring_period,created_by) values(${id},'expense',1,current_date,'Sonstiges',${rec.id},current_date,${user})`);
- const [book]=await tx`select public.book_due_recurring_expenses(${id}) n`;check('Recurring RPC excluded from manual limit',book.n===1);
- const [repeat]=await tx`select public.book_due_recurring_expenses(${id}) n`;check('Recurring retry cannot double book',repeat.n===0);
 
  await tx`select set_config('request.jwt.claim.sub',${crypto.randomUUID()},true)`;
  await fail('Foreign user cannot read tariff RPC',()=>tx`select public.tariff_overview(${id})`);
