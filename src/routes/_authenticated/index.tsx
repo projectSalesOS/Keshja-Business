@@ -59,7 +59,7 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
   const m = useMemo(() => dashboardData(d.transactions, range), [d.transactions, range.from, range.to]);
   const chart = useMemo(() => chartSeries(d.transactions, chartRange, today), [d.transactions, chartRange.from, chartRange.to, today]);
   const isFullMonth = range.from.slice(0, 7) === range.to.slice(0, 7) && range.from.endsWith("-01");
-  const monthParam = isFullMonth ? range.from.slice(0, 7) : undefined;
+  const monthSearch = isFullMonth ? { monat: range.from.slice(0, 7) } : {};
   const outstanding = useMemo(() => receivables(d.invoices, d.payments, today), [d.invoices, d.payments, today]);
   const recent = d.transactions.filter((t) => t.booking_date >= range.from && t.booking_date <= range.to).slice(0, 6);
   if (d.isLoading) return <p className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Kennzahlen werden geladen …</p>;
