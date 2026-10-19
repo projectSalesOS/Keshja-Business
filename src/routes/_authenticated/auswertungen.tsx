@@ -89,15 +89,56 @@ function ReportsView({ orgId }: { orgId: string }) {
     const o = org?.organization;
     if (!o) return;
     try {
-      const { buildReportPdf } = await import("@/lib/reportPdf");
+      const [{ buildReportPdf }, { loadPdfLogo }, { supabase }] = await Promise.all([
+        import("@/lib/reportPdf"),
+        import("@/lib/orgLogo"),
+        import("@/integrations/supabase/client"),
+      ]);
+      const paid = d.transactions.filter((t) => t.status === "bezahlt" && t.booking_date >= range.from && t.booking_date <= range.to);
+      // Umsatzsteuer aus ausgestellten Rechnungen (Stornos tragen negative Beträge) – keine Doppelzählung mit Buchungen.
+      const { data: vatDocs, error: vatErr } = await supabase
+        .from("documents")
+        .select("kind, tax_total, doc_date")
+        .eq("organization_id", orgId)
+        .in("kind", ["invoice", "cancellation"])
+        .eq("status", "issued")
+        .gte("doc_date", range.from)
+        .lte("doc_date", range.to);
+      if (vatErr) throw vatErr;
+      const outputVat = (vatDocs ?? []).reduce((s, doc) => s + Number(doc.tax_total), 0);
+      // Vorsteuer nur aus Belegen mit Steueraufschlüsselung, die als bezahlte Ausgabe gebucht sind.
+      const paidExpenses = paid.filter((t) => t.type === "expense");
+      const receiptIds = [...new Set(paidExpenses.flatMap((t) => (t.receipt_id ? [t.receipt_id] : [])))];
+      const { data: vatReceipts, error: rErr } = receiptIds.length
+        ? await supabase.from("receipts").select("id, vat_breakdown").in("id", receiptIds)
+        : { data: [] as { id: string; vat_breakdown: { tax: number }[] }[], error: null };
+      if (rErr) throw rErr;
+      const receiptVat = new Map((vatReceipts ?? []).map((rc) => [rc.id, (Array.isArray(rc.vat_breakdown) ? rc.vat_breakdown : []).reduce((s: number, row) => s + Number((row as { tax?: number }).tax ?? 0), 0)]));
+      let inputVat = 0;
+      let expensesWithoutVat = 0;
+      for (const t of paidExpenses) {
+        const v = t.receipt_id ? receiptVat.get(t.receipt_id) : undefined;
+        if (v) inputVat += v;
+        else expensesWithoutVat++;
+      }
+      const incomeWithoutInvoice = paid.filter((t) => t.type === "income" && !t.payment_id).length;
+      const logo = await loadPdfLogo(o.logo_path).catch(() => null);
       buildReportPdf({
         company: o,
+        logo,
         range,
         createdOn: today,
         totals: actualTotals(d.transactions, range),
         months: monthlySeries(d.transactions, range),
         expenseCategories: byCategory(d.transactions, range, "expense"),
         incomeCategories: byCategory(d.transactions, range, "income"),
+        vat: {
+          smallBusiness: o.small_business,
+          outputVat: Math.round(outputVat * 100) / 100,
+          inputVat: Math.round(inputVat * 100) / 100,
+          incomeWithoutInvoice,
+          expensesWithoutVat,
+        },
         receivables: [],
         recurring: [],
         planned: [],

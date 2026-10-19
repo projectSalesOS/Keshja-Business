@@ -38,3 +38,9 @@
 - [x] Standard-Zeitraum „Monat" bestätigt; alle Kennzahlen synchron
 - [x] Diagrammzeitraum entkoppelt (6M/12M/Jahr/Quartal), Linien- und Balkendiagramm synchron, 0-€-Monate, Zukunft als Lücke
 - [x] Geprüft: 89 Tests, tsgo, Playwright Mobil/Desktop, Filterübernahme, kein Overflow
+
+## PDF-Bericht optimiert (19.10.2026)
+- [x] Firmenkopf: Logo links, Name/Adresse/Kontakt/Steuerdaten daneben, Zeitraum + Erstellungsdatum
+- [x] Umsatzsteuerübersicht: USt aus Rechnungen (Stornos abgezogen), Vorsteuer aus Beleg-Aufschlüsselung, Zahllast/Erstattung, Hinweise bei fehlenden Daten, §19-Hinweis
+- [x] Fußzeile mit Trennlinie und Seitenzahlen; „Saldo" bleibt Saldo
+- [x] Geprüft: 89 Tests, tsgo, PDF-Download mit echtem Konto, Layout/Seitenumbruch per Rendering
