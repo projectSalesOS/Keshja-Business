@@ -64,8 +64,14 @@ async function syncSubscription(subscription: any, env: StripeEnv) {
     .eq("organization_id", orgId)
     .maybeSingle();
 
-  // Manuelle Freischaltungen werden niemals durch Zahlungs-Webhooks überschrieben.
-  if (existing?.source === "manual") {
+  // Aktive manuelle Freischaltungen werden niemals durch Zahlungs-Webhooks
+  // überschrieben. Die automatisch angelegte Free-Startzeile (source 'manual',
+  // Status 'free') darf dagegen durch ein echtes Abonnement ersetzt werden.
+  const manualGrantActive = existing?.source === "manual" &&
+    ["active", "trialing"].includes(existing.status) &&
+    existing.period_end !== null &&
+    new Date(existing.period_end) > new Date();
+  if (manualGrantActive) {
     console.log("Webhook: manuelle Freischaltung bleibt unberührt", orgId);
     return;
   }
