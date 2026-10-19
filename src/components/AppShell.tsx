@@ -1,21 +1,22 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { LayoutDashboard, Repeat, Users, Wallet, Settings, LogOut, FileText, FileSignature, Ellipsis } from "lucide-react";
-import type { ReactNode } from "react";
+import { LayoutDashboard, Repeat, Users, Wallet, Settings, LogOut, FileText, FileSignature, Menu } from "lucide-react";
+import { useState, type ReactNode } from "react";
 import logoMark from "@/assets/keshja-business-logo.png.asset.json";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/useProfile";
 import { useOrganization } from "@/hooks/useOrganization";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetTrigger, SheetContent, SheetTitle } from "@/components/ui/sheet";
 
 const NAV = [
-  { to: "/", label: "Dashboard", short: "Start", icon: LayoutDashboard, match: [] as string[] },
-  { to: "/rechnungen", label: "Rechnungen", short: "Rechnungen", icon: FileText, match: [] as string[] },
-  { to: "/angebote", label: "Angebote", short: "Angebote", icon: FileSignature, match: [] as string[] },
-  { to: "/finanzen", label: "Einnahmen & Ausgaben", short: "Buchungen", icon: Wallet, match: ["/kassenbons", "/auswertungen"] },
-  { to: "/fixkosten", label: "Wiederkehrende Kosten", short: "Fixkosten", icon: Repeat, match: [] as string[] },
-  { to: "/kunden", label: "Kunden", short: "Kunden", icon: Users, match: [] as string[] },
-  { to: "/einstellungen", label: "Einstellungen", short: "Mehr", icon: Settings, match: [] as string[] },
+  { to: "/", label: "Dashboard", tone: "brand", icon: LayoutDashboard, match: [] as string[] },
+  { to: "/rechnungen", label: "Rechnungen", tone: "blue", icon: FileText, match: [] as string[] },
+  { to: "/angebote", label: "Angebote", tone: "orange", icon: FileSignature, match: [] as string[] },
+  { to: "/finanzen", label: "Einnahmen & Ausgaben", tone: "income", icon: Wallet, match: ["/kassenbons", "/auswertungen"] },
+  { to: "/fixkosten", label: "Wiederkehrende Kosten", tone: "expense", icon: Repeat, match: [] as string[] },
+  { to: "/kunden", label: "Kunden", tone: "amber", icon: Users, match: [] as string[] },
+  { to: "/einstellungen", label: "Einstellungen", tone: "neutral", icon: Settings, match: [] as string[] },
 ] as const;
 
 function useActive() {
@@ -98,64 +99,16 @@ export function useSignOut() {
   };
 }
 
-export function AppShell({ children, dashboard = false }: { children: ReactNode; dashboard?: boolean }) {
+export function AppShell({ children }: { children: ReactNode; dashboard?: boolean }) {
   const { data: profile } = useProfile();
   const { data: org } = useOrganization();
   const signOut = useSignOut();
   const isActive = useActive();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <div className="business-ui min-h-screen bg-background">
-      <aside className="app-sidebar fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-sidebar-border bg-sidebar px-4 py-7 lg:flex">
-        <Logo className="px-2" />
-        <nav aria-label="Hauptnavigation" className="app-nav mt-10 flex flex-col gap-1.5">
-          {NAV.map((item) => {
-            const { to, label, icon: Icon } = item;
-            return (
-            <Link
-              key={to}
-              to={to}
-              className={
-                isActive(item)
-                  ? "brand-selected flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium bg-sidebar-primary text-sidebar-primary-foreground"
-                  : "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-              }
-            >
-              <Icon className="h-4.5 w-4.5" strokeWidth={1.75} />
-              {label}
-            </Link>
-            );
-          })}
-        </nav>
-        <div className="mt-auto border-t border-sidebar-border pt-3">
-          {profile ? (
-            <div className="flex items-center justify-between gap-2 px-3 py-1.5">
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-foreground">
-                  {profile.displayName}
-                </p>
-                <p className="truncate text-xs text-muted-foreground">
-                  {org?.organization?.name ?? "Kein Unternehmen"}
-                </p>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                type="button"
-                onClick={signOut}
-                aria-label="Abmelden"
-                title="Abmelden"
-                className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-              >
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </div>
-          ) : null}
-          <p className="px-3 pt-2 text-xs text-muted-foreground">KESHJA Business</p>
-        </div>
-      </aside>
-
-      <header className="sticky top-0 z-20 grid h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-card/90 px-5 backdrop-blur-lg lg:hidden">
+      <header className="sticky top-0 z-20 grid h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-card/90 px-5 backdrop-blur-lg">
         <Logo />
         <Button
           variant="ghost"
@@ -169,30 +122,35 @@ export function AppShell({ children, dashboard = false }: { children: ReactNode;
         </Button>
       </header>
 
-      <main className="app-main mx-auto w-full min-w-0 px-5 pb-28 pt-6 sm:px-8 lg:pb-16 lg:pl-80 lg:pr-16 lg:pt-12">
+      <main className="app-main mx-auto w-full min-w-0 px-5 pb-28 pt-6 sm:px-8 lg:px-16 lg:pt-12">
         {children}
       </main>
 
-      <nav aria-label="Mobile Hauptnavigation" className="mobile-nav app-nav fixed inset-x-0 bottom-0 z-30 flex overflow-x-auto border-t border-border bg-card/95 px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur-xl lg:hidden">
-        {(dashboard ? NAV.slice(0, 4) : NAV).map((item) => {
-          const { to, short, icon: Icon } = item;
-          return (
-          <Link
-            key={to}
-            to={to}
-            className={
-              isActive(item)
-                ? "brand-selected flex w-24 shrink-0 flex-col items-center gap-1.5 rounded-lg px-1 py-2 text-xs font-semibold"
-                : "flex w-24 shrink-0 flex-col items-center gap-1.5 rounded-lg px-1 py-2 text-xs font-medium text-muted-foreground"
-            }
-          >
-            <Icon className="h-5 w-5" strokeWidth={1.75} />
-            <span className="whitespace-nowrap">{short === "Mehr" ? "Einstellungen" : short}</span>
-          </Link>
-          );
-        })}
-        {dashboard && <details className="dash-more"><summary aria-label="Mehr" className="dash-more-trigger"><Ellipsis size={22} /><span>Mehr</span></summary><div className="dash-more-menu">{NAV.slice(4).map(item => <Link key={item.to} to={item.to}><item.icon size={18} />{item.label}</Link>)}<Button variant="ghost" onClick={signOut}><LogOut size={18} />Abmelden</Button></div></details>}
-      </nav>
+      <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+        <SheetTrigger asChild>
+          <Button type="button" size="icon" className="navigation-trigger" aria-label="Menü öffnen" title="Menü öffnen">
+            <Menu size={25} strokeWidth={1.75} />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="navigation-drawer" overlayClassName="navigation-overlay" closeLabel="Menü schließen" aria-describedby={undefined}>
+          <SheetTitle className="sr-only">KESHJA Business – Navigation</SheetTitle>
+          <div className="navigation-heading"><Logo /></div>
+          <nav aria-label="Hauptnavigation" className="navigation-list">
+            {NAV.map((item) => {
+              const active = isActive(item);
+              const Icon = item.icon;
+              return <Link key={item.to} to={item.to} aria-current={active ? "page" : undefined} className="navigation-link" onClick={() => setMenuOpen(false)}>
+                <span className={`navigation-icon navigation-icon-${item.tone}`}><Icon size={21} strokeWidth={1.75} /></span>
+                <span>{item.label}</span>
+              </Link>;
+            })}
+          </nav>
+          <div className="navigation-account">
+            {profile && <div className="min-w-0"><p className="truncate text-sm font-semibold">{profile.displayName}</p><p className="truncate text-xs text-muted-foreground">{org?.organization?.name ?? "Kein Unternehmen"}</p></div>}
+            <Button variant="ghost" onClick={() => { setMenuOpen(false); void signOut(); }} className="w-full justify-start"><LogOut size={18} />Abmelden</Button>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
