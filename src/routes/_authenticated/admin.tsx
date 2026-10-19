@@ -381,14 +381,24 @@ function PlanEditor({ plan }: { plan: TariffPlan }) {
       }}
     >
       <h3 className="font-semibold">{p.name}</h3>
-      <Field label="Monatspreis in Cent">
+      <Field label="Monatspreis in Cent (monatliche Zahlung)">
         <input
           type="number"
           min={0}
           required
           className={inputClass}
-          value={p.price_cents}
-          onChange={(e) => update({ ...p, price_cents: Number(e.target.value) })}
+          value={p.price_cents_monthly}
+          onChange={(e) => update({ ...p, price_cents_monthly: Number(e.target.value) })}
+        />
+      </Field>
+      <Field label="Jahrespreis in Cent (jährliche Vorauszahlung)">
+        <input
+          type="number"
+          min={0}
+          required
+          className={inputClass}
+          value={p.price_cents_annual}
+          onChange={(e) => update({ ...p, price_cents_annual: Number(e.target.value) })}
         />
       </Field>
       <Field label="Handbuchungen (leer = unbegrenzt)">

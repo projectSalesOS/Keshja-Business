@@ -36,7 +36,7 @@ export const Route = createFileRoute("/preise")({
       <section className="py-8">
         <h1 className="text-3xl font-semibold">Tarife für dein Business</h1>
         <p className="mb-8 mt-3 text-muted-foreground">
-          Monatliche Preise · Freischaltung aktuell durch den Betreiber.
+          Jährliche oder monatliche Zahlung · Freischaltung aktuell durch den Betreiber.
         </p>
         <TariffComparison publicPage />
         <p className="mt-7 text-sm text-muted-foreground">

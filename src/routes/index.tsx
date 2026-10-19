@@ -123,7 +123,7 @@ function Landing() {
         <section className="mx-auto max-w-6xl px-5 py-12">
           <h2 className="text-3xl font-semibold">Dein passender Tarif</h2>
           <p className="mb-7 mt-3 text-sm text-muted-foreground">
-            Monatliche Preise. Ein gemeinsames Kontingent für dein Unternehmen.
+            Jährlich oder monatlich zahlbar. Ein gemeinsames Kontingent für dein Unternehmen.
           </p>
           <TariffComparison publicPage />
         </section>
