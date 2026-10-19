@@ -654,24 +654,30 @@ export type Database = {
           active_organization_id: string | null
           created_at: string
           display_name: string | null
+          email: string | null
           household_id: string | null
           id: string
+          operator_notified_at: string | null
           updated_at: string
         }
         Insert: {
           active_organization_id?: string | null
           created_at?: string
           display_name?: string | null
+          email?: string | null
           household_id?: string | null
           id: string
+          operator_notified_at?: string | null
           updated_at?: string
         }
         Update: {
           active_organization_id?: string | null
           created_at?: string
           display_name?: string | null
+          email?: string | null
           household_id?: string | null
           id?: string
+          operator_notified_at?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -943,6 +949,8 @@ export type Database = {
           name: string
           ocr_limit: number
           price_cents: number
+          price_cents_annual: number
+          price_cents_monthly: number
           voice: boolean
         }
         Insert: {
@@ -954,6 +962,8 @@ export type Database = {
           name: string
           ocr_limit?: number
           price_cents?: number
+          price_cents_annual?: number
+          price_cents_monthly?: number
           voice?: boolean
         }
         Update: {
@@ -965,6 +975,8 @@ export type Database = {
           name?: string
           ocr_limit?: number
           price_cents?: number
+          price_cents_annual?: number
+          price_cents_monthly?: number
           voice?: boolean
         }
         Relationships: []
