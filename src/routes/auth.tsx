@@ -8,7 +8,7 @@ import { notifyRegistration } from "@/lib/notifications.functions";
 import type { BillingInterval } from "@/lib/tariffs";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (s: Record<string, unknown>): {mode?: "login" | "register"; interval?: BillingInterval} => ({
+  validateSearch: (s: Record<string, unknown>): {mode?: "login" | "register"; interval?: BillingInterval | undefined} => ({
     mode: s["mode"] === "register" ? "register" : "login",
     interval: s["interval"] === "monthly" ? "monthly" : s["interval"] === "annual" ? "annual" : undefined,
   }),
