@@ -25,6 +25,10 @@ try:
  with concurrent.futures.ThreadPoolExecutor(2) as pool:res=list(pool.map(lambda _:call('/transactions',row(),member),range(2)))
  check('Concurrent last manual slot: exactly one success',sum(r.ok for r in res)==1)
  counted=call('/transactions?organization_id=eq.'+org+'&select=id',headers=admin,method='GET');check('Exactly 50 manual rows read back',len(counted.json())==50)
+ rec=call('/fixed_costs',{'organization_id':org,'user_id':user,'name':'Temporary recurring verification','amount':1,'category':'Sonstige Ausgaben','interval':'monatlich','due_day':19,'start_date':'2026-10-19'},member)
+ check('Recurring cost created',rec.ok)
+ first=rpc('book_due_recurring_expenses',{'_org':org},member);second=rpc('book_due_recurring_expenses',{'_org':org},member)
+ check('Recurring RPC works at manual limit and is idempotent',first.ok and first.json()==1 and second.ok and second.json()==0)
  requests_ids=[str(uuid.uuid4()) for _ in range(4)]
  for rid in requests_ids[:2]:assert rpc('reserve_ocr',{'_org':org,'_user':user,'_request':rid,'_hash':'h'+rid}).ok
  def reserve(rid):return rpc('reserve_ocr',{'_org':org,'_user':user,'_request':rid,'_hash':'h'+rid})
@@ -63,7 +67,7 @@ try:
  check('Operator central tariff editor authorized',rpc('operator_set_plan',{'_plan':'basic','_values':plans,'_reason':'Temporary no-op rule verification'},member).ok)
 finally:
  if org:
-  for table,col in [('payments','organization_id'),('transactions','organization_id'),('fixed_costs','organization_id'),('ocr_usage','organization_id'),('subscription_audit','organization_id'),('subscriptions','organization_id'),('organization_members','organization_id')]:
+  for table,col in [('payments','organization_id'),('transactions','organization_id'),('fixed_costs','organization_id'),('document_items','organization_id'),('documents','organization_id'),('customers','organization_id'),('ocr_usage','organization_id'),('subscription_audit','organization_id'),('subscriptions','organization_id'),('organization_members','organization_id')]:
    r=call('/'+table+'?'+col+'=eq.'+org,headers=admin,method='DELETE')
    assert r.ok,('cleanup',table,r.status_code)
   r=call('/organizations?id=eq.'+org,headers=admin,method='DELETE');assert r.ok,('cleanup org',r.status_code)
