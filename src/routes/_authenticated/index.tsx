@@ -90,17 +90,11 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
       </Link>)}
     </div>
 
-    <section className="dash-card dash-secondary-section" aria-label="Ausgabenübersicht">
-      <div className="mb-5 flex items-center gap-3"><span className="dash-icon dash-brand"><PieIcon size={21} /></span><div><h2 className="dash-title">Ausgabenübersicht</h2><p className="mt-1 text-xs text-muted-foreground">Kategorien im gewählten Zeitraum</p></div></div>
-      {m.categories.length > 0 ? <div className="grid items-center gap-6 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
-        <div className="relative mx-auto h-52 w-52"><ExpenseRing data={m.categories} /><div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-10 text-center"><strong className="break-all text-xl tabular-nums">{currency(m.totals.expense)}</strong><span className="mt-1 text-[11px] text-muted-foreground">Gesamtausgaben</span></div></div>
-        <ul data-testid="expense-categories" className="min-w-0">{m.categories.map((c, i) => <li className="dash-category" key={c.name}>
-          <svg width="8" height="8" aria-hidden="true"><circle cx="4" cy="4" r="4" fill={categoryColors[i % categoryColors.length]} /></svg>
-          <span className="min-w-0 text-sm">{c.name}<span className="ml-2 text-xs text-muted-foreground">{m.totals.expense > 0 ? `${(c.value / m.totals.expense * 100).toLocaleString("de-DE", { maximumFractionDigits: 1 })} %` : "–"}</span></span>
-          <strong className="text-sm font-medium tabular-nums">{currency(c.value)}</strong>
-        </li>)}</ul>
-      </div> : <Empty>Keine bezahlten Ausgaben in diesem Zeitraum.</Empty>}
-    </section>
+    <div aria-label="Schnellaktionen" className="grid grid-cols-3 gap-3">
+      <Link to="/kassenbons" search={{ capture: "1" }} className="dash-card dash-action"><span className="dash-icon dash-brand"><Camera size={21} /></span><span>Beleg erfassen<small>Foto oder Galerie</small></span><ChevronRight size={16} /></Link>
+      <Link to="/finanzen" search={{ neu: "1" }} className="dash-card dash-action"><span className="dash-icon dash-brand"><Plus size={21} /></span><span>Buchung erfassen<small>Einnahme oder Ausgabe</small></span><ChevronRight size={16} /></Link>
+      <Link to="/rechnungen" search={{ neu: "1" }} className="dash-card dash-action"><span className="dash-icon dash-brand"><FileText size={21} /></span><span>Rechnung erstellen<small>Schnell & einfach</small></span><ChevronRight size={16} /></Link>
+    </div>
 
     <section className="dash-card" aria-label="Einnahmen und Ausgaben im Diagrammzeitraum">
       <div className="dash-chart-heading"><span className="dash-icon dash-brand"><TrendingUp size={21} /></span><div><h2 className="dash-title">Einnahmen & Ausgaben</h2><p className="mt-1 text-xs text-muted-foreground">{formatDate(chartRange.from)} – {formatDate(chartRange.to)}</p></div>
@@ -113,11 +107,18 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
       <div className="dash-bar-chart min-w-0"><MonthlyBars data={chart} /></div>
     </section>
 
-    <div aria-label="Schnellaktionen" className="grid grid-cols-3 gap-3">
-      <Link to="/kassenbons" search={{ capture: "1" }} className="dash-card dash-action"><span className="dash-icon dash-brand"><Camera size={21} /></span><span>Beleg erfassen<small>Foto oder Galerie</small></span><ChevronRight size={16} /></Link>
-      <Link to="/finanzen" search={{ neu: "1" }} className="dash-card dash-action"><span className="dash-icon dash-brand"><Plus size={21} /></span><span>Buchung erfassen<small>Einnahme oder Ausgabe</small></span><ChevronRight size={16} /></Link>
-      <Link to="/rechnungen" search={{ neu: "1" }} className="dash-card dash-action"><span className="dash-icon dash-brand"><FileText size={21} /></span><span>Rechnung erstellen<small>Schnell & einfach</small></span><ChevronRight size={16} /></Link>
-    </div>
+    <section className="dash-card dash-secondary-section" aria-label="Ausgabenübersicht">
+      <div className="mb-5 flex items-center gap-3"><span className="dash-icon dash-brand"><PieIcon size={21} /></span><div><h2 className="dash-title">Ausgabenübersicht</h2><p className="mt-1 text-xs text-muted-foreground">Kategorien im gewählten Zeitraum</p></div></div>
+      {m.categories.length > 0 ? <div className="grid items-center gap-6 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+        <div className="relative mx-auto h-52 w-52"><ExpenseRing data={m.categories} /><div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-10 text-center"><strong className="break-all text-xl tabular-nums">{currency(m.totals.expense)}</strong><span className="mt-1 text-[11px] text-muted-foreground">Gesamtausgaben</span></div></div>
+        <ul data-testid="expense-categories" className="min-w-0">{m.categories.map((c, i) => <li className="dash-category" key={c.name}>
+          <svg width="8" height="8" aria-hidden="true"><circle cx="4" cy="4" r="4" fill={categoryColors[i % categoryColors.length]} /></svg>
+          <span className="min-w-0 text-sm">{c.name}<span className="ml-2 text-xs text-muted-foreground">{m.totals.expense > 0 ? `${(c.value / m.totals.expense * 100).toLocaleString("de-DE", { maximumFractionDigits: 1 })} %` : "–"}</span></span>
+          <strong className="text-sm font-medium tabular-nums">{currency(c.value)}</strong>
+        </li>)}</ul>
+      </div> : <Empty>Keine bezahlten Ausgaben in diesem Zeitraum.</Empty>}
+    </section>
+
     <div className="dash-secondary-section grid gap-6 lg:grid-cols-2">
       <Panel title="Letzte Buchungen" action={<Link to="/finanzen" className="text-xs font-medium text-primary">Alle</Link>}>
         {recent.length ? <ul className="divide-y divide-border text-sm">{recent.map((t) => <li key={t.id} className="flex items-center justify-between gap-3 py-3"><span className="min-w-0"><span className="block truncate font-medium">{t.description || t.category}</span><span className="text-xs text-muted-foreground">{formatDate(t.booking_date)} · {t.category}{t.status === "offen" ? " · offen" : ""}</span></span><span className={`shrink-0 font-medium tabular-nums dash-${t.type}`}>{t.type === "income" ? "+" : "−"}{currency(t.amount)}</span></li>)}</ul> : <Empty>Keine Buchungen im gewählten Zeitraum.</Empty>}
