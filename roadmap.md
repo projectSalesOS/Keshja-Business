@@ -1,5 +1,9 @@
 # Keshja Business – Roadmap
 
+## Menüführung (19.10.2026)
+- [ ] Bisherige Seitenleiste und untere Navigation durch einen Menü-Button und linkes Seitenmenü auf allen Bildschirmgrößen ersetzen; vorhandene Ziele, Profil und Abmelden erhalten.
+- [ ] Öffnen/Schließen, Zielwechsel, aktive Markierung, Neuladen und kleine Smartphone-/Desktop-Darstellung mit echtem Konto prüfen.
+
 - [x] Dashboard-Reihenfolge: Kennzahlen → drei Schnellzugriffe → Liniendiagramm → Balkendiagramm → Ausgabenübersicht → Letzte Buchungen. Nur Anordnung verschoben, keine Funktionen oder Inhalte geändert; 89 Tests bestanden, drei Aktionen navigieren weiterhin korrekt, beide Diagramme mit denselben Daten, 320/411/1280 px ohne Überbreite, Abstände 12 px mobil / 16 px Desktop, Build OK, keine Laufzeitfehler.
 
 
