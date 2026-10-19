@@ -602,3 +602,8 @@
   .dashboard-view :is(.dash-income-card,.dash-expense-card) .dash-metric { font-size: 18px; }
   .dashboard-view :is(.dash-income-card,.dash-expense-card) > .dash-icon { width: 18px; height: 18px; }
 }
+/* Auf sehr schmalen Smartphones ist im Kopfbereich kein Platz für die Datumssteuerung:
+   sie steht vollständig im Zeitraum-Block unterhalb (id="dashboard-filters"). */
+@media (max-width: 389px) {
+  .dashboard-view .dash-header-period { display: none; }
+}
