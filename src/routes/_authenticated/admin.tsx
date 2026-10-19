@@ -40,7 +40,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
 });
 function Admin() {
   const get = useServerFn(getOperatorDashboard);
-  const q = useQuery({ queryKey: ["operator-dashboard"], queryFn: () => get() });
+  const q = useQuery({ queryKey: ["operator-dashboard"], queryFn: () => get(), retry: false });
   return (
     <AppShell>
       <div className="space-y-7">
