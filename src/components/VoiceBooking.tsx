@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronRight, Mic, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useServerFn } from "@tanstack/react-start";
+import { checkFeature } from "@/lib/tariffs.functions";
+import { useTariff } from "@/hooks/useTariff";
+import { TariffNotice } from "@/components/TariffNotice";
 import { parseVoiceBooking } from "@/lib/voice-booking";
 
 type Recognition = {
@@ -12,7 +16,9 @@ type Recognition = {
 };
 type SpeechWindow = Window & { SpeechRecognition?: new () => Recognition; webkitSpeechRecognition?: new () => Recognition };
 
-export function VoiceBooking({ onResult, prominent = false, dashboard = false }: { onResult: (result: ReturnType<typeof parseVoiceBooking>) => void; prominent?: boolean; dashboard?: boolean }) {
+export function VoiceBooking({ orgId, onResult, prominent = false, dashboard = false }: { orgId: string; onResult: (result: ReturnType<typeof parseVoiceBooking>) => void; prominent?: boolean; dashboard?: boolean }) {
+  const entitlement = useTariff(orgId);
+  const check = useServerFn(checkFeature);
   const recognition = useRef<Recognition | null>(null);
   const [supported, setSupported] = useState(false);
   const [listening, setListening] = useState(false);
@@ -23,7 +29,8 @@ export function VoiceBooking({ onResult, prominent = false, dashboard = false }:
     setSupported(Boolean(w.SpeechRecognition ?? w.webkitSpeechRecognition));
     return () => { const current = recognition.current; if (current) { current.onresult = null; current.onend = null; current.onerror = null; current.abort(); } };
   }, []);
-  function start() {
+  async function start() {
+    try { await check({data:{orgId,feature:"voice"}}); } catch(e) { setError(e instanceof Error ? e.message : "Tarifprüfung fehlgeschlagen."); return; }
     const w = window as SpeechWindow;
     const Constructor = w.SpeechRecognition ?? w.webkitSpeechRecognition;
     if (!Constructor) return;
@@ -58,6 +65,7 @@ export function VoiceBooking({ onResult, prominent = false, dashboard = false }:
     setError(""); setTranscript("");
     try { r.start(); setListening(true); } catch { setError("Mikrofon konnte nicht gestartet werden."); }
   }
+  if (!entitlement.data?.plan.voice) return <TariffNotice feature="Sprachbuchung" />;
   return (
     <div className={`space-y-2 ${dashboard ? "dash-voice-card" : prominent ? "w-full sm:w-64" : ""}`}>
       <Button type="button" variant={dashboard ? "ghost" : prominent ? "default" : "outline"} className={dashboard ? "dash-voice-button" : prominent ? "min-h-14 w-full whitespace-normal rounded-xl px-4 text-base [&_svg]:size-6" : ""} disabled={!supported} onClick={() => listening ? recognition.current?.stop() : start()} aria-label={listening ? "Sprachaufnahme stoppen" : dashboard ? "Buchung per Sprache erfassen" : prominent ? "Buchung erfassen" : "Sprachbuchung starten"} aria-pressed={listening}>

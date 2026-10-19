@@ -5,12 +5,14 @@ import type { TxStatus, TxType } from "@/lib/business";
 
 export type Customer = Database["public"]["Tables"]["customers"]["Row"];
 type TxRow = Database["public"]["Tables"]["transactions"]["Row"];
-export type Transaction = Omit<TxRow, "amount" | "type" | "status"> & {
+export type Transaction = Omit<TxRow, "amount" | "type" | "status" | "capture_source"> & {
+  capture_source?: "manual" | "voice";
   amount: number;
   type: TxType;
   status: TxStatus;
 };
 export type TransactionInput = {
+  capture_source?: "manual" | "voice";
   type: TxType;
   amount: number;
   booking_date: string;
@@ -70,6 +72,7 @@ export function useTransactions(orgId: string) {
       if (error) throw error;
       return (data ?? []).map((r) => ({
         ...r,
+        capture_source: r.capture_source === "voice" ? "voice" : "manual",
         amount: Number(r.amount),
         type: r.type as TxType,
         status: r.status as TxStatus,
@@ -93,6 +96,7 @@ export function useSaveTransaction(orgId: string) {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: transactionsKey(orgId) });
+      qc.invalidateQueries({ queryKey: ["tariff", orgId] });
     },
   });
 }

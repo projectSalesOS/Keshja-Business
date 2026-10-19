@@ -16,7 +16,7 @@ import { TransactionForm } from "@/components/TransactionForm";
 import { Button } from "@/components/ui/button";
 import type { parseVoiceBooking } from "@/lib/voice-booking";
 
-export const Route = createFileRoute("/_authenticated/")({
+export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [
     { title: "Dashboard – KESHJA Business" },
     { name: "description", content: "Gewinn, Einnahmen, Ausgabenkategorien und Verläufe aus deinen tatsächlichen Geschäftsbuchungen." },
@@ -67,7 +67,7 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
   return <div className="dashboard-view space-y-4">
     <header className="dash-topbar"><Logo /><div className="dash-top-controls"><Button variant="outline" size="icon" aria-label="Zeitraum auswählen" onClick={() => document.getElementById("dashboard-filters")?.scrollIntoView({ behavior: "smooth", block: "center" })}><CalendarDays size={20} /></Button><label className="dash-header-period"><span className="sr-only">Zeitraum im Kopfbereich</span><input type="month" value={range.to.slice(0, 7)} onChange={e => { if (!e.target.value) return; const from = `${e.target.value}-01`; setPreset("frei"); setCustom(rangeFor("monat", from)); }} /></label><details className="dash-notifications"><summary aria-label="Offene Rechnungen"><Bell size={20} />{outstanding.length > 0 && <span className="dash-notification-dot" />}</summary><div className="dash-notification-list"><strong>Offene Rechnungen</strong>{outstanding.length ? outstanding.slice(0, 5).map(r => <Link key={r.id} to="/rechnungen">{r.number} · {currency(r.open)}</Link>) : <p>Keine offenen Rechnungen.</p>}</div></details></div></header>
     <PageHeader title="Dashboard" description={`Deine Geschäftszahlen im Überblick · ${greeting}`} />
-    <VoiceBooking dashboard onResult={setVoiceResult} />
+    <VoiceBooking orgId={orgId} dashboard onResult={setVoiceResult} />
     <div id="dashboard-filters" className="dash-filters space-y-3">
       <div className="flex flex-wrap items-start gap-2">
         <PeriodPicker preset={preset} custom={custom} today={today} onChange={(p, c) => { setPreset(p); setCustom(c); }} />

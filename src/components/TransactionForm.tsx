@@ -69,6 +69,7 @@ export function TransactionForm({
           status,
           customer_id: customerId || null,
           receipt_id: receiptId || null,
+          capture_source: voiceDraft ? "voice" : tx?.capture_source ?? "manual",
         },
       });
       toast.success(tx ? "Buchung gespeichert." : "Buchung erfasst.");
@@ -81,7 +82,7 @@ export function TransactionForm({
   return (
     <Modal title={tx ? "Buchung bearbeiten" : "Neue Buchung"} onClose={onClose}>
       <form className="space-y-3" onSubmit={submit}>
-        {!tx && <VoiceBooking onResult={(result) => {
+        {!tx && <VoiceBooking orgId={orgId} onResult={(result) => {
           if (result.type) { setType(result.type); setCategory(""); }
           else setCategory("");
           setAmount(result.amount === null ? "" : String(result.amount).replace(".", ","));

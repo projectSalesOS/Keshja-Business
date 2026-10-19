@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Loader2, Upload } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
+import { useOrganization } from "@/hooks/useOrganization";
 import { analyzeReceipt } from "@/lib/receipts.functions";
 import { diffTraces, type ReceiptTrace } from "@/lib/receipt-trace";
 
@@ -38,6 +39,7 @@ function readAsDataUrl(file: File): Promise<string> {
 }
 
 function OcrDebugPage() {
+  const {data: org}=useOrganization();
   const inputRef = useRef<HTMLInputElement>(null);
   const analyze = useServerFn(analyzeReceipt);
   const [runs, setRuns] = useState<ReceiptTrace[]>([]);
@@ -52,10 +54,12 @@ function OcrDebugPage() {
     setError(null);
     setRuns([]);
     try {
+      const organizationId=org?.organization?.id;
+      if(!organizationId) throw new Error("Bitte zuerst ein Unternehmen wählen.");
       const imageDataUrl = await readAsDataUrl(file);
       const collected: ReceiptTrace[] = [];
       for (let i = 0; i < count; i += 1) {
-        const result = await analyze({ data: { imageDataUrl } });
+        const result = await analyze({ data: { imageDataUrl, organizationId, requestId: crypto.randomUUID() } });
         collected.push(result.trace);
         setHash(result.imageSha256);
         setRuns([...collected]);

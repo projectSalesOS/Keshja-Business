@@ -9,20 +9,30 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as PreiseRouteImport } from './routes/preise'
+import { Route as RechtlichesRouteImport } from './routes/rechtliches'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAngeboteRouteImport } from './routes/_authenticated/angebote'
 import { Route as AuthenticatedAuswertungenRouteImport } from './routes/_authenticated/auswertungen'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedEinstellungenRouteImport } from './routes/_authenticated/einstellungen'
 import { Route as AuthenticatedFinanzenRouteImport } from './routes/_authenticated/finanzen'
 import { Route as AuthenticatedFixkostenRouteImport } from './routes/_authenticated/fixkosten'
 import { Route as AuthenticatedKassenbonsRouteImport } from './routes/_authenticated/kassenbons'
 import { Route as AuthenticatedKundenRouteImport } from './routes/_authenticated/kunden'
 import { Route as AuthenticatedRechnungenRouteImport } from './routes/_authenticated/rechnungen'
+import { Route as AuthenticatedTarifRouteImport } from './routes/_authenticated/tarif'
 import { Route as AuthenticatedDebugOcrRouteImport } from './routes/_authenticated/debug.ocr'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -32,14 +42,24 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PreiseRoute = PreiseRouteImport.update({
+  id: '/preise',
+  path: '/preise',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RechtlichesRoute = RechtlichesRouteImport.update({
+  id: '/rechtliches',
+  path: '/rechtliches',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAngeboteRoute = AuthenticatedAngeboteRouteImport.update({
@@ -53,6 +73,11 @@ const AuthenticatedAuswertungenRoute =
     path: '/auswertungen',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedEinstellungenRoute =
   AuthenticatedEinstellungenRouteImport.update({
     id: '/einstellungen',
@@ -84,6 +109,11 @@ const AuthenticatedRechnungenRoute = AuthenticatedRechnungenRouteImport.update({
   path: '/rechnungen',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTarifRoute = AuthenticatedTarifRouteImport.update({
+  id: '/tarif',
+  path: '/tarif',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDebugOcrRoute = AuthenticatedDebugOcrRouteImport.update({
   id: '/debug/ocr',
   path: '/debug/ocr',
@@ -91,47 +121,62 @@ const AuthenticatedDebugOcrRoute = AuthenticatedDebugOcrRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof AuthenticatedIndexRoute
+  '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/preise': typeof PreiseRoute
+  '/rechtliches': typeof RechtlichesRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/angebote': typeof AuthenticatedAngeboteRoute
   '/auswertungen': typeof AuthenticatedAuswertungenRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/einstellungen': typeof AuthenticatedEinstellungenRoute
   '/finanzen': typeof AuthenticatedFinanzenRoute
   '/fixkosten': typeof AuthenticatedFixkostenRoute
   '/kassenbons': typeof AuthenticatedKassenbonsRoute
   '/kunden': typeof AuthenticatedKundenRoute
   '/rechnungen': typeof AuthenticatedRechnungenRoute
+  '/tarif': typeof AuthenticatedTarifRoute
   '/debug/ocr': typeof AuthenticatedDebugOcrRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/preise': typeof PreiseRoute
+  '/rechtliches': typeof RechtlichesRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/angebote': typeof AuthenticatedAngeboteRoute
   '/auswertungen': typeof AuthenticatedAuswertungenRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/einstellungen': typeof AuthenticatedEinstellungenRoute
   '/finanzen': typeof AuthenticatedFinanzenRoute
   '/fixkosten': typeof AuthenticatedFixkostenRoute
   '/kassenbons': typeof AuthenticatedKassenbonsRoute
   '/kunden': typeof AuthenticatedKundenRoute
   '/rechnungen': typeof AuthenticatedRechnungenRoute
-  '/': typeof AuthenticatedIndexRoute
+  '/tarif': typeof AuthenticatedTarifRoute
   '/debug/ocr': typeof AuthenticatedDebugOcrRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/preise': typeof PreiseRoute
+  '/rechtliches': typeof RechtlichesRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/angebote': typeof AuthenticatedAngeboteRoute
   '/_authenticated/auswertungen': typeof AuthenticatedAuswertungenRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/einstellungen': typeof AuthenticatedEinstellungenRoute
   '/_authenticated/finanzen': typeof AuthenticatedFinanzenRoute
   '/_authenticated/fixkosten': typeof AuthenticatedFixkostenRoute
   '/_authenticated/kassenbons': typeof AuthenticatedKassenbonsRoute
   '/_authenticated/kunden': typeof AuthenticatedKundenRoute
   '/_authenticated/rechnungen': typeof AuthenticatedRechnungenRoute
-  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/tarif': typeof AuthenticatedTarifRoute
   '/_authenticated/debug/ocr': typeof AuthenticatedDebugOcrRoute
 }
 export interface FileRouteTypes {
@@ -139,55 +184,80 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/preise'
+    | '/rechtliches'
     | '/reset-password'
+    | '/admin'
     | '/angebote'
     | '/auswertungen'
+    | '/dashboard'
     | '/einstellungen'
     | '/finanzen'
     | '/fixkosten'
     | '/kassenbons'
     | '/kunden'
     | '/rechnungen'
+    | '/tarif'
     | '/debug/ocr'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/auth'
+    | '/preise'
+    | '/rechtliches'
     | '/reset-password'
+    | '/admin'
     | '/angebote'
     | '/auswertungen'
+    | '/dashboard'
     | '/einstellungen'
     | '/finanzen'
     | '/fixkosten'
     | '/kassenbons'
     | '/kunden'
     | '/rechnungen'
-    | '/'
+    | '/tarif'
     | '/debug/ocr'
   id:
     | '__root__'
+    | '/'
     | '/_authenticated'
     | '/auth'
+    | '/preise'
+    | '/rechtliches'
     | '/reset-password'
+    | '/_authenticated/admin'
     | '/_authenticated/angebote'
     | '/_authenticated/auswertungen'
+    | '/_authenticated/dashboard'
     | '/_authenticated/einstellungen'
     | '/_authenticated/finanzen'
     | '/_authenticated/fixkosten'
     | '/_authenticated/kassenbons'
     | '/_authenticated/kunden'
     | '/_authenticated/rechnungen'
-    | '/_authenticated/'
+    | '/_authenticated/tarif'
     | '/_authenticated/debug/ocr'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  PreiseRoute: typeof PreiseRoute
+  RechtlichesRoute: typeof RechtlichesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -202,6 +272,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/preise': {
+      id: '/preise'
+      path: '/preise'
+      fullPath: '/preise'
+      preLoaderRoute: typeof PreiseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rechtliches': {
+      id: '/rechtliches'
+      path: '/rechtliches'
+      fullPath: '/rechtliches'
+      preLoaderRoute: typeof RechtlichesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -209,11 +293,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/': {
-      id: '/_authenticated/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/angebote': {
@@ -228,6 +312,13 @@ declare module '@tanstack/react-router' {
       path: '/auswertungen'
       fullPath: '/auswertungen'
       preLoaderRoute: typeof AuthenticatedAuswertungenRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/einstellungen': {
@@ -272,6 +363,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRechnungenRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/tarif': {
+      id: '/_authenticated/tarif'
+      path: '/tarif'
+      fullPath: '/tarif'
+      preLoaderRoute: typeof AuthenticatedTarifRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/debug/ocr': {
       id: '/_authenticated/debug/ocr'
       path: '/debug/ocr'
@@ -283,28 +381,32 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedAngeboteRoute: typeof AuthenticatedAngeboteRoute
   AuthenticatedAuswertungenRoute: typeof AuthenticatedAuswertungenRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedEinstellungenRoute: typeof AuthenticatedEinstellungenRoute
   AuthenticatedFinanzenRoute: typeof AuthenticatedFinanzenRoute
   AuthenticatedFixkostenRoute: typeof AuthenticatedFixkostenRoute
   AuthenticatedKassenbonsRoute: typeof AuthenticatedKassenbonsRoute
   AuthenticatedKundenRoute: typeof AuthenticatedKundenRoute
   AuthenticatedRechnungenRoute: typeof AuthenticatedRechnungenRoute
-  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedTarifRoute: typeof AuthenticatedTarifRoute
   AuthenticatedDebugOcrRoute: typeof AuthenticatedDebugOcrRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedAngeboteRoute: AuthenticatedAngeboteRoute,
   AuthenticatedAuswertungenRoute: AuthenticatedAuswertungenRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedEinstellungenRoute: AuthenticatedEinstellungenRoute,
   AuthenticatedFinanzenRoute: AuthenticatedFinanzenRoute,
   AuthenticatedFixkostenRoute: AuthenticatedFixkostenRoute,
   AuthenticatedKassenbonsRoute: AuthenticatedKassenbonsRoute,
   AuthenticatedKundenRoute: AuthenticatedKundenRoute,
   AuthenticatedRechnungenRoute: AuthenticatedRechnungenRoute,
-  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedTarifRoute: AuthenticatedTarifRoute,
   AuthenticatedDebugOcrRoute: AuthenticatedDebugOcrRoute,
 }
 
@@ -312,8 +414,11 @@ const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  PreiseRoute: PreiseRoute,
+  RechtlichesRoute: RechtlichesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport

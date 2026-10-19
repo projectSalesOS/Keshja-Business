@@ -1,3 +1,4 @@
+import { generateChatCompletion, GatewayError } from "@lovable.dev/ai-gateway";
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { ReceiptCheck } from "./receipt-check";
@@ -16,7 +17,7 @@ import { extractVat, validateVat, vatTotals } from "./receipt-vat";
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const MODEL = "openai/gpt-5.4-mini";
 
-function validateImageInput(input: { imageDataUrl: string }) {
+function validateImageInput(input: { imageDataUrl: string; organizationId: string; requestId: string }) {
   const url = input?.imageDataUrl;
   if (typeof url !== "string" || !/^data:image\/(png|jpe?g|webp|heic|heif);base64,/i.test(url)) {
     throw new Error("Bitte ein gültiges Foto (JPG, PNG oder WEBP) auswählen.");
@@ -25,7 +26,8 @@ function validateImageInput(input: { imageDataUrl: string }) {
   if (bytes > MAX_IMAGE_BYTES) {
     throw new Error("Das Foto ist zu groß. Bitte ein kleineres Bild verwenden (max. 8 MB).");
   }
-  return { imageDataUrl: url };
+  if (!/^[0-9a-f-]{36}$/i.test(input.organizationId) || !/^[0-9a-f-]{36}$/i.test(input.requestId)) throw new Error("Ungültige Scan-Anfrage.");
+  return { imageDataUrl: url, organizationId: input.organizationId, requestId: input.requestId };
 }
 
 /** Stabile Prüfsumme des Fotos, um Wiederholungsläufe vergleichen zu können. */
@@ -101,54 +103,16 @@ export type AnalyzeResult = {
   model: string;
 };
 
-async function transcribe(imageDataUrl: string, apiKey: string): Promise<Record<string, unknown>> {
-  let response: Response;
-  try {
-    response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Lovable-API-Key": apiKey },
-      body: JSON.stringify({
-        model: MODEL,
-        // Determinismus: keine Kreativität, feste Startbedingungen.
-        temperature: 0,
-        top_p: 1,
-        seed: 7,
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          {
-            role: "user",
-            content: [
-              { type: "text", text: "Transkribiere diesen Kassenbon Zeile für Zeile." },
-              { type: "image_url", image_url: { url: imageDataUrl } },
-            ],
-          },
-        ],
-        response_format: {
-          type: "json_schema",
-          json_schema: { name: "kassenbon_rohzeilen", strict: true, schema: RESPONSE_SCHEMA },
-        },
-      }),
-    });
-  } catch (error) {
-    console.error("AI gateway network error", error);
-    throw new Error("Netzwerkfehler bei der KI-Analyse. Bitte erneut versuchen.");
-  }
-
-  if (!response.ok) {
-    const failure = await response.json().catch(() => null) as { message?: string; error?: { message?: string } } | null;
-    throw new Error(failure?.message ?? failure?.error?.message ?? `KI-Analyse nicht verfügbar (${response.status}).`);
-  }
-
-  const payload = (await response.json()) as { choices?: { message?: { content?: string; refusal?: string } }[] };
-  if (payload.choices?.[0]?.message?.refusal) throw new Error(payload.choices[0].message.refusal);
-  const content = payload.choices?.[0]?.message?.content;
-  if (!content) throw new Error("Die KI hat keine Daten geliefert; die Analyse wurde beendet.");
-
-  try {
-    return JSON.parse(content) as Record<string, unknown>;
-  } catch {
-    throw new Error("Die KI-Antwort war unvollständig. Bitte erneut versuchen.");
-  }
+async function transcribe(imageDataUrl: string): Promise<Record<string, unknown>> {
+  const payload = await generateChatCompletion({
+    model: MODEL, temperature: 0, top_p: 1, seed: 7,
+    messages: [{ role: "system", content: SYSTEM_PROMPT }, {role: "user", content: [{ type: "text", text: "Transkribiere diesen Kassenbon Zeile für Zeile." }, {type: "image_url", image_url: { url: imageDataUrl }}]}],
+    response_format: {type: "json_schema", json_schema: {name: "kassenbon_rohzeilen", strict: true, schema: RESPONSE_SCHEMA}},
+  });
+  if(payload.choices[0]?.message.refusal) throw new Error("Die KI konnte dieses Bild nicht verarbeiten.");
+  const content=payload.choices[0]?.message.content;
+  if(typeof content!=="string" || !content) throw new Error("Die KI hat keine lesbaren Daten geliefert.");
+  try { return JSON.parse(content) as Record<string,unknown>; } catch { throw new Error("Die KI-Antwort war unvollständig. Der Scan wurde gezählt."); }
 }
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
@@ -156,11 +120,27 @@ const round2 = (n: number) => Math.round(n * 100) / 100;
 export const analyzeReceipt = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(validateImageInput)
-  .handler(async ({ data }): Promise<AnalyzeResult> => {
-    const apiKey = process.env["LOVABLE_API_KEY"];
-    if (!apiKey) throw new Error("Die KI-Analyse ist derzeit nicht konfiguriert.");
-
-    const raw = await transcribe(data.imageDataUrl, apiKey);
+  .handler(async ({ data, context }): Promise<AnalyzeResult> => {
+    const { data: membership, error: memberError } = await context.supabase.from("organization_members").select("id").eq("organization_id", data.organizationId).eq("user_id", context.userId).maybeSingle();
+    if(memberError || !membership) throw new Error("Kein Zugriff auf dieses Unternehmen.");
+    const imageSha256 = await sha256(data.imageDataUrl);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const reservation = await supabaseAdmin.rpc("reserve_ocr", {_org:data.organizationId,_user:context.userId,_request:data.requestId,_hash:imageSha256});
+    if(reservation.error) throw new Error(reservation.error.message);
+    const state=reservation.data as {state:string;result?:AnalyzeResult};
+    if(state.state==="confirmed" && state.result) return state.result;
+    if(state.state!=="new") throw new Error("Dieser Scan wurde bereits angefragt. Bei unklarem Ausgang bleibt das Kontingent reserviert; bitte nicht blind wiederholen.");
+    let raw: Record<string,unknown>;
+    try { raw=await transcribe(data.imageDataUrl); }
+    catch(error) {
+      if(error instanceof GatewayError && error.outcome==="not_started") {
+        await supabaseAdmin.rpc("finish_ocr", {_request:data.requestId,_state:"refunded",_reason:`KI nicht gestartet: ${error.code}`});
+      }
+      console.error("Receipt scan failed", error instanceof GatewayError ? {code:error.code,outcome:error.outcome,ids:error.ids} : "Invalid AI result");
+      throw new Error(error instanceof GatewayError && error.outcome!=="not_started" ? "KI-Ausgang unklar. Der Scan bleibt reserviert. Bitte den Betreiber um Prüfung bitten, bevor du erneut scannst." : "KI-Analyse nicht verfügbar. Dein Foto bleibt unverändert.");
+    }
+    const acknowledged=await supabaseAdmin.rpc("finish_ocr",{_request:data.requestId,_state:"confirmed"});
+    if(acknowledged.error) throw new Error("Scan durchgeführt, aber Bestätigung fehlgeschlagen. Bitte nicht erneut anfragen.");
 
     if (raw["readable"] === false) {
       throw new Error(
@@ -227,8 +207,7 @@ export const analyzeReceipt = createServerFn({ method: "POST" })
     const vatWarning = validateVat(vatBreakdown, receipt.total);
     if (vatWarning) warnings.push(vatWarning);
 
-    const imageSha256 = await sha256(data.imageDataUrl);
-    return {
+    const result: AnalyzeResult = {
       receipt: { ...receipt, vatBreakdown, trace, imageSha256, model: MODEL },
       warnings,
       check,
@@ -236,6 +215,9 @@ export const analyzeReceipt = createServerFn({ method: "POST" })
       imageSha256,
       model: MODEL,
     };
+    const stored=await supabaseAdmin.from("ocr_usage").update({result:JSON.parse(JSON.stringify(result))}).eq("id",data.requestId).eq("state","confirmed");
+    if(stored.error) throw new Error("Scan-Ergebnis konnte nicht sicher gespeichert werden. Bitte nicht wiederholen.");
+    return result;
   });
 
 export const saveReceipt = createServerFn({ method: "POST" })

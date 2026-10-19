@@ -38,6 +38,7 @@ export function ReceiptCapture({
   organizationId: string;
 }) {
   const cameraRef = useRef<HTMLInputElement>(null);
+  const scanRequest = useRef<{file: File; id: string} | null>(null);
   const uploadRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -64,7 +65,9 @@ export function ReceiptCapture({
     setLoading(true);
     try {
       const imageDataUrl = await readAsDataUrl(file);
-      const result = await analyze({ data: { imageDataUrl } });
+      if(scanRequest.current?.file !== file) scanRequest.current = {file,id:crypto.randomUUID()};
+      const result = await analyze({ data: { imageDataUrl, organizationId, requestId: scanRequest.current.id } });
+      await queryClient.invalidateQueries({queryKey:["tariff",organizationId]});
       setDraft(result.receipt);
       setWarnings(result.warnings);
     } catch (err) {

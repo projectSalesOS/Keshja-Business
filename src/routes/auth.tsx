@@ -6,6 +6,7 @@ import { Logo } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/auth")({
+  validateSearch: (s: Record<string, unknown>): {mode?: "login" | "register"} => ({ mode: s["mode"] === "register" ? "register" : "login" }),
   
   head: () => ({
     meta: [
@@ -33,7 +34,8 @@ const inputClass =
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"login" | "register">("login");
+  const search = Route.useSearch();
+  const [mode, setMode] = useState<"login" | "register">(search.mode ?? "login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,7 +44,7 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/", replace: true });
+      if (data.session) navigate({ to: "/dashboard", replace: true });
     });
   }, [navigate]);
 
@@ -70,7 +72,7 @@ function AuthPage() {
           return;
         }
         toast.success("Konto erstellt. Willkommen bei KESHJA!");
-        navigate({ to: "/", replace: true });
+        navigate({ to: "/dashboard", replace: true });
         return;
       }
 
@@ -79,7 +81,7 @@ function AuthPage() {
         password,
       });
       if (error) throw error;
-      navigate({ to: "/", replace: true });
+      navigate({ to: "/dashboard", replace: true });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Anmeldung fehlgeschlagen.";
       toast.error(
