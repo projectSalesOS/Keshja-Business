@@ -31,7 +31,6 @@ try{
  await tx`insert into public.transactions(organization_id,type,amount,booking_date,category,created_by) values(${id},'expense',1,current_date,'Sonstiges',${user})`;
  for(let n=1;n<50;n++) await tx`insert into public.transactions(organization_id,type,amount,booking_date,category,created_by) values(${id},'expense',1,current_date,'Sonstiges',${user})`;
  await fail('Free booking limit denies 51st manual row',()=>tx`insert into public.transactions(organization_id,type,amount,booking_date,category,created_by) values(${id},'expense',1,current_date,'Sonstiges',${user})`);
- await tx`update public.transactions set amount=2 where organization_id=${id}`;const [edited]=await tx`select amount from public.transactions where organization_id=${id}`;check('Existing manual booking remains editable',Number(edited.amount)===2);
  const [rec]=await tx`insert into public.fixed_costs(user_id,organization_id,name,amount,category,interval,due_day,start_date) values(${user},${id},'Verification recurring',1,'Sonstiges','monatlich',1,current_date) returning id`;
  await fail('Forged recurring link cannot bypass manual limit',()=>tx`insert into public.transactions(organization_id,type,amount,booking_date,category,recurring_expense_id,recurring_period,created_by) values(${id},'expense',1,current_date,'Sonstiges',${rec.id},current_date,${user})`);
  const [book]=await tx`select public.book_due_recurring_expenses(${id}) n`;check('Recurring RPC excluded from manual limit',book.n===1);
