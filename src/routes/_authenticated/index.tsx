@@ -102,14 +102,15 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
       </div> : <Empty>Keine bezahlten Ausgaben in diesem Zeitraum.</Empty>}
     </section>
 
-    <section className="dash-card" aria-label="Einnahmen und Ausgaben der letzten sechs Monate">
-      <div className="dash-chart-heading"><span className="dash-icon dash-brand"><TrendingUp size={21} /></span><div><h2 className="dash-title">Einnahmen & Ausgaben</h2><p className="mt-1 text-xs text-muted-foreground">Sechs Monate bis {formatDate(range.to)}</p></div></div>
-      <div className="dash-line-chart min-w-0"><IncomeExpenseChart data={m.trend} /></div>
+    <section className="dash-card" aria-label="Einnahmen und Ausgaben im Diagrammzeitraum">
+      <div className="dash-chart-heading"><span className="dash-icon dash-brand"><TrendingUp size={21} /></span><div><h2 className="dash-title">Einnahmen & Ausgaben</h2><p className="mt-1 text-xs text-muted-foreground">{formatDate(chartRange.from)} – {formatDate(chartRange.to)}</p></div>
+        <label className="ml-auto flex items-center gap-2 text-xs text-muted-foreground"><span className="sr-only">Diagrammzeitraum</span><select className="h-9 rounded-lg border border-border bg-card px-2 text-xs text-foreground" value={chartPreset} onChange={(e) => setChartPreset(e.target.value as ChartPreset)} aria-label="Diagrammzeitraum">{(["6m", "12m", "jahr", "quartal"] as const).map((p) => <option key={p} value={p}>{CHART_PRESET_LABEL[p]}</option>)}</select></label></div>
+      <div className="dash-line-chart min-w-0"><IncomeExpenseChart data={chart} /></div>
     </section>
 
     <section className="dash-card" aria-label="Monatliche Einnahmen und Ausgaben als Balken">
-      <div className="dash-chart-heading"><span className="dash-icon dash-brand"><ChartNoAxesColumnIncreasing size={21} /></span><div><h2 className="dash-title">Monatliche Einnahmen & Ausgaben</h2><p className="mt-1 text-xs text-muted-foreground">Vergleich der letzten sechs Monate</p></div></div>
-      <div className="dash-bar-chart min-w-0"><MonthlyBars data={m.trend} /></div>
+      <div className="dash-chart-heading"><span className="dash-icon dash-brand"><ChartNoAxesColumnIncreasing size={21} /></span><div><h2 className="dash-title">Monatliche Einnahmen & Ausgaben</h2><p className="mt-1 text-xs text-muted-foreground">{CHART_PRESET_LABEL[chartPreset]} · {formatDate(chartRange.from)} – {formatDate(chartRange.to)}</p></div></div>
+      <div className="dash-bar-chart min-w-0"><MonthlyBars data={chart} /></div>
     </section>
 
     <div aria-label="Schnellaktionen" className="grid grid-cols-3 gap-3">
