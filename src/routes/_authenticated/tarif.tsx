@@ -161,8 +161,8 @@ function TariffPage({ orgId }: { orgId: string }) {
         <section>
           <h2 className="mb-2 text-xl font-semibold">Tarif buchen</h2>
           <p className="mb-4 text-sm text-muted-foreground">
-            Zahlung über unseren Zahlungsdienstleister im Testbetrieb. Endpreise; bei Anwendung
-            von § 19 UStG kein gesonderter Umsatzsteuerausweis. Steuerabwicklung vor Freigabe prüfen.
+            Zahlung über unseren Zahlungsdienstleister im Testbetrieb. Es gilt die reguläre
+            Umsatzsteuer; maßgeblich ist der im Zahlungsformular ausgewiesene Betrag. Steuerabwicklung vor Freigabe prüfen.
             Jahrestarife werden jährlich im Voraus abgerechnet.
           </p>
           <div
