@@ -209,7 +209,7 @@ function AdminContent({ data }: { data: OperatorData }) {
     </>
   );
 }
-function SubscriptionEditor({ org }: { org: OperatorData["organizations"][number] }) {
+function SubscriptionEditor({ org, members }: { org: OperatorData["organizations"][number]; members: string[] }) {
   const s = org.tariff.subscription;
   const [plan, setPlanId] = useState(s.plan_id);
   const [status, setStatus] = useState(s.status);
@@ -255,6 +255,30 @@ function SubscriptionEditor({ org }: { org: OperatorData["organizations"][number
   return (
     <article className="rounded-lg border border-border bg-card/70 p-5">
       <h3 className="font-semibold">{org.name}</h3>
+      <p className="text-xs text-muted-foreground">
+        Gespeichert: {s.plan_id} · {STATUS_LABEL[s.status]}
+        {s.period_end ? ` bis ${new Date(s.period_end).toLocaleDateString("de-DE")}` : ""} ·
+        Mitglieder: {members.join(", ") || "–"}
+      </p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {([
+          ["Premium 1 Monat", "premium", 1],
+          ["Premium 1 Jahr", "premium", 12],
+          ["Basic 1 Monat", "basic", 1],
+        ] as const).map(([label, p, months]) => (
+          <Button key={label} type="button" size="sm" variant="outline" onClick={() => {
+            const now = new Date();
+            const until = new Date(now);
+            until.setUTCMonth(until.getUTCMonth() + months);
+            setPlanId(p); setStatus("active");
+            setStart(now.toISOString().slice(0, 16)); setEnd(until.toISOString().slice(0, 16));
+          }}>{label}</Button>
+        ))}
+        <Button type="button" size="sm" variant="outline" onClick={() => {
+          setPlanId("free"); setStatus("free"); setEnd("");
+          setStart(new Date().toISOString().slice(0, 16));
+        }}>Auf Free zurückstufen</Button>
+      </div>
       <p className="mt-2 text-sm text-muted-foreground">
         Wirksam: {org.tariff.plan.name} · Buchungen {org.tariff.manual_used}/
         {org.tariff.plan.manual_limit ?? "∞"} · OCR {org.tariff.ocr_used}/
