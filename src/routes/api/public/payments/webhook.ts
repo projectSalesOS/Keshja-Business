@@ -99,7 +99,7 @@ async function syncSubscription(subscription: any, env: StripeEnv) {
       : periodEnd
         ? new Date(periodEnd * 1000).toISOString()
         : null,
-    source: "stripe",
+    source: "provider",
     external_customer_ref: typeof subscription.customer === "string" ? subscription.customer : subscription.customer?.id,
     external_subscription_ref: subscription.id,
     billing_interval: mapped.interval,
@@ -122,7 +122,7 @@ async function markStatusBySubscriptionRef(subscriptionId: string, status: strin
     .select("*")
     .eq("external_subscription_ref", subscriptionId)
     .maybeSingle();
-  if (!existing || existing.source !== "stripe") return;
+  if (!existing || existing.source !== "provider") return;
   if (existing.stripe_environment && existing.stripe_environment !== env) return;
   const { error } = await admin
     .from("subscriptions")

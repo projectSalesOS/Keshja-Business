@@ -70,7 +70,7 @@ function TariffPage({ orgId }: { orgId: string }) {
 
   const isAdmin = role.data === "owner" || role.data === "admin";
   const sub = q.data?.subscription;
-  const hasStripeSub = sub?.source === "stripe" && Boolean(sub.period_end) &&
+  const hasStripeSub = sub?.source === "provider" && Boolean(sub.period_end) &&
     ["active", "trialing", "past_due"].includes(sub.status);
   const hasManualGrant = sub?.source === "manual" && Boolean(sub.period_end) &&
     new Date(sub.period_end!) > new Date() && ["active", "trialing"].includes(sub.status);
@@ -118,7 +118,7 @@ function TariffPage({ orgId }: { orgId: string }) {
           </div>
           {sub?.period_end && (
             <p className="text-sm text-muted-foreground">
-              {sub.source === "stripe" ? "Abonnement" : "Freischaltung"}:{" "}
+              {sub.source === "provider" ? "Abonnement" : "Freischaltung"}:{" "}
               {formatDate(sub.starts_at.slice(0, 10))} bis {formatDate(sub.period_end.slice(0, 10))}
               {sub.billing_interval
                 ? ` · ${sub.billing_interval === "annual" ? "jährliche" : "monatliche"} Zahlung`

@@ -89,7 +89,7 @@ export const createSubscriptionCheckout = createServerFn({ method: "POST" })
       if (active && existing.source === "manual") {
         return { error: "Für diese Organisation besteht eine manuelle Freischaltung. Bitte wende dich an den Betreiber, bevor du ein Abonnement abschließt." };
       }
-      if (active && existing.source === "stripe") {
+      if (active && existing.source === "provider") {
         return { error: "Es besteht bereits ein aktives Abonnement. Verwalte es über „Abonnement verwalten“." };
       }
     }
