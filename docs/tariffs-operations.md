@@ -2,7 +2,7 @@
 
 ## Einrichtung
 
-Es wurde **kein dauerhaftes Betreiberkonto automatisch ausgewählt oder freigeschaltet**. Unternehmens-Inhaber/Admins sind keine Plattformbetreiber.
+Ersteinrichtung in der App: `/admin` zeigt, solange kein Betreiber existiert, ausschließlich dem zuerst registrierten, E-Mail-bestätigten Konto die Aktion „Als Betreiber einrichten“ (RPC `claim_initial_operator`, auditiert, danach dauerhaft geschlossen). Am 19.10.2026 durch das Inhaberkonto ausgeführt. Unternehmens-Inhaber/Admins sind keine Plattformbetreiber.
 
 Der Projektinhaber bestätigt zuerst die UUID eines existierenden, E-Mail-bestätigten Betreiberkontos. Anschließend kann eine vertrauenswürdige administrative Cloud-Datenänderung einen Eintrag in `public.platform_operators` setzen und ihn in `public.subscription_audit` protokollieren. Kein Browser-Formular oder öffentliches Bootstrap-Endpunkt existiert. Alternativ steht `scripts/setup-operator.ts` für eine bereits sicher konfigurierte, vertrauenswürdige Serverumgebung bereit. Cloud-Service-Schlüssel sind für Nutzer nicht abrufbar; niemals zum Einfügen oder Offenlegen auffordern. Die erste Einrichtung verweigert weitere Aufrufe, wenn bereits ein Betreiber existiert.
 
