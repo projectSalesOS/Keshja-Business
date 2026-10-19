@@ -92,6 +92,13 @@
       "when": 1792428308074,
       "tag": "0012_platform_legal_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1792428339634,
+      "tag": "0013_legal_public_projection",
+      "breakpoints": true
     }
   ]
 }

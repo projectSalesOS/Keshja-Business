@@ -1182,6 +1182,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      public_legal_settings: { Args: never; Returns: Json }
       regenerate_org_invite_code: { Args: { _org: string }; Returns: string }
       reserve_ocr: {
         Args: { _hash: string; _org: string; _request: string; _user: string }
