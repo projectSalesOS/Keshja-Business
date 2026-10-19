@@ -122,6 +122,7 @@ describe("Export", () => {
       months: [],
       expenseCategories: [],
       incomeCategories: [],
+      vat: { smallBusiness: false, outputVat: 0, inputVat: 0, incomeWithoutInvoice: 0, expensesWithoutVat: 0 },
       receivables: [],
       recurring: [],
       planned: [],

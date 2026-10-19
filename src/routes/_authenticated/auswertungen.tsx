@@ -113,7 +113,7 @@ function ReportsView({ orgId }: { orgId: string }) {
         ? await supabase.from("receipts").select("id, vat_breakdown").in("id", receiptIds)
         : { data: [] as { id: string; vat_breakdown: { tax: number }[] }[], error: null };
       if (rErr) throw rErr;
-      const receiptVat = new Map((vatReceipts ?? []).map((rc) => [rc.id, (rc.vat_breakdown ?? []).reduce((s, row) => s + Number(row.tax ?? 0), 0)]));
+      const receiptVat = new Map((vatReceipts ?? []).map((rc) => [rc.id, (Array.isArray(rc.vat_breakdown) ? rc.vat_breakdown : []).reduce((s: number, row) => s + Number((row as { tax?: number }).tax ?? 0), 0)]));
       let inputVat = 0;
       let expensesWithoutVat = 0;
       for (const t of paidExpenses) {
