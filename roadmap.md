@@ -1,5 +1,11 @@
 # Keshja Business – Roadmap
 
+## Rechtsfelder konkret befüllen (19.10.2026)
+- [x] Bestehende Betreiberangaben erhalten; zehn thematische Entwürfe und öffentlicher Prüfstand über das autorisierte Betreiberformular auditiert gespeichert. Tatsächliche Tarifpreise aus zentraler Datenquelle und amtliche Rechtsquellen geprüft.
+- [x] Speicherung/Neuladen und öffentliche Übernahme auf Impressum, Datenschutz, AGB, Vertragsinformationen und Prüfstand mit echtem Betreiberkonto sowie anonymem Browser geprüft; 21 Tests bestanden, Build OK. Falsche 19-%-Preishinweise und unbelegte monatliche Kündigungszusage korrigiert; keine Zahlungs-/Steuerkonfiguration oder Kundengeschäftsdaten geändert.
+- [x] Persönliche Bestätigungen und rechtliche Freigabepunkte im öffentlichen Prüfstand konkret benannt; Warnungen erhalten, optionale persönliche Angaben nicht erfunden.
+- [ ] Rechtliche Veröffentlichung wartet auf persönliche Bestätigung von Betreiberangaben/§19-Voraussetzungen/Support/Kündigungsweg und Frist sowie geprüfte B2B-Abgrenzung, Vertragsannahme/Bestätigung, Zahlungsanbieter-Steuerbehandlung, Haftung, Dienstleisterverträge/Regionen/Transfers, Löschkonzept und Kunden-AVV.
+
 ## Unternehmensdaten & Rechtliches (19.10.2026)
 - [x] Zentrale persistente Betreiberangaben, auditiertes Speichern nur durch Plattformbetreiber, öffentliche Positivliste ohne interne Steuernummer; additive Migrationen 0012–0014.
 - [x] Impressum, Datenschutz, B2B-AGB und Vertrags-/Widerrufsinformationen als gekennzeichnete Entwürfe; gemeinsame Fußzeile und Hinweise bei Registrierung/Checkout. Zentrale Tarifpreise auch im Buchungsbereich.
