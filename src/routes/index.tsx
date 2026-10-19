@@ -87,7 +87,7 @@ function Landing() {
             </Button>
           </div>
           <p className="mt-4 text-xs text-muted-foreground">
-            Free ohne Zahlungsdaten. Bezahlte Tarife derzeit nur per manueller Freischaltung.
+            Free ohne Zahlungsdaten. Bezahlte Tarife aktuell im Zahlungstest oder per manueller Freischaltung.
           </p>
         </section>
         <section id="funktionen" className="border-y border-border bg-card/40">
@@ -137,7 +137,7 @@ function Landing() {
               ],
               [
                 "Wie erhalte ich Basic oder Premium?",
-                "Der Betreiber kann deinen Tarif manuell freischalten. Onlinezahlungen sind noch nicht eingerichtet; ein öffentlicher Kontaktweg ist noch offen.",
+                "Inhaber und Admins können unter Tarif & Nutzung einen Testcheckout starten. Zusätzlich kann der Betreiber Tarife manuell freischalten. Echte Zahlungen sind noch nicht freigegeben.",
               ],
               [
                 "Was passiert nach Ablauf einer Freischaltung?",
@@ -174,7 +174,7 @@ function Landing() {
           <Logo />
           <div className="flex flex-wrap gap-5 text-muted-foreground">
             <Link to="/preise">Tarife</Link>
-            <Link to="/rechtliches">Rechtliches & Kontakt · offen</Link>
+            <Link to="/rechtliches">Rechtliches & Kontakt · Prüfstand</Link>
             <Link to="/auth" search={{ mode: "login" }}>
               Anmelden
             </Link>

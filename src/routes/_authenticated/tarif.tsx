@@ -15,6 +15,8 @@ import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { createPortalSession } from "@/lib/payments.functions";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { toast } from "sonner";
+import { usePlans } from "@/hooks/useTariff";
+import { ContractNotice } from "@/components/LegalLinks";
 
 export const Route = createFileRoute("/_authenticated/tarif")({
   validateSearch: (search: Record<string, unknown>): { checkout?: string } =>
@@ -61,6 +63,7 @@ function useMemberRole(orgId: string) {
 
 function TariffPage({ orgId }: { orgId: string }) {
   const q = useTariff(orgId);
+  const plans = usePlans();
   const role = useMemberRole(orgId);
   const queryClient = useQueryClient();
   const { checkout } = Route.useSearch();
@@ -73,7 +76,7 @@ function TariffPage({ orgId }: { orgId: string }) {
   const hasStripeSub = sub?.source === "provider" && Boolean(sub.period_end) &&
     ["active", "trialing", "past_due"].includes(sub.status);
   const hasManualGrant = sub?.source === "manual" && Boolean(sub.period_end) &&
-    new Date(sub.period_end!) > new Date() && ["active", "trialing"].includes(sub.status);
+    Boolean(sub.period_end && new Date(sub.period_end) > new Date()) && ["active", "trialing"].includes(sub.status);
 
   const openPortal = async () => {
     setPortalBusy(true);
@@ -189,8 +192,9 @@ function TariffPage({ orgId }: { orgId: string }) {
           </div>
           <div className="grid gap-5 sm:grid-cols-2">
             {(["basic", "premium"] as const).map((planId) => {
-              const plan = q.data && planId === "basic" ? { name: "Basic", monthly: 1290, annual: 11880 } : { name: "Premium", monthly: 1990, annual: 20280 };
-              const cents = interval === "annual" ? Math.round(plan.annual / 12) : plan.monthly;
+              const plan = plans.data?.find(p => p.id === planId);
+              if (!plan) return null;
+              const cents = monthlyPriceCents(plan, interval);
               const isCurrent = q.data?.subscription.plan_id === planId && hasStripeSub;
               return (
                 <article key={planId} className="glass-tile rounded-lg border border-border p-6">
@@ -201,7 +205,7 @@ function TariffPage({ orgId }: { orgId: string }) {
                   </p>
                   <p className="mb-4 text-xs text-muted-foreground">
                     {interval === "annual"
-                      ? `${formatCents(plan.annual)} pro Jahr, jährlich im Voraus zahlbar.`
+                      ? `${formatCents(plan.price_cents_annual)} pro Jahr, jährlich im Voraus zahlbar.`
                       : "Monatlich zahlbar, monatlich kündbar."}
                   </p>
                   <Button
@@ -247,6 +251,7 @@ function TariffPage({ orgId }: { orgId: string }) {
               {interval === "annual" ? "jährliche Zahlung" : "monatliche Zahlung"}
             </DialogTitle>
           </DialogHeader>
+          <ContractNotice />
           {checkoutTarget && (
             <StripeEmbeddedCheckout
               orgId={orgId}

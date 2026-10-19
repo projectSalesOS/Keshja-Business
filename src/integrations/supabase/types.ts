@@ -626,6 +626,24 @@ export type Database = {
           },
         ]
       }
+      platform_legal_settings: {
+        Row: {
+          details: Json
+          id: boolean
+          updated_at: string
+        }
+        Insert: {
+          details?: Json
+          id?: boolean
+          updated_at?: string
+        }
+        Update: {
+          details?: Json
+          id?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       platform_operators: {
         Row: {
           created_at: string
@@ -1145,6 +1163,10 @@ export type Database = {
         Args: { _reason: string; _request: string }
         Returns: undefined
       }
+      operator_save_legal_settings: {
+        Args: { _details: Json; _reason: string }
+        Returns: undefined
+      }
       operator_set_plan: {
         Args: { _plan: string; _reason: string; _values: Json }
         Returns: undefined
@@ -1160,6 +1182,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      public_legal_settings: { Args: never; Returns: Json }
       regenerate_org_invite_code: { Args: { _org: string }; Returns: string }
       reserve_ocr: {
         Args: { _hash: string; _org: string; _request: string; _user: string }

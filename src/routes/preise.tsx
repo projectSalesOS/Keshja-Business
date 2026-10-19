@@ -36,13 +36,13 @@ export const Route = createFileRoute("/preise")({
       <section className="py-8">
         <h1 className="text-3xl font-semibold">Tarife für dein Business</h1>
         <p className="mb-8 mt-3 text-muted-foreground">
-          Jährliche oder monatliche Zahlung · Freischaltung aktuell durch den Betreiber.
+          Jährliche oder monatliche Zahlung · Aktuell Zahlungstest und manuelle Freischaltung.
         </p>
         <TariffComparison publicPage />
         <p className="mt-7 text-sm text-muted-foreground">
-          Es gibt noch keinen Checkout. Testzeiträume werden nur manuell eingerichtet.{" "}
+          Online-Abonnements laufen derzeit ausschließlich im Testmodus. Testzeiträume werden nur manuell eingerichtet.{" "}
           <Link to="/rechtliches" className="text-primary">
-            Rechtliche Angaben und Kontakt sind noch offen.
+            Rechtliche Angaben, Kontakt und Prüfstand ansehen.
           </Link>
         </p>
       </section>

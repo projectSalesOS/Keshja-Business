@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { AppShell, PageHeader } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
+import { LegalSettingsEditor } from "@/components/LegalSettingsEditor";
 import { Field, inputClass } from "@/components/OrgGate";
 import {
   getOperatorDashboard,
@@ -124,6 +125,7 @@ function AdminContent({ data }: { data: OperatorData }) {
   });
   return (
     <>
+      <LegalSettingsEditor />
       <section>
         <h2 className="mb-4 text-xl font-semibold">Organisationen & Nutzung</h2>
         <div className="mb-5 grid gap-3 sm:grid-cols-[1fr_auto]">

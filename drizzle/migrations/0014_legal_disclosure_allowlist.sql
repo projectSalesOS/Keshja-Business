@@ -1,0 +1,6 @@
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER ON public.platform_legal_settings FROM anon, authenticated;
+CREATE OR REPLACE FUNCTION public.public_legal_settings() RETURNS jsonb LANGUAGE sql STABLE SECURITY DEFINER SET search_path=public AS $$
+SELECT coalesce((SELECT jsonb_build_object('details',coalesce((SELECT jsonb_object_agg(key,value) FROM jsonb_each(details) WHERE key=ANY(ARRAY['company_name','legal_form','operator_name','street','postal_code','city','country','email','phone','website','register_court','register_number','vat_id','supervisory_info','privacy_contact','provider_details','retention','processing_agreements','tax_info','contract_formation','cancellation_terms','service_terms','liability_terms','consumer_policy','imprint_extra','privacy_extra','terms_extra','review_notes']::text[])),'{}'::jsonb),'updated_at',updated_at) FROM platform_legal_settings WHERE id=true),jsonb_build_object('details','{}'::jsonb,'updated_at',null))
+$$;
+REVOKE ALL ON FUNCTION public.public_legal_settings() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.public_legal_settings() TO anon, authenticated;
