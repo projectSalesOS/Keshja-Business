@@ -99,6 +99,13 @@
       "when": 1792428339634,
       "tag": "0013_legal_public_projection",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1792428676001,
+      "tag": "0014_legal_disclosure_allowlist",
+      "breakpoints": true
     }
   ]
 }
