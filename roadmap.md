@@ -69,3 +69,9 @@
 - [x] Betreiber-E-Mail bei Neuregistrierung (duplikatgeschützt, blockiert Registrierung nie); OPERATOR_NOTIFICATION_EMAIL hinterlegt
 - [ ] RESEND_FROM_EMAIL mit verifizierter Absenderdomain (sonst Zustellung nur an Resend-Kontoinhaber)
 - [ ] Impressum/Datenschutz/Kontakt/USt-Angabe weiterhin offen
+
+## Stripe-Abonnements Testmodus (19.10.2026)
+- [x] Eingebaute Stripe-Integration aktiviert; Produkte keshja_basic/keshja_premium mit je monatlichem und jährlichem Preis (12,90/118,80/19,90/202,80 EUR, Steuercode SaaS) angelegt.
+- [x] Serverseitiger Checkout (nur Inhaber/Admin, Preis-IDs aus tariff_plans, managed payments, keine Browser-Preise), Embedded Checkout auf /tarif mit Intervall-Umschalter, Kundenportal für Online-Abos.
+- [x] Webhook /api/public/payments/webhook mit Signaturprüfung, Idempotenz (stripe_events), Status-Sync in subscriptions (source 'provider'), Schutz manueller Freischaltungen, Audit-Einträge.
+- [x] Getestet: echte Testzahlung 4242 bis checkout=success, signierte Simulation aktivieren/kündigen, Duplikat-Zustellung, ungültige Signaturen 400, 106 Unit-Tests, Typsicherheit. Live-Zahlungen warten auf ausdrückliche Freigabe und Stripe-Go-Live.

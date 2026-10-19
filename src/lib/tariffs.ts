@@ -13,6 +13,8 @@ export type TariffPlan = {
   voice: boolean;
   logo: boolean;
   advanced_reports: boolean;
+  stripe_price_monthly?: string | null;
+  stripe_price_annual?: string | null;
 };
 export type Subscription = {
   organization_id: string;
@@ -23,6 +25,8 @@ export type Subscription = {
   renews_at: string | null;
   source: string;
   trial_used: boolean;
+  billing_interval?: "monthly" | "annual" | null;
+  stripe_environment?: string | null;
 };
 export type TariffOverview = {
   subscription: Subscription;
