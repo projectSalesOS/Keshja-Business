@@ -46,7 +46,7 @@ export function missingLegalFields(details: LegalDetails) {
 export type LegalData = { details: LegalDetails; updated_at: string | null };
 export const legalLinks = [
   ["/impressum", "Impressum"], ["/datenschutz", "Datenschutz"], ["/agb", "AGB (B2B)"],
-  ["/vertragsinformationen", "Vertrag & Kündigung"], ["/rechtliches", "Prüfstand & Kontakt"],
+  ["/vertragsinformationen", "Vertrag & Kündigung"], ["/rechtliches", "Rechtliches & Kontakt"],
 ] as const;
 export function legalHead(title: string, description: string) {
   return { meta: [ { title: `${title} – KESHJA Business` }, { name: "description", content: description },

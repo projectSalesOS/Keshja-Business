@@ -20,12 +20,6 @@ export function LegalDocument({ kind }: { kind: LegalDocumentKind }) {
  return <main className="business-ui mx-auto min-h-screen max-w-4xl space-y-7 px-5 py-8 text-sm leading-relaxed">
  <Link to="/" aria-label="KESHJA Business Startseite"><Logo /></Link>
  <h1 className="break-words pt-5 text-2xl font-semibold [hyphens:auto] sm:text-3xl">{titles[kind]}</h1>
- <aside role="note" className="space-y-2 border-y border-destructive/30 py-4 text-destructive">
- <p className="font-semibold">Entwurf – keine abgeschlossene individuelle Rechtsprüfung</p>
- <p>{missing.length ? `${missing.length} erforderliche Angaben sind noch offen.` : "Basisangaben erfasst. Anwendbarkeit und Vollständigkeit müssen weiterhin individuell geprüft werden."}</p>
- <p>Dieser Prüfstand bestätigt weder abgeschlossene Datenschutzverträge noch rechtliche Vollständigkeit.</p>
- {data.updated_at && <p>Zuletzt gespeichert: {new Date(data.updated_at).toLocaleString("de-DE", { timeZone: "Europe/Berlin" })}</p>}
- </aside>
  <Section title={kind === "privacy" ? "Verantwortlicher und Kontakt" : "Anbieter"}>
  <p className="font-medium">{value("company_name")} · {value("legal_form")}</p>
  <p>Betreiber / Vertretungsberechtigte: {value("operator_name")}</p>
@@ -93,8 +87,6 @@ export function LegalDocument({ kind }: { kind: LegalDocumentKind }) {
  </>}
  {kind === "status" && <>
  <Section title="Noch fehlende Pflichtangaben"><ul className="list-disc space-y-2 pl-5">{missing.map(([key, label]) => <li key={key}>{label}</li>)}</ul>{!missing.length && <p>Keine leeren Basisfelder; keine rechtliche Vollständigkeitsbestätigung.</p>}</Section>
- <Section title="Vor produktiver Freigabe"><p>Prüfen: Register-/Berufspflichten, B2B-Abgrenzung, Umsatzsteuer, Zahlungs-Vertragspartner, Kündigungsfristen, Leistung/Haftung, Kunden-AVV, Dienstleisterverträge, Datenstandorte, Drittlandgarantien, tatsächliche Löschfristen. Unternehmensdaten allein ergeben keine geprüften Rechtstexte.</p></Section>
  </>}
- {d.review_notes && <Section title="Öffentlicher Prüfstand">{supplied("review_notes")}</Section>}
- </main>;
+  </main>;
 }
