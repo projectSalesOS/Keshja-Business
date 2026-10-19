@@ -4,9 +4,14 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Logo } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
+import { notifyRegistration } from "@/lib/notifications.functions";
+import type { BillingInterval } from "@/lib/tariffs";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (s: Record<string, unknown>): {mode?: "login" | "register"} => ({ mode: s["mode"] === "register" ? "register" : "login" }),
+  validateSearch: (s: Record<string, unknown>): {mode?: "login" | "register"; interval?: BillingInterval} => ({
+    mode: s["mode"] === "register" ? "register" : "login",
+    interval: s["interval"] === "monthly" ? "monthly" : s["interval"] === "annual" ? "annual" : undefined,
+  }),
   
   head: () => ({
     meta: [
