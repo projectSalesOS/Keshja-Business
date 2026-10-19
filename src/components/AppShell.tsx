@@ -56,8 +56,8 @@ export function Logo({ className = "" }: { className?: string }) {
         <span className="font-display text-lg font-semibold leading-tight text-foreground">
           KESHJA
         </span>
-        <span className="text-xs leading-tight font-sans font-medium text-muted-foreground">
-          BUSINESS
+        <span className="whitespace-nowrap text-xs leading-tight font-sans font-medium text-muted-foreground">
+          Super. Easy. Business.
         </span>
       </span>
     </span>
