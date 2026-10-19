@@ -1,5 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { effectivePlan, remaining, type Subscription } from "./tariffs";
+import {
+  effectivePlan,
+  formatCents,
+  monthlyPriceCents,
+  remaining,
+  type Subscription,
+  type TariffPlan,
+} from "./tariffs";
 const s: Subscription = {
   organization_id: "org",
   plan_id: "premium",
@@ -31,4 +38,37 @@ describe("Entitlements", () => {
   it("Basic 20 scans yields 19 after one", () => expect(remaining(20, 1)).toBe(19));
   it("Premium 150 scans yields 149 after one", () => expect(remaining(150, 1)).toBe(149));
   it("unlimited bookings remain unlimited", () => expect(remaining(null, 2001)).toBe(null));
+});
+const plan = (over: Partial<TariffPlan>): TariffPlan => ({
+  id: "basic",
+  name: "Basic",
+  price_cents: 0,
+  price_cents_monthly: 1290,
+  price_cents_annual: 11880,
+  manual_limit: null,
+  ocr_limit: 20,
+  documents: true,
+  voice: false,
+  logo: false,
+  advanced_reports: false,
+  ...over,
+});
+describe("Intervallpreise", () => {
+  it("Basic monatlich 12,90 €", () =>
+    expect(formatCents(monthlyPriceCents(plan({}), "monthly"))).toBe("12,90 €"));
+  it("Basic jährlich effektiv 9,90 €/Monat", () =>
+    expect(formatCents(monthlyPriceCents(plan({}), "annual"))).toBe("9,90 €"));
+  it("Basic Jahresgesamt 118,80 €", () =>
+    expect(formatCents(plan({}).price_cents_annual)).toBe("118,80 €"));
+  it("Premium monatlich 19,90 €, jährlich effektiv 16,90 €/Monat", () => {
+    const p = plan({ id: "premium", price_cents_monthly: 1990, price_cents_annual: 20280 });
+    expect(formatCents(monthlyPriceCents(p, "monthly"))).toBe("19,90 €");
+    expect(formatCents(monthlyPriceCents(p, "annual"))).toBe("16,90 €");
+    expect(formatCents(p.price_cents_annual)).toBe("202,80 €");
+  });
+  it("Free bleibt 0,00 € in beiden Intervallen", () => {
+    const p = plan({ id: "free", price_cents_monthly: 0, price_cents_annual: 0 });
+    expect(formatCents(monthlyPriceCents(p, "monthly"))).toBe("0,00 €");
+    expect(formatCents(monthlyPriceCents(p, "annual"))).toBe("0,00 €");
+  });
 });
