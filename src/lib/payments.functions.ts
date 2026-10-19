@@ -149,7 +149,7 @@ export const createPortalSession = createServerFn({ method: "POST" })
       .select("external_customer_ref, source")
       .eq("organization_id", data.orgId)
       .maybeSingle();
-    if (!sub?.external_customer_ref || sub.source !== "stripe") {
+    if (!sub?.external_customer_ref || sub.source !== "provider") {
       return { error: "Für diese Organisation existiert kein Online-Abonnement." };
     }
 
