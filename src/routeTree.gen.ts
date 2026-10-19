@@ -11,10 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AgbRouteImport } from './routes/agb'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as DatenschutzRouteImport } from './routes/datenschutz'
+import { Route as ImpressumRouteImport } from './routes/impressum'
 import { Route as PreiseRouteImport } from './routes/preise'
 import { Route as RechtlichesRouteImport } from './routes/rechtliches'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as VertragsinformationenRouteImport } from './routes/vertragsinformationen'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAngeboteRouteImport } from './routes/_authenticated/angebote'
 import { Route as AuthenticatedAuswertungenRouteImport } from './routes/_authenticated/auswertungen'
@@ -38,9 +42,24 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgbRoute = AgbRouteImport.update({
+  id: '/agb',
+  path: '/agb',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DatenschutzRoute = DatenschutzRouteImport.update({
+  id: '/datenschutz',
+  path: '/datenschutz',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImpressumRoute = ImpressumRouteImport.update({
+  id: '/impressum',
+  path: '/impressum',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PreiseRoute = PreiseRouteImport.update({
@@ -56,6 +75,11 @@ const RechtlichesRoute = RechtlichesRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VertragsinformationenRoute = VertragsinformationenRouteImport.update({
+  id: '/vertragsinformationen',
+  path: '/vertragsinformationen',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -129,10 +153,14 @@ const ApiPublicPaymentsWebhookRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/agb': typeof AgbRoute
   '/auth': typeof AuthRoute
+  '/datenschutz': typeof DatenschutzRoute
+  '/impressum': typeof ImpressumRoute
   '/preise': typeof PreiseRoute
   '/rechtliches': typeof RechtlichesRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/vertragsinformationen': typeof VertragsinformationenRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/angebote': typeof AuthenticatedAngeboteRoute
   '/auswertungen': typeof AuthenticatedAuswertungenRoute
@@ -149,10 +177,14 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/agb': typeof AgbRoute
   '/auth': typeof AuthRoute
+  '/datenschutz': typeof DatenschutzRoute
+  '/impressum': typeof ImpressumRoute
   '/preise': typeof PreiseRoute
   '/rechtliches': typeof RechtlichesRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/vertragsinformationen': typeof VertragsinformationenRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/angebote': typeof AuthenticatedAngeboteRoute
   '/auswertungen': typeof AuthenticatedAuswertungenRoute
@@ -171,10 +203,14 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/agb': typeof AgbRoute
   '/auth': typeof AuthRoute
+  '/datenschutz': typeof DatenschutzRoute
+  '/impressum': typeof ImpressumRoute
   '/preise': typeof PreiseRoute
   '/rechtliches': typeof RechtlichesRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/vertragsinformationen': typeof VertragsinformationenRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/angebote': typeof AuthenticatedAngeboteRoute
   '/_authenticated/auswertungen': typeof AuthenticatedAuswertungenRoute
@@ -193,10 +229,14 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/agb'
     | '/auth'
+    | '/datenschutz'
+    | '/impressum'
     | '/preise'
     | '/rechtliches'
     | '/reset-password'
+    | '/vertragsinformationen'
     | '/admin'
     | '/angebote'
     | '/auswertungen'
@@ -213,10 +253,14 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/agb'
     | '/auth'
+    | '/datenschutz'
+    | '/impressum'
     | '/preise'
     | '/rechtliches'
     | '/reset-password'
+    | '/vertragsinformationen'
     | '/admin'
     | '/angebote'
     | '/auswertungen'
@@ -234,10 +278,14 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/agb'
     | '/auth'
+    | '/datenschutz'
+    | '/impressum'
     | '/preise'
     | '/rechtliches'
     | '/reset-password'
+    | '/vertragsinformationen'
     | '/_authenticated/admin'
     | '/_authenticated/angebote'
     | '/_authenticated/auswertungen'
@@ -256,10 +304,14 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AgbRoute: typeof AgbRoute
   AuthRoute: typeof AuthRoute
+  DatenschutzRoute: typeof DatenschutzRoute
+  ImpressumRoute: typeof ImpressumRoute
   PreiseRoute: typeof PreiseRoute
   RechtlichesRoute: typeof RechtlichesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  VertragsinformationenRoute: typeof VertragsinformationenRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
@@ -279,11 +331,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agb': {
+      id: '/agb'
+      path: '/agb'
+      fullPath: '/agb'
+      preLoaderRoute: typeof AgbRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/datenschutz': {
+      id: '/datenschutz'
+      path: '/datenschutz'
+      fullPath: '/datenschutz'
+      preLoaderRoute: typeof DatenschutzRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/impressum': {
+      id: '/impressum'
+      path: '/impressum'
+      fullPath: '/impressum'
+      preLoaderRoute: typeof ImpressumRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/preise': {
@@ -305,6 +378,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vertragsinformationen': {
+      id: '/vertragsinformationen'
+      path: '/vertragsinformationen'
+      fullPath: '/vertragsinformationen'
+      preLoaderRoute: typeof VertragsinformationenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -437,10 +517,14 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AgbRoute: AgbRoute,
   AuthRoute: AuthRoute,
+  DatenschutzRoute: DatenschutzRoute,
+  ImpressumRoute: ImpressumRoute,
   PreiseRoute: PreiseRoute,
   RechtlichesRoute: RechtlichesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  VertragsinformationenRoute: VertragsinformationenRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport

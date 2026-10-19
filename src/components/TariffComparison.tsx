@@ -95,7 +95,7 @@ export function TariffComparison({ publicPage = false }: { publicPage?: boolean 
               </Button>
             ) : (
               <p className="mt-6 border-t border-border pt-4 text-xs text-muted-foreground">
-                Freischaltung durch den Betreiber. Keine Onlinezahlung verfügbar.
+                Abonnement über Tarif & Nutzung im Zahlungstest oder manuelle Freischaltung.
               </p>
             )}
           </article>

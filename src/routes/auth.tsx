@@ -6,6 +6,8 @@ import { Logo } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyRegistration } from "@/lib/notifications.functions";
 import type { BillingInterval } from "@/lib/tariffs";
+import { ContractNotice } from "@/components/LegalLinks";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (s: Record<string, unknown>): {mode?: "login" | "register"; interval?: BillingInterval | undefined} => ({
@@ -190,14 +192,15 @@ function AuthPage() {
               </p>
             )}
 
-            <button
+            {mode === "register" && <ContractNotice registration />}
+            <Button
               type="submit"
               disabled={busy}
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-card transition-opacity hover:opacity-90 disabled:opacity-60"
             >
               {busy && <Loader2 className="h-4 w-4 animate-spin" />}
               {mode === "login" ? "Anmelden" : "Konto erstellen"}
-            </button>
+            </Button>
           </form>
 
           <div className="mt-5 flex flex-col gap-2 text-center text-xs text-muted-foreground">

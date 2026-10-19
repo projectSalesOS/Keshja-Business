@@ -1,6 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Logo } from "@/components/AppShell";
+import { createFileRoute } from "@tanstack/react-router";
+import { LegalDocument, publicLegalOptions } from "@/components/LegalDocument";
 export const Route = createFileRoute("/rechtliches")({
+  loader: ({ context }) => context.queryClient.fetchQuery(publicLegalOptions()),
   head: () => ({
     meta: [
       { title: "Offene rechtliche Angaben – KESHJA Business" },
@@ -19,28 +20,5 @@ export const Route = createFileRoute("/rechtliches")({
       { name: "robots", content: "noindex" },
     ],
   }),
-  component: () => (
-    <main className="business-ui mx-auto min-h-screen max-w-3xl px-5 py-8">
-      <Link to="/">
-        <Logo />
-      </Link>
-      <h1 className="mt-12 text-3xl font-semibold">Rechtliche Angaben & Kontakt</h1>
-      <p className="mt-5 text-muted-foreground">
-        Diese Angaben sind noch offen. Hier stehen keine fertigen Rechtstexte.
-      </p>
-      <ul className="mt-7 list-disc space-y-4 pl-5 text-sm">
-        <li>Impressum: Betreibername, ladungsfähige Anschrift und Pflichtangaben fehlen.</li>
-        <li>
-          Datenschutzerklärung: Freigegebene Angaben zu Verarbeitung, eingesetzten Diensten und
-          Betroffenenrechten fehlen.
-        </li>
-        <li>Kontakt: Eine öffentliche Kontaktadresse für Tarif-Freischaltungen fehlt.</li>
-        <li>Preisangaben: Umsatzsteuerbehandlung muss vom Betreiber bestätigt werden.</li>
-      </ul>
-      <p className="mt-8 border-t border-border pt-6 text-sm text-destructive">
-        Vor öffentlicher Veröffentlichung müssen die erforderlichen Angaben ergänzt und geprüft
-        werden.
-      </p>
-    </main>
-  ),
+  component: () => <LegalDocument kind="status" />,
 });

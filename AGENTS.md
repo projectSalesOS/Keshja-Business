@@ -39,3 +39,4 @@
 - Public / is the landing page and redirects hydrated signed-in users to protected /dashboard; existing business URLs remain protected, while /preise and /rechtliches stay public.
 - Premium report filters execute through getAdvancedReport using existing pure analytics; raw business data remains member-readable for normal bookkeeping, and browser voice checks entitlements before starting and tags saved drafts for DB enforcement.
 - Operator bootstrap requires trusted administration, a verified confirmed account and audit reason; no public self-grant. See docs/tariffs-operations.md.
+- Legal settings use audited operator writes and a public projection excluding internal tax data; shared draft pages reload this central source.
