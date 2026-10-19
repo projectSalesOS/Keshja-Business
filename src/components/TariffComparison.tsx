@@ -102,7 +102,7 @@ export function TariffComparison({ publicPage = false }: { publicPage?: boolean 
         ))}
       </div>
       <p className="mt-5 text-xs text-muted-foreground">
-        Endpreise. Bei Anwendung der Kleinunternehmerregelung (§ 19 UStG) kein gesonderter Umsatzsteuerausweis. Steuerabwicklung des Zahlungstests vor Freigabe prüfen.
+        Preise für Geschäftskunden; es gilt die reguläre Umsatzsteuer. Maßgeblich ist der im Zahlungsformular ausgewiesene Betrag. Brutto-/Nettodarstellung und Steuerabwicklung des Zahlungstests vor Freigabe prüfen.
       </p>
     </div>
   );
