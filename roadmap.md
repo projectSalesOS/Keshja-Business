@@ -1,5 +1,10 @@
 # Keshja Business – Roadmap
 
+## Rechtsfelder konkret befüllen (19.10.2026)
+- [ ] Bestehende Betreiberangaben erhalten und zehn thematische Entwürfe anhand tatsächlicher Funktionen sowie verifizierter Rechtsquellen in leere Felder speichern.
+- [ ] Speicherung, Neuladen und öffentliche Übernahme prüfen; keine Zahlungs-/Steuerkonfiguration oder Geschäftsdaten ändern.
+- [ ] Persönliche Bestätigungen und rechtliche Freigabepunkte konkret benennen, Warnungen erhalten.
+
 ## Unternehmensdaten & Rechtliches (19.10.2026)
 - [x] Zentrale persistente Betreiberangaben, auditiertes Speichern nur durch Plattformbetreiber, öffentliche Positivliste ohne interne Steuernummer; additive Migrationen 0012–0014.
 - [x] Impressum, Datenschutz, B2B-AGB und Vertrags-/Widerrufsinformationen als gekennzeichnete Entwürfe; gemeinsame Fußzeile und Hinweise bei Registrierung/Checkout. Zentrale Tarifpreise auch im Buchungsbereich.
