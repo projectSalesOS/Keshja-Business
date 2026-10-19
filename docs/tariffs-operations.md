@@ -36,3 +36,17 @@ Browser-Speech-API und lokale Auswertungen können nicht vor unabhängiger Eigen
 ## Veröffentlichung und offene Punkte
 
 Impressum, freigegebene Datenschutzerklärung, Betreiberanschrift, öffentliche Kontaktadresse und Umsatzsteuerbehandlung der Preise fehlen. `/rechtliches` benennt diese Lücken; keine erfundenen Rechtstexte. Vor Veröffentlichung ergänzen. Zahlungen bleiben vollständig ausgenommen. Die SDK-Anbindung behält `openai/gpt-5.4-mini` bei.
+
+## Tatsächliche Abschlussprüfung (19.10.2026)
+
+- 101 Vitest-Tests bestanden (einschließlich bestehender Finanz-, Dokument-, Sprachparser-, VAT- und Dashboardtests).
+- 12 SQL-Integrationstests bestanden; alle Datenänderungen zurückgerollt. Die bereitgestellte SQL-Verbindung kann keine Rollen wechseln und hat begrenzte Schreibrechte; deshalb RLS und Betreiberänderungen separat mit echten Data-API-Sessions getestet.
+- 28 echte API-Integrationstests bestanden: parallele Anfragen auf den letzten manuellen/Scan-Platz lassen jeweils genau eine Anfrage durch; OCR-Deduplizierung/Bestätigung/Erstattung, Statuswechsel, einmalige Testphase, dokumentierter Betreiberwechsel, zentrale Regeln und Fixkostenbuchung am Limit mit idempotenter Wiederholung.
+- 10 direkte unberechtigte Zugriffe geprüft: Betreiber-RPCs, Selbstfreigabe, Abonnement-Update (keine Zeile verändert), Scanreservierung/-erstattung, fremder Tarif, Free-Sprachbuchung und anonyme Betreiberanfrage abgewiesen.
+- Playwright mit echtem Konto: Adminformular → Premium-Freischaltung → Tarifseite liest zurück; simulierte Sprache → bestehende Buchungsmaske → Speichern ohne Bestätigung abgewiesen → bestätigt gespeichert → Betrag/Quelle in Datenbank und Dashboard zurückgelesen. Premium-Kategoriefilter und echter PDF-Download geprüft (gültige PDF-Signatur, 13.895 Bytes).
+- Öffentliche Seiten bei 320/411 px und Desktop geprüft; zehn bestehende angemeldete Seiten bei 411 px ohne horizontalen Überlauf, Tarif-Menü funktionsfähig, keine Laufzeitfehler. Content-Routen besitzen eigene Metadaten. Letzter automatischer Build/TypeScript-Prüflauf erfolgreich.
+- Alle temporären Organisationen und Betreiberfreigaben entfernt; abschließende Datenbankabfrage: 0 Testorganisationen, 0 dauerhafte Betreiber, 0 Organisationen ohne Abonnement. Ein tatsächlicher No-op-Test der zentralen Basic-Regeln ist im Audit dokumentiert; Preise/Kontingente unverändert.
+
+Nicht ausgeführt: kostenpflichtiger echter OCR-Aufruf (keine zusätzlichen KI-Kosten), reale Mikrofonerkennung, neue Registrierung/Bestätigung oder Passwortlogin (bestehende echte Session verwendet), echter E-Mail-Versand sowie neue Rechnungsausgabe/Zahlungsmarkierung im End-to-End-Workflow. Deren bestehenden Logiktests bestanden; nicht als neue vollständige Live-Verifikation interpretieren.
+
+Offen: bestätigtes Betreiberkonto für dauerhafte Ersteinrichtung, Impressum/Datenschutzerklärung/Kontakt/Preis-Umsatzsteuerangabe. Späterer Zahlungsanbieter benötigt Checkout, sichere Konfiguration, signaturgeprüfte und idempotent persistierte Webhook-Ereignisse sowie Zahlungs-/Erstattungs-Tests; diese sind ausdrücklich noch nicht implementiert.
