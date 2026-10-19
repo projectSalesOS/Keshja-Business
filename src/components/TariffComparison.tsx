@@ -102,7 +102,7 @@ export function TariffComparison({ publicPage = false }: { publicPage?: boolean 
         ))}
       </div>
       <p className="mt-5 text-xs text-muted-foreground">
-        Alle Preise inklusive 19 % Umsatzsteuer.
+        Endpreise. Bei Anwendung der Kleinunternehmerregelung (§ 19 UStG) kein gesonderter Umsatzsteuerausweis. Steuerabwicklung des Zahlungstests vor Freigabe prüfen.
       </p>
     </div>
   );

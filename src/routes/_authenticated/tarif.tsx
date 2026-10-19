@@ -161,8 +161,9 @@ function TariffPage({ orgId }: { orgId: string }) {
         <section>
           <h2 className="mb-2 text-xl font-semibold">Tarif buchen</h2>
           <p className="mb-4 text-sm text-muted-foreground">
-            Sichere Zahlung über unseren Zahlungsdienstleister. Alle Preise inklusive 19 %
-            Umsatzsteuer. Jahrestarife werden jährlich im Voraus abgerechnet.
+            Zahlung über unseren Zahlungsdienstleister im Testbetrieb. Endpreise; bei Anwendung
+            von § 19 UStG kein gesonderter Umsatzsteuerausweis. Steuerabwicklung vor Freigabe prüfen.
+            Jahrestarife werden jährlich im Voraus abgerechnet.
           </p>
           <div
             role="group"
@@ -206,7 +207,7 @@ function TariffPage({ orgId }: { orgId: string }) {
                   <p className="mb-4 text-xs text-muted-foreground">
                     {interval === "annual"
                       ? `${formatCents(plan.price_cents_annual)} pro Jahr, jährlich im Voraus zahlbar.`
-                      : "Monatlich zahlbar, monatlich kündbar."}
+                      : "Monatlich zahlbar. Kündigungsbedingungen: siehe Vertragsinformationen (Entwurf)."}
                   </p>
                   <Button
                     className="w-full"
