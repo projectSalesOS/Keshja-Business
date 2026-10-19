@@ -77,12 +77,12 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
     </div>
 
     <div className="dash-kpis grid grid-cols-2 gap-3" aria-label="Kennzahlen">
-      <Link to="/finanzen" search={{ monat: monthParam }} aria-label="Gewinn und Verlust – alle Buchungen anzeigen" className="dash-card dash-kpi dash-profit-card">
+      <Link to="/finanzen" search={monthSearch} aria-label="Gewinn und Verlust – alle Buchungen anzeigen" className="dash-card dash-kpi dash-profit-card">
         <span className="dash-icon dash-brand"><ChartNoAxesColumnIncreasing size={25} /></span><h2 className="dash-title">Gewinn / Verlust</h2>
         <p data-testid="dashboard-balance" className={`dash-metric ${m.totals.balance < 0 ? "dash-expense" : "dash-brand"}`}>{currency(m.totals.balance)}</p>
         <p className="text-xs text-muted-foreground">{m.totals.count} {m.totals.count === 1 ? "Buchung" : "Buchungen"} im Zeitraum</p>
       </Link>
-      {(["income", "expense"] as const).map((type) => <Link key={type} to="/finanzen" search={{ typ: type, monat: monthParam }} className={`dash-card dash-kpi dash-${type}-card`} aria-label={`${type === "income" ? "Einnahmen" : "Ausgaben"} – Buchungen anzeigen`}>
+      {(["income", "expense"] as const).map((type) => <Link key={type} to="/finanzen" search={{ typ: type, ...monthSearch }} className={`dash-card dash-kpi dash-${type}-card`} aria-label={`${type === "income" ? "Einnahmen" : "Ausgaben"} – Buchungen anzeigen`}>
         <span className={`dash-icon dash-${type}`}>{type === "income" ? <ArrowUpRight size={25} /> : <ArrowDownRight size={25} />}</span>
         <h2 className="dash-title">{type === "income" ? "Einnahmen" : "Ausgaben"}</h2>
         <p data-testid={`dashboard-${type}`} className={`dash-metric dash-${type}`}>{currency(m.totals[type])}</p>
