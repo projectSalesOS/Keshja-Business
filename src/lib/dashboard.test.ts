@@ -63,9 +63,9 @@ describe("Chart series independent of the KPI range", () => {
   it("fills months without bookings with 0 and uses only paid bookings", () => {
     const s = chartSeries(rows, chartRange, "2026-10-19");
     expect(s.map((r) => r.month)).toEqual(["2026-08", "2026-09", "2026-10", "2026-11", "2026-12"]);
-    expect(s[0]).toMatchObject({ income: 0, expense: 0 });
-    expect(s[1]).toMatchObject({ income: 200, expense: 0 });
-    expect(s[2]).toMatchObject({ income: 300, expense: 100 });
+    expect(s[0]!).toMatchObject({ income: 0, expense: 0 });
+    expect(s[1]!).toMatchObject({ income: 200, expense: 0 });
+    expect(s[2]!).toMatchObject({ income: 300, expense: 100 });
   });
   it("shows future months as gaps, not as achieved zero values", () => {
     const s = chartSeries(rows, chartRange, "2026-10-19");
