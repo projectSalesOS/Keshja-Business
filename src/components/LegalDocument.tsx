@@ -19,7 +19,7 @@ export function LegalDocument({ kind }: { kind: LegalDocumentKind }) {
  const missing = missingLegalFields(d);
  return <main className="business-ui mx-auto min-h-screen max-w-4xl space-y-7 px-5 py-8 text-sm leading-relaxed">
  <Link to="/" aria-label="KESHJA Business Startseite"><Logo /></Link>
- <h1 className="break-words pt-5 text-3xl font-semibold">{titles[kind]}</h1>
+ <h1 className="break-words pt-5 text-2xl font-semibold [hyphens:auto] sm:text-3xl">{titles[kind]}</h1>
  <aside role="note" className="space-y-2 border-y border-destructive/30 py-4 text-destructive">
  <p className="font-semibold">Entwurf – keine abgeschlossene individuelle Rechtsprüfung</p>
  <p>{missing.length ? `${missing.length} erforderliche Angaben sind noch offen.` : "Basisangaben erfasst. Anwendbarkeit und Vollständigkeit müssen weiterhin individuell geprüft werden."}</p>
