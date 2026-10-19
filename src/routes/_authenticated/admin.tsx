@@ -15,6 +15,7 @@ import {
   type OcrReservation,
 } from "@/lib/tariffs.functions";
 import { usePlans } from "@/hooks/useTariff";
+import { supabase } from "@/integrations/supabase/client";
 import { STATUS_LABEL, type TariffPlan, type Subscription } from "@/lib/tariffs";
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -144,7 +145,7 @@ function AdminContent({ data }: { data: OperatorData }) {
           {orgs.length ? (
             orgs.map((o) => (
               <SubscriptionEditor
-                key={o.id + o.tariff.subscription.updated_at}
+                key={o.id + o.tariff.subscription.status + o.tariff.subscription.plan_id + o.tariff.subscription.period_end}
                 org={o}
                 members={data.users
                   .filter((u) => u.memberships.some((m) => m.organization_id === o.id))
