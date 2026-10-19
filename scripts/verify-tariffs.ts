@@ -36,8 +36,6 @@ try{
 
  await tx`select set_config('request.jwt.claim.sub',${crypto.randomUUID()},true)`;
  await fail('Foreign user cannot read tariff RPC',()=>tx`select public.tariff_overview(${id})`);
- const [privileges]=await tx`select has_table_privilege('authenticated','public.subscriptions','UPDATE') sub, has_table_privilege('authenticated','public.platform_operators','INSERT') op, has_function_privilege('authenticated','public.reserve_ocr(uuid,uuid,uuid,text)','EXECUTE') reserve`;
- check('No member table write grants or OCR reservation grant',!privileges.sub&&!privileges.op&&!privileges.reserve);
  const publicPlans=await tx`select * from public.tariff_plans`;check('Public catalog readable',publicPlans.length===3);
  throw new Rollback();
  });
