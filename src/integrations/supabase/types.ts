@@ -1075,6 +1075,7 @@ export type Database = {
         Args: { _invoice: string; _reason: string }
         Returns: string
       }
+      claim_initial_operator: { Args: { _reason: string }; Returns: undefined }
       create_household: { Args: { _name: string }; Returns: string }
       create_invoice_from_quote: { Args: { _quote: string }; Returns: string }
       create_organization: { Args: { _name: string }; Returns: string }
@@ -1092,6 +1093,7 @@ export type Database = {
       join_organization: { Args: { _code: string }; Returns: string }
       leave_household: { Args: never; Returns: undefined }
       leave_organization: { Args: { _org: string }; Returns: undefined }
+      operator_bootstrap_status: { Args: never; Returns: Json }
       operator_dashboard: { Args: never; Returns: Json }
       operator_ocr_reservations: { Args: never; Returns: Json }
       operator_refund_ocr: {
