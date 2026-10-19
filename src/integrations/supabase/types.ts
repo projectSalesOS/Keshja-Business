@@ -626,6 +626,24 @@ export type Database = {
           },
         ]
       }
+      platform_legal_settings: {
+        Row: {
+          details: Json
+          id: boolean
+          updated_at: string
+        }
+        Insert: {
+          details?: Json
+          id?: boolean
+          updated_at?: string
+        }
+        Update: {
+          details?: Json
+          id?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       platform_operators: {
         Row: {
           created_at: string
@@ -1143,6 +1161,10 @@ export type Database = {
       operator_ocr_reservations: { Args: never; Returns: Json }
       operator_refund_ocr: {
         Args: { _reason: string; _request: string }
+        Returns: undefined
+      }
+      operator_save_legal_settings: {
+        Args: { _details: Json; _reason: string }
         Returns: undefined
       }
       operator_set_plan: {
