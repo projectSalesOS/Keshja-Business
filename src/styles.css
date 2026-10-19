@@ -390,13 +390,67 @@
   color: var(--primary);
   box-shadow: none;
 }
-.app-sidebar .brand-selected { border-left: 3px solid var(--primary); padding-left: 9px; }
 .dark :where(.business-ui, [role="dialog"]) .text-muted-foreground { color: var(--muted-foreground); }
 .dark :where(button, a)[class~="bg-primary"][class~="text-primary-foreground"] { color: var(--brand-on-light); }
 .dark .period-picker button[aria-pressed="true"],
 .dark .app-nav .brand-selected { background-color: var(--brand-selection); color: var(--brand-selection-text); }
-.mobile-nav { scrollbar-width: thin; scrollbar-color: var(--input) transparent; scroll-snap-type: x proximity; }
-.mobile-nav a { scroll-snap-align: center; }
+.navigation-trigger {
+  position: fixed; z-index: 40;
+  left: max(16px, env(safe-area-inset-left));
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  width: 56px; height: 56px;
+  border-radius: 50% !important;
+  background-image: var(--gradient-primary);
+  color: var(--primary-foreground); box-shadow: var(--shadow-brand);
+}
+.navigation-trigger:hover { filter: brightness(1.06); }
+.navigation-trigger:active { transform: scale(.96); }
+.navigation-overlay { background: color-mix(in oklab, var(--foreground) 24%, transparent); backdrop-filter: blur(3px); }
+.navigation-drawer {
+  display: flex; flex-direction: column; gap: 0;
+  width: min(340px, calc(100vw - 32px)); max-width: 340px;
+  height: 100dvh; padding: 0; overflow: hidden;
+  background: var(--card); border-color: var(--border);
+  box-shadow: var(--shadow-strong);
+  animation-duration: 220ms !important;
+}
+.navigation-drawer > button {
+  display: grid; place-items: center; width: 44px; height: 44px;
+  top: max(12px, env(safe-area-inset-top)); right: 12px;
+  color: var(--muted-foreground); border-radius: 8px; opacity: 1;
+}
+.navigation-drawer > button:hover { background: var(--muted); }
+.navigation-drawer > button svg { width: 20px; height: 20px; }
+.navigation-heading { flex-shrink: 0; padding: calc(24px + env(safe-area-inset-top)) 60px 24px 20px; border-bottom: 1px solid var(--border); }
+.navigation-heading > span { align-items: center; gap: 10px; }
+.navigation-heading > span > span { flex-direction: column; align-items: flex-start; gap: 4px; }
+.navigation-heading .font-display { font-size: 18px; }
+.navigation-heading .text-xs { font-size: 11px; }
+.navigation-list { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 16px 12px; display: flex; flex-direction: column; gap: 6px; }
+.navigation-link {
+  flex-shrink: 0; display: flex; align-items: center; gap: 12px;
+  min-height: 56px; padding: 8px 10px; border-left: 3px solid transparent;
+  border-radius: 8px; color: var(--foreground); font-size: 13px; font-weight: 500;
+}
+.navigation-link:hover { background: var(--muted); }
+.navigation-link[aria-current="page"] { background: var(--secondary); border-left-color: var(--primary); color: var(--primary); font-weight: 600; }
+.navigation-link:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
+.navigation-icon { display: grid; place-items: center; width: 36px; height: 36px; flex-shrink: 0; border-radius: 8px; color: var(--nav-icon); background: color-mix(in oklab, var(--nav-icon) 10%, var(--card)); }
+.navigation-icon-brand { --nav-icon: var(--primary); }
+.navigation-icon-blue { --nav-icon: var(--cat-mobilitaet); }
+.navigation-icon-orange { --nav-icon: var(--cat-dienstleistungen); }
+.navigation-icon-income { --nav-icon: var(--cat-buero); }
+.navigation-icon-expense { --nav-icon: var(--cat-drogerie); }
+.navigation-icon-amber { --nav-icon: var(--cat-haushalt); }
+.navigation-icon-neutral { --nav-icon: var(--cat-tabak); }
+.navigation-account { margin-top: auto; flex-shrink: 0; border-top: 1px solid var(--border); padding: 16px 20px calc(12px + env(safe-area-inset-bottom)); display: grid; gap: 10px; }
+@media (max-height: 480px) {
+  .navigation-heading { padding-block: 12px; }
+  .navigation-account { padding-top: 8px; gap: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .navigation-drawer, .navigation-overlay { animation-duration: 0s !important; }
+}
 .section-tabs a { min-height: 48px; }
 .business-ui .quick-action { background-image: var(--gradient-surface); min-height: 80px; }
 .business-ui .quick-icon { box-shadow: none; }
@@ -520,9 +574,9 @@
 .dashboard-view .dash-header-period input { width: 145px; font-size: 13px; color: var(--foreground); background: transparent; }
 .dashboard-view .dash-notifications { position: relative; }
 .dashboard-view .dash-notifications summary { display: grid; position: relative; place-items: center; width: 44px; height: 44px; cursor: pointer; list-style: none; border: 1px solid var(--dash-contour); border-radius: 12px; background: var(--dash-surface); box-shadow: var(--dash-shadow); }
-.dashboard-view .dash-notifications summary::-webkit-details-marker, .dash-more summary::-webkit-details-marker { display: none; }
+.dashboard-view .dash-notifications summary::-webkit-details-marker { display: none; }
 .dashboard-view .dash-notification-dot { position: absolute; right: 8px; top: 7px; width: 6px; height: 6px; border-radius: 50%; background: var(--dash-brand); }
-.dashboard-view .dash-notification-list, .business-ui:has(.dashboard-view) .dash-more-menu { position: absolute; z-index: 40; right: 0; top: calc(100% + 8px); width: 250px; padding: 14px; border: 1px solid var(--dash-contour); border-radius: 12px; background: var(--dash-surface); box-shadow: var(--dash-shadow); font-size: 13px; }
+.dashboard-view .dash-notification-list { position: absolute; z-index: 40; right: 0; top: calc(100% + 8px); width: 250px; padding: 14px; border: 1px solid var(--dash-contour); border-radius: 12px; background: var(--dash-surface); box-shadow: var(--dash-shadow); font-size: 13px; }
 .dashboard-view .dash-notification-list a { display: block; padding-block: 10px; }
 .dashboard-view .dash-voice-card { border: 1px solid var(--dash-contour); border-left: 4px solid var(--dash-brand); border-radius: 14px; padding: 12px 18px; background: linear-gradient(110deg, var(--dash-surface), color-mix(in oklab, var(--dash-brand) 12%, var(--dash-surface)), color-mix(in oklab, var(--dash-expense) 6%, var(--dash-surface))); box-shadow: var(--dash-shadow); }
 .dashboard-view .dash-voice-button { display: grid; grid-template-columns: auto minmax(0,1fr) auto auto; gap: 18px; width: 100%; height: auto; padding: 0; white-space: normal; text-align: left; background: transparent; color: var(--foreground); }
@@ -555,12 +609,6 @@
 .dashboard-view .dash-bar-chart { height: 160px; }
 .dashboard-view .dash-action { display: grid; grid-template-columns: auto minmax(0,1fr) auto; gap: 12px; text-align: left; min-height: 72px; padding: 12px; font-size: 12px; }
 .dashboard-view .dash-action small { display: block; margin-top: 3px; font-size: 10px; font-weight: 400; color: var(--muted-foreground); }
-.business-ui:has(.dashboard-view) .mobile-nav { overflow: visible; }
-.business-ui:has(.dashboard-view) .mobile-nav > a, .business-ui:has(.dashboard-view) .dash-more { flex: 1; min-width: 0; width: auto; }
-.business-ui:has(.dashboard-view) .dash-more { position: relative; }
-.business-ui:has(.dashboard-view) .dash-more-trigger { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 8px 0; min-height: 60px; list-style: none; cursor: pointer; font-size: 12px; color: var(--muted-foreground); }
-.business-ui:has(.dashboard-view) .dash-more-menu { top: auto; bottom: calc(100% + 16px); }
-.business-ui:has(.dashboard-view) .dash-more-menu a { display: flex; align-items: center; gap: 10px; padding: 12px 4px; }
 @media (max-width: 639px) {
   .dashboard-view .dash-card { padding: 18px; }
   .dashboard-view .dash-metric { font-size: 28px; }
@@ -596,7 +644,6 @@
   .dashboard-view .dash-action { display: flex; flex-direction: column; gap: 7px; min-height: 92px; text-align: center; font-size: 10px; }
   .dashboard-view .dash-action > svg, .dashboard-view .dash-action small { display: none; }
   .dashboard-view .dash-action .dash-icon { width: 30px; height: 30px; }
-  .business-ui:has(.dashboard-view) .mobile-nav > a, .business-ui:has(.dashboard-view) .dash-more-trigger { font-size: 10px; }
 }
 @media (max-width: 359px) {
   .dashboard-view :is(.dash-income-card,.dash-expense-card) .dash-metric { font-size: 18px; }
