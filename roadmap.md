@@ -1,5 +1,10 @@
 # Keshja Business – Roadmap
 
+## Unternehmensdaten & Rechtliches (19.10.2026)
+- [ ] Zentrale persistente Betreiberangaben, geschützte Verwaltung und öffentliche Datenübernahme.
+- [ ] Impressum, Datenschutz, B2B-AGB und Vertrags-/Widerrufsinformationen als gekennzeichnete Entwürfe; Links und Hinweise.
+- [ ] Speicher-, Berechtigungs-, Mobil- und Registrierungsprüfungen; fehlende Angaben dokumentieren.
+
 ## Tarife, Landingpage und Betreiberverwaltung (19.10.2026)
 - [x] Zentrale Tarife (Free 0 €, Basic 9,90 €, Premium 19,90 €), Abonnements und protokollierte manuelle Freischaltungen; additive Migrationen 0007/0008. Free-Startwerte: 50 aktive reine Handbuchungen, 3 OCR/UTC-Kalendermonat; Angebote/Rechnungen zunächst in allen Tarifen.
 - [x] Atomare Buchungs-/OCR-Limits, wiederholbare Scan-IDs, sichere Erstattungen, Tarifrechte und Mandanten-/Betreiberschutz; Sprache/Logo/erweiterte Reportfilter Premium, bestehende Daten und Standardberichte erhalten.
