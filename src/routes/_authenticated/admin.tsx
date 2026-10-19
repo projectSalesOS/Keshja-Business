@@ -54,9 +54,9 @@ function Admin() {
             <h2 className="font-semibold">Kein Betreiberzugriff</h2>
             <p className="mt-2 text-sm text-muted-foreground">{q.error.message}</p>
             <p className="mt-2 text-sm text-muted-foreground">
-              Die Erstfreigabe muss kontrolliert durch den Projektinhaber erfolgen;
               Unternehmensrollen geben keinen Betreiberzugriff.
             </p>
+            <Bootstrap />
           </div>
         ) : (
           <AdminContent data={q.data} />
@@ -65,16 +65,95 @@ function Admin() {
     </AppShell>
   );
 }
+function Bootstrap() {
+  const qc = useQueryClient();
+  const status = useQuery({
+    queryKey: ["operator-bootstrap"],
+    queryFn: async () => {
+      const r = await supabase.rpc("operator_bootstrap_status");
+      if (r.error) throw r.error;
+      return r.data as { open: boolean; eligible: boolean };
+    },
+  });
+  const [reason, setReason] = useState("");
+  const [error, setError] = useState("");
+  if (!status.data?.open) return null;
+  if (!status.data.eligible)
+    return (
+      <p className="mt-3 text-sm text-muted-foreground">
+        Die Ersteinrichtung kann nur das zuerst registrierte, bestätigte Konto durchführen.
+      </p>
+    );
+  return (
+    <form
+      className="mt-5 space-y-3 rounded-lg border border-border bg-card/70 p-5"
+      onSubmit={async (e) => {
+        e.preventDefault();
+        setError("");
+        const r = await supabase.rpc("claim_initial_operator", { _reason: reason });
+        if (r.error) return setError(r.error.message);
+        await qc.invalidateQueries();
+      }}
+    >
+      <h3 className="font-semibold">Betreiberkonto einrichten</h3>
+      <p className="text-sm text-muted-foreground">
+        Noch kein Betreiber vorhanden. Als erstes registriertes Konto kannst du dich einmalig
+        freischalten; danach ist dieser Weg dauerhaft geschlossen.
+      </p>
+      <Field label="Grund">
+        <input required minLength={3} className={inputClass} value={reason} onChange={(e) => setReason(e.target.value)} />
+      </Field>
+      <Button type="submit">Als Betreiber einrichten</Button>
+      {error && <p className="text-sm text-destructive">{error}</p>}
+    </form>
+  );
+}
 function AdminContent({ data }: { data: OperatorData }) {
   const plans = usePlans();
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<"all" | "free" | "basic" | "premium">("all");
+  const term = search.trim().toLowerCase();
+  const orgs = data.organizations.filter((o) => {
+    if (filter !== "all" && o.tariff.plan.id !== filter) return false;
+    if (!term) return true;
+    const members = data.users.filter((u) => u.memberships.some((m) => m.organization_id === o.id));
+    return [o.name, o.id, ...members.flatMap((u) => [u.display_name ?? "", u.id])].some((v) =>
+      v.toLowerCase().includes(term),
+    );
+  });
   return (
     <>
       <section>
         <h2 className="mb-4 text-xl font-semibold">Organisationen & Nutzung</h2>
+        <div className="mb-5 grid gap-3 sm:grid-cols-[1fr_auto]">
+          <input
+            aria-label="Organisation oder Nutzer suchen"
+            placeholder="Organisation, Nutzername oder ID suchen …"
+            className={inputClass}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <select aria-label="Nach wirksamem Tarif filtern" className={inputClass} value={filter} onChange={(e) => setFilter(e.target.value as typeof filter)}>
+            <option value="all">Alle Tarife</option>
+            <option value="free">Free</option>
+            <option value="basic">Basic</option>
+            <option value="premium">Premium</option>
+          </select>
+        </div>
         <div className="space-y-5">
-          {data.organizations.map((o) => (
-            <SubscriptionEditor key={o.id} org={o} />
-          ))}
+          {orgs.length ? (
+            orgs.map((o) => (
+              <SubscriptionEditor
+                key={o.id + o.tariff.subscription.updated_at}
+                org={o}
+                members={data.users
+                  .filter((u) => u.memberships.some((m) => m.organization_id === o.id))
+                  .map((u) => u.display_name || u.id)}
+              />
+            ))
+          ) : (
+            <p className="text-sm text-muted-foreground">Keine Treffer.</p>
+          )}
         </div>
       </section>
       <section className="border-t border-border pt-7">
