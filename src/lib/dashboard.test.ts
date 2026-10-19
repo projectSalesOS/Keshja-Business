@@ -69,9 +69,9 @@ describe("Chart series independent of the KPI range", () => {
   });
   it("shows future months as gaps, not as achieved zero values", () => {
     const s = chartSeries(rows, chartRange, "2026-10-19");
-    expect(s[3].income).toBeNull();
-    expect(s[4].expense).toBeNull();
-    expect(s[3].balance).toBeNull();
+    expect(s[3]!.income).toBeNull();
+    expect(s[4]!.expense).toBeNull();
+    expect(s[3]!.balance).toBeNull();
   });
   it("ignores unpaid bookings entirely", () => {
     const s = chartSeries(rows, chartRange, "2026-10-19");
