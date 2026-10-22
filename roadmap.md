@@ -1,8 +1,8 @@
 # Keshja Business – Roadmap
 
 ## OCR-Umsatzsteuer-Aufteilung (22.10.2026)
-- [ ] Datenfluss und Beispiel 11,17 € reproduzieren; Brutto-/Netto-Verwechslung gezielt korrigieren, erkannte Steuergruppen erhalten und Abweichungen korrigierbar anzeigen.
-- [ ] Automatisierte Beleg-/Steuertests und angemeldeten Prüf-/Speicherweg mit isolierten Testdaten verifizieren.
+- [x] Gemeldete 11,26 € reproduziert: 5,39 € als Netto führt zu 6,41 € Brutto; OCR-Spalten bisher ohne Steuergruppenmarker. Unvollständige Aufteilungen verwenden erkanntes Brutto, vollständige Widersprüche bleiben sichtbar; gedruckte A/B-Gruppen mit Pfand/Rabatten werden gegengeprüft, ohne Brutto zu überschreiben. Korrekturaktion berechnet Netto/Steuer explizit aus Brutto. Originalfoto/OCR-Antwort fehlt, daher konkrete ursprüngliche Erkennungsursache nicht abschließend bewiesen.
+- [x] 54 Tests bestanden; angemeldet falsche Aufteilung serverseitig zurückgewiesen, Warnung/Korrektur/Speichern/Neuladen mit temporärem separatem Testbeleg geprüft und Testbeleg entfernt. Ergebnis 9,93 € netto + 1,24 € Steuer = 11,17 € brutto, keine Laufzeitfehler, Build OK; kein neuer echter OCR-Aufruf und keine Änderung vorhandener Geschäftsdaten.
 
 ## Rechtsfelder konkret befüllen (19.10.2026)
 - [x] Bestehende Betreiberangaben erhalten; zehn thematische Entwürfe und öffentlicher Prüfstand über das autorisierte Betreiberformular auditiert gespeichert. Tatsächliche Tarifpreise aus zentraler Datenquelle und amtliche Rechtsquellen geprüft.
