@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { classifyLineType, type RawLine } from "./receipt-lines";
 
 export const vatRowSchema = z.object({
   rate: z.number().finite().min(0).max(100),
@@ -68,4 +69,17 @@ export function vatExtractionWarnings(value: unknown, rows: VatRow[]): string[] 
     }
   }
   return [...new Set(warnings)];
+}
+
+/** Compare printed group markers; include deposits and signed discounts exactly once. */
+export function vatGroupWarnings(rows: VatRow[], lines: RawLine[]): string[] {
+  const moneyLines = lines.filter((line) => ['product', 'deposit', 'deposit_return', 'product_discount', 'receipt_discount'].includes(classifyLineType(line.text, line.amount)) && line.amount !== null);
+  if (!rows.some((r) => r.group) || !moneyLines.length) return [];
+  if (moneyLines.some((line) => !line.taxGroup || !rows.some((r) => r.group === line.taxGroup))) return ["Nicht alle Positionen, Pfand- oder Rabattzeilen haben eine eindeutige erkannte Steuergruppe. Bitte Zuordnung am Bon prüfen; fehlende Gruppen werden nicht geraten."];
+  return rows.flatMap((row) => {
+    const matching = moneyLines.filter((line) => line.taxGroup === row.group);
+    if (!matching.length) return [];
+    const gross = round(matching.reduce((sum, line) => sum + (line.amount ?? 0), 0));
+    return Math.abs(gross - row.gross) > 0.030001 ? [`Steuergruppe ${row.group}: Positionen einschließlich Pfand/Rabatten ergeben ${gross.toFixed(2).replace('.', ',')} €, der Steuerblock ${row.gross.toFixed(2).replace('.', ',')} €. Bitte Gruppen und Bruttobeträge am Bon prüfen.`] : [];
+  });
 }

@@ -12,7 +12,7 @@ import {
   type ParsedReceipt,
 } from "./receipt-schema";
 import type { ReceiptTrace } from "./receipt-trace";
-import { extractVat, validateVat, vatTotals } from "./receipt-vat";
+import { extractVat, validateVat, vatTotals, vatExtractionWarnings, vatGroupWarnings } from "./receipt-vat";
 
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const MODEL = "openai/gpt-5.4-mini";
@@ -60,7 +60,8 @@ ${CATEGORY_TREE_PROMPT}
   der passenden Hauptkategorie. Passt gar nichts: "Geschenke & Sonstiges" / "Sonstiges".
 - Datum immer als JJJJ-MM-TT, Uhrzeit als HH:MM oder null.
 - Erfinde keine Zeilen. Nicht lesbare Zeilen weglassen.
-- Schreibe zusätzlich den gedruckten Umsatzsteuerblock nach "vat_breakdown" ab: je Steuersatz "rate" in Prozent, "net", "tax", "gross". Fehlende Beträge null; keine Berechnungen. Alle vorhandenen Steuersätze separat, keine Angaben erfinden; ohne Steuerblock leere Liste.
+- Schreibe zusätzlich den gedruckten Umsatzsteuerblock nach "vat_breakdown" ab: je Steuersatz "rate" in Prozent, "group" als gedruckte Kennung (z.B. A/B) oder null, "net", "tax", "gross". Ordne Spalten NUR nach den gedruckten Überschriften zu, niemals nach ihrer Reihenfolge. Bonpositionspreise und als Brutto ausgewiesene Gruppenbeträge enthalten die Steuer bereits und gehören NIEMALS in "net". Fehlende Beträge null; keine Berechnungen. Alle vorhandenen Steuersätze separat, keine Angaben erfinden; ohne Steuerblock leere Liste.
+- "tax_group" pro Zeile ist ausschließlich die gedruckte Steuerkennung (z.B. A/B), auch bei Pfand und Rabatten, sonst null. Keine Zuordnung aus Produktnamen oder Warenkategorien raten. Gruppenbeträge nicht aus Positionen errechnen.
 - Ist das Bild kein lesbarer Kassenbon, setze readable=false und lines auf eine leere Liste.`;
 
 const RESPONSE_SCHEMA = {
@@ -73,13 +74,13 @@ const RESPONSE_SCHEMA = {
     date: { type: ["string", "null"] },
     time: { type: ["string", "null"] },
     total: { type: ["number", "null"] },
-    vat_breakdown: { type: "array", items: { type: "object", additionalProperties: false, required: ["rate", "net", "tax", "gross"], properties: { rate: { type: "number" }, net: { type: ["number", "null"] }, tax: { type: ["number", "null"] }, gross: { type: ["number", "null"] } } } },
+    vat_breakdown: { type: "array", items: { type: "object", additionalProperties: false, required: ["rate", "group", "net", "tax", "gross"], properties: { rate: { type: "number" }, group: { type: ["string", "null"] }, net: { type: ["number", "null"] }, tax: { type: ["number", "null"] }, gross: { type: ["number", "null"] } } } },
     lines: {
       type: "array",
       items: {
         type: "object",
         additionalProperties: false,
-        required: ["index", "text", "amount", "quantity", "unit_price", "category", "subcategory"],
+        required: ["index", "text", "amount", "quantity", "unit_price", "category", "subcategory", "tax_group"],
         properties: {
           index: { type: "number" },
           text: { type: "string" },
@@ -88,6 +89,7 @@ const RESPONSE_SCHEMA = {
           unit_price: { type: ["number", "null"] },
           category: { type: ["string", "null"] },
           subcategory: { type: ["string", "null"] },
+          tax_group: { type: ["string", "null"] },
         },
       },
     },
@@ -164,6 +166,7 @@ export const analyzeReceipt = createServerFn({ method: "POST" })
       unitPrice: typeof line["unit_price"] === "number" ? round2(line["unit_price"]) : null,
       category: typeof line["category"] === "string" ? line["category"] : null,
       subcategory: typeof line["subcategory"] === "string" ? line["subcategory"] : null,
+      taxGroup: typeof line["tax_group"] === "string" ? line["tax_group"] : null,
     }));
 
     const dateRaw = typeof raw["date"] === "string" ? raw["date"] : "";
@@ -204,6 +207,7 @@ export const analyzeReceipt = createServerFn({ method: "POST" })
     }
     warnings.push(...trace.notes);
     const vatBreakdown = extractVat(raw["vat_breakdown"]);
+    warnings.push(...vatExtractionWarnings(raw["vat_breakdown"], vatBreakdown), ...vatGroupWarnings(vatBreakdown, parsedRaw.data.lines));
     const vatWarning = validateVat(vatBreakdown, receipt.total);
     if (vatWarning) warnings.push(vatWarning);
 

@@ -15,6 +15,7 @@ import { checkReceipt, isDepositItem } from "@/lib/receipt-check";
 import { RECEIPTS_QUERY_KEY } from "@/hooks/useReceipts";
 import { ReceiptVatEditor } from "@/components/ReceiptVatEditor";
 import { validateVat } from "@/lib/receipt-vat";
+import { Button } from "@/components/ui/button";
 
 const MAX_BYTES = 8 * 1024 * 1024;
 
@@ -89,6 +90,7 @@ export function ReceiptCapture({
   };
 
   const check = useMemo(() => (draft ? checkReceipt(draft) : null), [draft]);
+  const vatError = draft ? validateVat(draft.vatBreakdown ?? [], draft.total) : null;
   const suspectMap = useMemo(
     () => new Map((check?.suspects ?? []).map((s) => [s.index, s])),
     [check],
@@ -407,14 +409,14 @@ export function ReceiptCapture({
               >
                 Verwerfen
               </button>
-              <button
+              <Button
                 type="button"
                 onClick={() => void onSave()}
-                disabled={saving || draft.items.length === 0}
+                disabled={saving || draft.items.length === 0 || !!vatError}
                 className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
               >
                 {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null} Speichern
-              </button>
+              </Button>
             </div>
           </div>
         </div>
