@@ -1,5 +1,9 @@
 # Keshja Business – Roadmap
 
+## OCR-Umsatzsteuer-Aufteilung (22.10.2026)
+- [ ] Datenfluss und Beispiel 11,17 € reproduzieren; Brutto-/Netto-Verwechslung gezielt korrigieren, erkannte Steuergruppen erhalten und Abweichungen korrigierbar anzeigen.
+- [ ] Automatisierte Beleg-/Steuertests und angemeldeten Prüf-/Speicherweg mit isolierten Testdaten verifizieren.
+
 ## Rechtsfelder konkret befüllen (19.10.2026)
 - [x] Bestehende Betreiberangaben erhalten; zehn thematische Entwürfe und öffentlicher Prüfstand über das autorisierte Betreiberformular auditiert gespeichert. Tatsächliche Tarifpreise aus zentraler Datenquelle und amtliche Rechtsquellen geprüft.
 - [x] Speicherung/Neuladen und öffentliche Übernahme auf Impressum, Datenschutz, AGB, Vertragsinformationen und Prüfstand mit echtem Betreiberkonto sowie anonymem Browser geprüft; 21 Tests bestanden, Build OK. Falsche 19-%-Preishinweise und unbelegte monatliche Kündigungszusage korrigiert; keine Zahlungs-/Steuerkonfiguration oder Kundengeschäftsdaten geändert.
