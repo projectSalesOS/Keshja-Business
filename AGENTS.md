@@ -30,6 +30,7 @@
 - Main navigation has independent invoice and quote entries; booking/receipt/report sub-areas use SectionTabs, and nav highlighting matches by path prefix.
 - Shared VoiceBooking browser recognition/local parser feeds TransactionForm drafts requiring confirmation before existing save; no parallel capture/persistence or paid transcription.
 - Receipt VAT is an optional multi-rate breakdown on receipts, validated in shared pure helpers and a database trigger; missing historical VAT remains unknown and receipt gross amounts continue to drive manual bookings.
+- Receipt VAT completion uses recognized gross as authority for incomplete rows; complete contradictions remain visible, explicit recalculation preserves gross, and printed tax-group markers in raw traces support signed deposit/discount cross-checks without guessing rates from categories.
 - Document PDFs are built once by makeDocPdf (DocumentsView) and reused for download and email, so the sent attachment equals the export.
 - Document emails go through the createServerFn sendDocumentEmail (Resend connector, attachments) because Lovable app emails cannot carry attachments; no send status is shown unless the provider accepted it.
 - Company logos live in private storage bucket org-logos under <organization_id>/; storage RLS reuses private.is_org_member/is_org_admin; organizations.logo_path points to the current file.

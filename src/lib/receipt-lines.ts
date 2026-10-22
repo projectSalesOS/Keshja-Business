@@ -17,6 +17,8 @@ export const rawLineSchema = z.object({
   /** reine Warenklassifikation, keine Preislogik */
   category: z.string().trim().max(60).nullable(),
   subcategory: z.string().trim().max(60).nullable(),
+  /** Printed tax-group marker only; never infer from the product/category. */
+  taxGroup: z.string().trim().max(20).nullable().optional(),
 });
 
 export const rawReceiptSchema = z.object({
