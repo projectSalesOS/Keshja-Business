@@ -196,8 +196,8 @@ export function DocumentsView({ kind, ctx, startNew = false }: { kind: Kind; ctx
           <option value="">Alle Kunden</option>
           {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
-        <input type="date" className={inputClass} value={filter.from} onChange={(e) => setFilter({ ...filter, from: e.target.value })} aria-label="Von" />
-        <input type="date" className={inputClass} value={filter.to} onChange={(e) => setFilter({ ...filter, to: e.target.value })} aria-label="Bis" />
+        <label className="filter-field"><span>Von</span><input type="date" className={inputClass} value={filter.from} onChange={(e) => setFilter({ ...filter, from: e.target.value })} /></label>
+        <label className="filter-field"><span>Bis</span><input type="date" className={inputClass} value={filter.to} onChange={(e) => setFilter({ ...filter, to: e.target.value })} /></label>
       </div>
       {kind === "invoice" && sumOpen > 0 ? (
         <p className="text-sm text-muted-foreground">Offene Forderungen: <span className="font-semibold text-foreground tabular-nums">{currency(sumOpen)}</span></p>

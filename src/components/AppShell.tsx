@@ -8,7 +8,7 @@ import { useOperator } from "@/hooks/useTariff";
 import { useProfile } from "@/hooks/useProfile";
 import { useOrganization } from "@/hooks/useOrganization";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetTrigger, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 
 const NAV = [
   { to: "/dashboard", label: "Dashboard", tone: "brand", icon: LayoutDashboard, match: [] as string[] },
@@ -111,7 +111,10 @@ export function AppShell({ children }: { children: ReactNode; dashboard?: boolea
 
   return (
     <div className="business-ui min-h-screen bg-background">
-      <header className="sticky top-0 z-20 grid h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-card/90 px-5 backdrop-blur-lg">
+      <header className="sticky top-0 z-20 grid h-16 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-card/90 px-3 backdrop-blur-lg sm:px-5">
+        <Button type="button" variant="ghost" size="icon" className="navigation-trigger" aria-label="Menü öffnen" title="Menü öffnen" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}>
+          <Menu size={22} strokeWidth={1.75} />
+        </Button>
         <Logo />
         <Button
           variant="ghost"
@@ -130,11 +133,6 @@ export function AppShell({ children }: { children: ReactNode; dashboard?: boolea
       </main>
 
       <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-        <SheetTrigger asChild>
-          <Button type="button" size="icon" className="navigation-trigger" aria-label="Menü öffnen" title="Menü öffnen">
-            <Menu size={25} strokeWidth={1.75} />
-          </Button>
-        </SheetTrigger>
         <SheetContent side="left" className="navigation-drawer" overlayClassName="navigation-overlay" closeLabel="Menü schließen" aria-describedby={undefined}>
           <SheetTitle className="sr-only">KESHJA Business – Navigation</SheetTitle>
           <div className="navigation-heading"><Logo /></div>

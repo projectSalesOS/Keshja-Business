@@ -12,7 +12,7 @@
 ## Architecture rules
 - Central CSS tokens define brand gradients for primary controls/navigation; KPI accents are presentation-only, preserving calculations and structure.
 - AppShell business-ui/dialog styles in src/styles.css and shared Stat/controls isolate presentation from calculations/mutations; retain all navigation destinations.
-- AppShell owns one controlled Sheet for all viewports, NAV and SectionTabs; no parallel sidebar/bottom navigation. VoiceBooking retains dashboard presentation.
+- AppShell owns one controlled Sheet (trigger in the sticky top bar, shown on all pages incl. dashboard), NAV and SectionTabs; no parallel sidebar/bottom navigation.
 - Tenant isolation: every business table carries organization_id and RLS uses private.is_org_member / private.is_org_admin (security definer) — avoids policy recursion.
 - Org creation/joining goes through SECURITY DEFINER RPCs (create_organization, join_organization) because membership rows cannot be inserted directly by clients.
 

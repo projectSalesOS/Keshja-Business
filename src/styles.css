@@ -654,3 +654,138 @@
 @media (max-width: 389px) {
   .dashboard-view .dash-header-period { display: none; }
 }
+
+/* ============ Modern Minimal Finance (Redesign 2026-11) ============
+ * Token-level retheme: white space instead of colour fields, violet only as accent.
+ * Presentation only — layout, logic and navigation targets stay with the components. */
+:root {
+  --background: oklch(0.977 0.004 286);
+  --foreground: oklch(0.271 0.020 293);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.271 0.020 293);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.271 0.020 293);
+  --primary: oklch(0.527 0.127 301);
+  --primary-mid: oklch(0.527 0.127 301);
+  --primary-end: oklch(0.527 0.127 301);
+  --primary-foreground: oklch(1 0 0);
+  --gradient-primary: linear-gradient(var(--primary), var(--primary));
+  --secondary: oklch(0.957 0.007 295);
+  --secondary-foreground: oklch(0.271 0.020 293);
+  --muted: oklch(0.957 0.007 295);
+  --muted-foreground: oklch(0.566 0.019 297);
+  --subtle-foreground: oklch(0.667 0.018 301);
+  --accent: oklch(0.961 0.011 308);
+  --accent-foreground: oklch(0.527 0.127 301);
+  --brand-soft: oklch(0.929 0.024 302);
+  --destructive: oklch(0.603 0.152 23);
+  --border: oklch(0.940 0.008 301);
+  --input: oklch(0.915 0.010 301);
+  --ring: oklch(0.527 0.127 301);
+  --success: oklch(0.552 0.102 159);
+  --success-soft: oklch(0.960 0.015 158);
+  --warning: oklch(0.727 0.132 76);
+  --warning-soft: oklch(0.969 0.019 83);
+  --danger-soft: oklch(0.957 0.015 17);
+  --dashboard-income: oklch(0.552 0.102 159);
+  --dashboard-expense: oklch(0.603 0.152 23);
+  --profit-positive: oklch(0.527 0.127 301);
+  --profit-negative: oklch(0.603 0.152 23);
+  --surface-glass: var(--card);
+  --surface-contour: var(--border);
+  --surface-pastel: var(--accent);
+  --surface-rose: var(--accent);
+  --surface-mint: var(--success-soft);
+  --surface-coral: var(--danger-soft);
+  --kpi-violet: var(--brand-soft);
+  --kpi-blue: var(--secondary);
+  --kpi-turquoise: var(--success-soft);
+  --kpi-green: var(--success-soft);
+  --kpi-orange: var(--warning-soft);
+  --kpi-pink: var(--danger-soft);
+  --gradient-surface: none;
+  --gradient-icon: linear-gradient(var(--accent), var(--accent));
+  --gradient-page: none;
+  --shadow-control: 0 1px 2px oklch(0.27 0.02 293 / 0.04);
+  --shadow-brand: 0 1px 2px oklch(0.27 0.02 293 / 0.08);
+  --shadow-soft: 0 1px 2px oklch(0.27 0.02 293 / 0.03), 0 4px 16px -8px oklch(0.27 0.02 293 / 0.08);
+  --shadow-strong: 0 16px 40px -16px oklch(0.27 0.02 293 / 0.18);
+  --sidebar: oklch(1 0 0);
+  --chart-1: oklch(0.527 0.127 301);
+  --chart-2: oklch(0.552 0.102 159);
+  --chart-3: oklch(0.603 0.152 23);
+  --chart-8: oklch(0.667 0.018 301);
+}
+@theme inline {
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger-soft: var(--danger-soft);
+  --color-brand-soft: var(--brand-soft);
+  --color-subtle-foreground: var(--subtle-foreground);
+}
+body { font-feature-settings: "tnum" 0; }
+.tabular-nums, .kpi-value, .dash-metric, td { font-variant-numeric: tabular-nums; }
+
+/* Calm surfaces: no glass, no tints, fine contours. */
+.glass-tile { background-image: none; backdrop-filter: none; background-color: var(--card); border-color: var(--border); }
+.kpi-contour { display: none; }
+:where(.business-ui, [role="dialog"], [role="alertdialog"]) :where(.rounded-2xl) { border-radius: 16px; }
+:where(.business-ui, [role="dialog"], [role="alertdialog"]) :where(.rounded-xl) { border-radius: 14px; }
+:where(.business-ui, [role="dialog"], [role="alertdialog"]) :where(button, a[role="button"])[class*="rounded-"] { border-radius: 11px; }
+:where(.business-ui, [role="dialog"], [role="alertdialog"]) :where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea)[class~="border"] { border-radius: 10px; box-shadow: none; border-color: var(--input); }
+.business-ui :where(thead, [data-slot="table-header"]) { background-color: transparent; color: var(--subtle-foreground); border-bottom: 1px solid var(--border); }
+.business-ui :where(thead th) { font-size: 12px; font-weight: 500; letter-spacing: .02em; }
+.business-ui :where(tbody tr) { border-color: var(--border); }
+@media (hover: hover) { .business-ui :where(tbody tr, ul[class~="bg-card"] > li):hover { background-color: var(--accent); } }
+.business-ui .quick-icon { background: var(--accent); color: var(--primary); border-color: transparent; }
+.business-ui .quick-action { background-image: none; }
+.page-header h1 { font-family: var(--font-sans); font-weight: 650; letter-spacing: -0.01em; }
+
+/* Navigation: trigger sits in the sticky top bar, so it never covers content. */
+.navigation-trigger {
+  position: static; width: 44px; height: 44px; border-radius: 11px !important;
+  background: transparent; background-image: none; color: var(--foreground); box-shadow: none;
+}
+.navigation-trigger:hover { background: var(--muted); filter: none; }
+.app-main { padding-bottom: calc(40px + env(safe-area-inset-bottom)); }
+.navigation-link[aria-current="page"] { background: var(--accent); border-left-color: var(--primary); color: var(--primary); }
+.navigation-icon, .navigation-icon-blue, .navigation-icon-orange, .navigation-icon-income, .navigation-icon-expense, .navigation-icon-amber, .navigation-icon-neutral { --nav-icon: var(--muted-foreground); background: var(--muted); }
+.navigation-link[aria-current="page"] .navigation-icon { --nav-icon: var(--primary); background: var(--brand-soft); }
+
+/* Labelled filter fields (e.g. Von / Bis on documents). */
+.filter-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+
+/* Dashboard: same calm palette, global top bar with menu, single period control. */
+.business-ui:has(.dashboard-view) {
+  --dash-background: var(--background);
+  --dash-surface: var(--card);
+  --dash-brand: var(--primary);
+  --dash-income: var(--success);
+  --dash-expense: var(--destructive);
+  --dash-income-accent: var(--success);
+  --dash-expense-accent: var(--destructive);
+  --dash-line: var(--border);
+  --dash-contour: var(--border);
+  --dash-reflection: none;
+  --dash-shadow: var(--shadow-soft);
+}
+.business-ui:has(.dashboard-view) > header { display: grid; }
+.dashboard-view .dash-topbar > span:first-child,
+.dashboard-view .dash-top-controls > button,
+.dashboard-view .dash-header-period { display: none; }
+.dashboard-view .dash-topbar { grid-template-columns: minmax(0,1fr) auto; justify-items: end; }
+.dashboard-view .dash-topbar::before { content: ""; }
+.dashboard-view .dash-card { border-radius: 16px; }
+.dashboard-view .dash-kpi { border-left-width: 1px; border-left-color: var(--dash-contour); }
+.dashboard-view :is(.dash-profit-card, .dash-income-card, .dash-expense-card) { background-image: none; }
+.dashboard-view .dash-profit-card::after { display: none; }
+.dashboard-view .dash-voice-card { background: var(--dash-surface); border-left-width: 1px; border-left-color: var(--dash-contour); padding: 10px 16px; }
+.dashboard-view .dash-microphone { width: 42px; height: 42px; background: var(--accent); color: var(--primary); box-shadow: none; }
+.dashboard-view .dash-microphone svg { width: 22px; height: 22px; }
+.dashboard-view .dash-waveform { display: none; }
+.dashboard-view .dash-voice-card > p { margin-left: 60px; }
+@media (max-width: 639px) {
+  .business-ui:has(.dashboard-view) .app-main { padding: 16px 16px calc(40px + env(safe-area-inset-bottom)); }
+}
