@@ -91,3 +91,7 @@
 - [x] Serverseitiger Checkout (nur Inhaber/Admin, Preis-IDs aus tariff_plans, managed payments, keine Browser-Preise), Embedded Checkout auf /tarif mit Intervall-Umschalter, Kundenportal für Online-Abos.
 - [x] Webhook /api/public/payments/webhook mit Signaturprüfung, Idempotenz (stripe_events), Status-Sync in subscriptions (source 'provider'), Schutz manueller Freischaltungen, Audit-Einträge.
 - [x] Getestet: echte Testzahlung 4242 bis checkout=success, signierte Simulation aktivieren/kündigen, Duplikat-Zustellung, ungültige Signaturen 400, 106 Unit-Tests, Typsicherheit. Live-Zahlungen warten auf ausdrückliche Freigabe und Stripe-Go-Live.
+
+## Dashboard-Redesign nach Bildreferenz (10.11.2026)
+- [x] Dashboard an die visuelle Referenz angelehnt: heller bläulicher Hintergrund, Glaskarten, Blau-Violett-Verlauf bei Gewinn/Verlust, grüne/rote Kennzahlen mit Vormonats-Badge, Balkendiagramm mit Blau-Violett-Verläufen, Aufgabenkarte mit Häkchen und echten Anzahlen, Business-Assistent-Karte mit festem Roboterbild und drei Aktionen, Schnellzugriff mit vier Karten inkl. Angebot erstellen. Begrüßung tageszeitabhängig mit echtem Vornamen; Seitenmenü im Referenzlook (aktiver Punkt mit Blau-Verlauf).
+- [x] Keine Datenbank-, Logik- oder Navigationsänderungen; Desktop (1440px) und Mobil (411px) angemeldet geprüft: kein Seitenüberlauf, keine Laufzeitfehler, Aufgaben-Häkchen schaltbar, Menü öffnet; 120 Tests bestanden, Build OK.

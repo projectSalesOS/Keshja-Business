@@ -25,15 +25,26 @@ export function BalanceChart({ data }: { data: Data["series"] }) {
 }
 
 export function MonthlyBars({ data }: { data: Data["trend"] }) {
+  const id = useId().replace(/:/g, "");
   return <ResponsiveContainer width="100%" height="100%">
     <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barGap={3} accessibilityLayer>
+      <defs>
+        <linearGradient id={`mb-income-${id}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--dash-bar-from, var(--dash-income-accent))" />
+          <stop offset="100%" stopColor="var(--dash-bar-to, var(--dash-income-accent))" />
+        </linearGradient>
+        <linearGradient id={`mb-expense-${id}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--dash-bar-expense, var(--dash-expense-accent))" stopOpacity={0.85} />
+          <stop offset="100%" stopColor="var(--dash-bar-expense, var(--dash-expense-accent))" stopOpacity={0.55} />
+        </linearGradient>
+      </defs>
       <CartesianGrid stroke="var(--dash-line)" strokeDasharray="3 4" vertical={false} />
       <XAxis dataKey="month" tickFormatter={monthTick} tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} tickLine={false} axisLine={false} minTickGap={20} />
       <YAxis width={46} tickFormatter={moneyTick} tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} tickLine={false} axisLine={false} />
       <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => currency(v)} labelFormatter={monthTick} cursor={{ fill: "var(--dash-line)" }} />
       <Legend content={() => <div className="mt-3 flex justify-center gap-5 text-xs"><span className="dash-income">● Einnahmen</span><span className="dash-expense">● Ausgaben</span></div>} />
-      <Bar dataKey="income" name="Einnahmen" fill="var(--dash-income-accent)" fillOpacity={0.65} maxBarSize={28} radius={[3, 3, 0, 0]} isAnimationActive={false} />
-      <Bar dataKey="expense" name="Ausgaben" fill="var(--dash-expense-accent)" fillOpacity={0.75} maxBarSize={28} radius={[3, 3, 0, 0]} isAnimationActive={false} />
+      <Bar dataKey="income" name="Einnahmen" fill={`url(#mb-income-${id})`} maxBarSize={30} radius={[6, 6, 0, 0]} isAnimationActive={false} />
+      <Bar dataKey="expense" name="Ausgaben" fill={`url(#mb-expense-${id})`} maxBarSize={30} radius={[6, 6, 0, 0]} isAnimationActive={false} />
     </BarChart>
   </ResponsiveContainer>;
 }

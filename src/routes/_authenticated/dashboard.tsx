@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowDownRight, ArrowUpRight, Bell, CalendarDays, Camera, ChartNoAxesColumnIncreasing, ChevronRight, FileText, Loader2, PieChart as PieIcon, Plus, TrendingUp } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Bell, Camera, ChartNoAxesColumnIncreasing, Check, ChevronRight, FileSignature, FileText, Loader2, PieChart as PieIcon, Plus, Sparkles, TrendingUp } from "lucide-react";
 import { useMemo, useState } from "react";
-import { AppShell, Logo, PageHeader } from "@/components/AppShell";
+import { AppShell } from "@/components/AppShell";
 import { OrgGate } from "@/components/OrgGate";
 import { Empty, Panel, PeriodPicker } from "@/components/AnalyticsUi";
 import { categoryColors, ExpenseRing, IncomeExpenseChart, MonthlyBars } from "@/components/DashboardCharts";
-import { useProfile } from "@/hooks/useProfile";
+import { useProfile, type Profile } from "@/hooks/useProfile";
 import { useAnalyticsData } from "@/hooks/useAnalytics";
 import { rangeFor, receivables, type Preset, type Range } from "@/lib/analytics";
 import { chartSeries, dashboardData } from "@/lib/dashboard";
@@ -14,6 +14,7 @@ import { currency, formatDate } from "@/lib/finance";
 import { VoiceBooking } from "@/components/VoiceBooking";
 import { TransactionForm } from "@/components/TransactionForm";
 import { Button } from "@/components/ui/button";
+import assistantRobot from "@/assets/business-assistant-robot.png";
 import type { parseVoiceBooking } from "@/lib/voice-booking";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 function DashboardPage() {
   const { data: profile } = useProfile();
-  return <AppShell dashboard><OrgGate>{({ orgId }) => <DashboardView orgId={orgId} greeting={profile ? `Hallo, ${profile.displayName}!` : "Hallo!"} />}</OrgGate></AppShell>;
+  return <AppShell dashboard><OrgGate>{({ orgId }) => <DashboardView orgId={orgId} profile={profile ?? null} />}</OrgGate></AppShell>;
 }
 function sixMonths(today: string): Range {
   const end = rangeFor("monat", today).to;
@@ -47,8 +48,29 @@ function chartRangeFor(preset: ChartPreset, today: string): Range {
   start.setUTCDate(1); start.setUTCMonth(start.getUTCMonth() - (preset === "12m" ? 11 : 5));
   return { from: start.toISOString().slice(0, 10), to: end };
 }
-function DashboardView({ orgId, greeting }: { orgId: string; greeting: string }) {
+
+/** Tageszeitabhängige Begrüßung mit dem tatsächlich angemeldeten Namen. */
+function greetingFor(profile: Profile | null): string {
+  const hour = new Date().getHours();
+  const daypart = hour < 11 ? "Guten Morgen" : hour < 18 ? "Guten Tag" : "Guten Abend";
+  const firstName = profile?.displayName.trim().split(/\s+/)[0];
+  return firstName ? `${daypart}, ${firstName}!` : `${daypart}!`;
+}
+
+function DeltaBadge({ value, tone }: { value: number | null; tone: "onBrand" | "income" | "expense" }) {
+  if (value === null) return null;
+  const up = value >= 0;
+  return (
+    <span className={`dash-delta dash-delta-${tone}`}>
+      {up ? <ArrowUpRight size={13} aria-hidden="true" /> : <ArrowDownRight size={13} aria-hidden="true" />}
+      {`${up ? "+" : "−"}${Math.abs(value).toLocaleString("de-DE", { maximumFractionDigits: 1 })} % zum Vormonat`}
+    </span>
+  );
+}
+
+function DashboardView({ orgId, profile }: { orgId: string; profile: Profile | null }) {
   const [voiceResult, setVoiceResult] = useState<ReturnType<typeof parseVoiceBooking> | null>(null);
+  const [doneTasks, setDoneTasks] = useState<ReadonlySet<string>>(new Set());
   const today = todayIso();
   const [preset, setPreset] = useState<Preset>("monat");
   const [custom, setCustom] = useState<Range>(rangeFor("monat", today));
@@ -62,12 +84,34 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
   const monthSearch = isFullMonth ? { monat: range.from.slice(0, 7) } : {};
   const outstanding = useMemo(() => receivables(d.invoices, d.payments, today), [d.invoices, d.payments, today]);
   const recent = d.transactions.filter((t) => t.booking_date >= range.from && t.booking_date <= range.to).slice(0, 6);
+  const openBookings = d.transactions.filter((t) => t.status === "offen").length;
+  const greeting = greetingFor(profile);
+
+  const tasks = [
+    { key: "invoices", label: outstanding.length === 1 ? "1 offene Rechnung" : `${outstanding.length} offene Rechnungen`, count: outstanding.length, to: "/rechnungen" as const },
+    { key: "bookings", label: openBookings === 1 ? "1 offene Buchung prüfen" : `${openBookings} offene Buchungen prüfen`, count: openBookings, to: "/finanzen" as const },
+    { key: "report", label: "Umsatzübersicht erstellen", count: null, to: "/auswertungen" as const },
+  ];
+  const toggleTask = (key: string) => setDoneTasks((prev) => {
+    const next = new Set(prev);
+    if (next.has(key)) next.delete(key); else next.add(key);
+    return next;
+  });
+
   if (d.isLoading) return <p className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Kennzahlen werden geladen …</p>;
   if (d.error) return <p className="text-sm text-destructive">Daten konnten nicht geladen werden: {d.error.message}</p>;
-  return <div className="dashboard-view space-y-4">
-    <header className="dash-topbar"><Logo /><div className="dash-top-controls"><Button variant="outline" size="icon" aria-label="Zeitraum auswählen" onClick={() => document.getElementById("dashboard-filters")?.scrollIntoView({ behavior: "smooth", block: "center" })}><CalendarDays size={20} /></Button><label className="dash-header-period"><span className="sr-only">Zeitraum im Kopfbereich</span><input type="month" value={range.to.slice(0, 7)} onChange={e => { if (!e.target.value) return; const from = `${e.target.value}-01`; setPreset("frei"); setCustom(rangeFor("monat", from)); }} /></label><details className="dash-notifications"><summary aria-label="Offene Rechnungen"><Bell size={20} />{outstanding.length > 0 && <span className="dash-notification-dot" />}</summary><div className="dash-notification-list"><strong>Offene Rechnungen</strong>{outstanding.length ? outstanding.slice(0, 5).map(r => <Link key={r.id} to="/rechnungen">{r.number} · {currency(r.open)}</Link>) : <p>Keine offenen Rechnungen.</p>}</div></details></div></header>
-    <PageHeader title="Dashboard" description={`Deine Geschäftszahlen im Überblick · ${greeting}`} />
-    <VoiceBooking orgId={orgId} dashboard onResult={setVoiceResult} />
+  return <div className="dashboard-view">
+    <header className="dash-greet">
+      <div className="min-w-0">
+        <h1>{greeting} <span aria-hidden="true">👋</span></h1>
+        <p>Deine Geschäftszahlen im Überblick</p>
+      </div>
+      <div className="dash-top-controls">
+        <label className="dash-header-period"><span className="sr-only">Zeitraum im Kopfbereich</span><input type="month" value={range.to.slice(0, 7)} onChange={e => { if (!e.target.value) return; const from = `${e.target.value}-01`; setPreset("frei"); setCustom(rangeFor("monat", from)); }} /></label>
+        <details className="dash-notifications"><summary aria-label="Offene Rechnungen"><Bell size={20} />{outstanding.length > 0 && <span className="dash-notification-dot" />}</summary><div className="dash-notification-list"><strong>Offene Rechnungen</strong>{outstanding.length ? outstanding.slice(0, 5).map(r => <Link key={r.id} to="/rechnungen">{r.number} · {currency(r.open)}</Link>) : <p>Keine offenen Rechnungen.</p>}</div></details>
+      </div>
+    </header>
+
     <div id="dashboard-filters" className="dash-filters space-y-3">
       <div className="flex flex-wrap items-start gap-2">
         <PeriodPicker preset={preset} custom={custom} today={today} onChange={(p, c) => { setPreset(p); setCustom(c); }} />
@@ -76,35 +120,81 @@ function DashboardView({ orgId, greeting }: { orgId: string; greeting: string })
       <p className="text-xs text-muted-foreground">{formatDate(range.from)} – {formatDate(range.to)} · bezahlte Buchungen</p>
     </div>
 
-    <div className="dash-kpis grid grid-cols-2 gap-3" aria-label="Kennzahlen">
-      <Link to="/finanzen" search={monthSearch} aria-label="Gewinn und Verlust – alle Buchungen anzeigen" className="dash-card dash-kpi dash-profit-card">
-        <span className="dash-icon dash-brand"><ChartNoAxesColumnIncreasing size={25} /></span><h2 className="dash-title">Gewinn / Verlust</h2>
-        <p data-testid="dashboard-balance" className={`dash-metric ${m.totals.balance < 0 ? "dash-expense" : "dash-brand"}`}>{currency(m.totals.balance)}</p>
-        <p className="text-xs text-muted-foreground">{m.totals.count} {m.totals.count === 1 ? "Buchung" : "Buchungen"} im Zeitraum</p>
-      </Link>
-      {(["income", "expense"] as const).map((type) => <Link key={type} to="/finanzen" search={{ typ: type, ...monthSearch }} className={`dash-card dash-kpi dash-${type}-card`} aria-label={`${type === "income" ? "Einnahmen" : "Ausgaben"} – Buchungen anzeigen`}>
-        <span className={`dash-icon dash-${type}`}>{type === "income" ? <ArrowUpRight size={25} /> : <ArrowDownRight size={25} />}</span>
-        <h2 className="dash-title">{type === "income" ? "Einnahmen" : "Ausgaben"}</h2>
-        <p data-testid={`dashboard-${type}`} className={`dash-metric dash-${type}`}>{currency(m.totals[type])}</p>
-        <p className="text-xs text-muted-foreground">{type === "income" ? m.incomeCount : m.expenseCount} Buchungen</p>
-      </Link>)}
+    <VoiceBooking orgId={orgId} dashboard onResult={setVoiceResult} />
+
+    <div className="dash-hero">
+      <div className="dash-hero-main">
+        <div className="dash-kpis" aria-label="Kennzahlen">
+          <Link to="/finanzen" search={monthSearch} aria-label="Gewinn und Verlust – alle Buchungen anzeigen" className="dash-card dash-kpi dash-profit-card">
+            <span className="dash-kpi-head"><h2 className="dash-title">Gewinn / Verlust</h2><span className="dash-icon"><ChartNoAxesColumnIncreasing size={22} /></span></span>
+            <p data-testid="dashboard-balance" className="dash-metric">{currency(m.totals.balance)}</p>
+            <span className="dash-kpi-foot">
+              <DeltaBadge value={m.deltas.balance} tone="onBrand" />
+              <span className="dash-kpi-sub">{m.totals.count} {m.totals.count === 1 ? "Buchung" : "Buchungen"} im Zeitraum</span>
+            </span>
+          </Link>
+          {(["income", "expense"] as const).map((type) => <Link key={type} to="/finanzen" search={{ typ: type, ...monthSearch }} className={`dash-card dash-kpi dash-${type}-card`} aria-label={`${type === "income" ? "Einnahmen" : "Ausgaben"} – Buchungen anzeigen`}>
+            <span className="dash-kpi-head"><h2 className="dash-title">{type === "income" ? "Einnahmen" : "Ausgaben"}</h2><span className={`dash-icon dash-${type}`}>{type === "income" ? <ArrowUpRight size={20} /> : <ArrowDownRight size={20} />}</span></span>
+            <p data-testid={`dashboard-${type}`} className={`dash-metric dash-${type}`}>{currency(m.totals[type])}</p>
+            <span className="dash-kpi-foot">
+              <DeltaBadge value={m.deltas[type]} tone={type} />
+              <span className="dash-kpi-sub">{type === "income" ? m.incomeCount : m.expenseCount} Buchungen</span>
+            </span>
+          </Link>)}
+        </div>
+
+        <div className="dash-hero-grid">
+          <section className="dash-card dash-chart-card" aria-label="Umsatzentwicklung als Balkendiagramm">
+            <div className="dash-chart-heading"><span className="dash-icon dash-brand"><TrendingUp size={21} /></span><div><h2 className="dash-title">Umsatzentwicklung (6 Monate)</h2><p className="mt-1 text-xs text-muted-foreground">{CHART_PRESET_LABEL[chartPreset]} · {formatDate(chartRange.from)} – {formatDate(chartRange.to)}</p></div>
+              <label className="ml-auto flex items-center gap-2 text-xs text-muted-foreground"><span className="sr-only">Diagrammzeitraum</span><select className="h-9 rounded-lg border border-border bg-card px-2 text-xs text-foreground" value={chartPreset} onChange={(e) => setChartPreset(e.target.value as ChartPreset)} aria-label="Diagrammzeitraum">{(["6m", "12m", "jahr", "quartal"] as const).map((p) => <option key={p} value={p}>{CHART_PRESET_LABEL[p]}</option>)}</select></label></div>
+            <div className="dash-bar-chart min-w-0"><MonthlyBars data={chart} /></div>
+          </section>
+
+          <section className="dash-card dash-tasks" aria-label="Meine Aufgaben">
+            <div className="dash-chart-heading"><div><h2 className="dash-title">Meine Aufgaben</h2><p className="mt-1 text-xs text-muted-foreground">Aus deinen aktuellen Daten</p></div></div>
+            <ul>
+              {tasks.map((task) => {
+                const done = doneTasks.has(task.key);
+                return <li key={task.key} className="dash-task" data-done={done}>
+                  <button type="button" className="dash-task-check" aria-pressed={done} aria-label={`${task.label} – als erledigt markieren`} onClick={() => toggleTask(task.key)}>{done && <Check size={14} strokeWidth={3} />}</button>
+                  <Link to={task.to} className="dash-task-label">{task.label}</Link>
+                  {task.count !== null && task.count > 0 && <span className="dash-task-count">{task.count}</span>}
+                </li>;
+              })}
+            </ul>
+          </section>
+        </div>
+      </div>
+
+      <aside className="dash-card dash-assistant" aria-label="Business-Assistent">
+        <div className="dash-assistant-intro">
+          <img src={assistantRobot} width={816} height={816} loading="lazy" alt="KESHJA Business-Assistent" className="dash-assistant-robot" />
+          <div>
+            <h2 className="dash-title"><Sparkles size={15} aria-hidden="true" /> Business-Assistent</h2>
+            <p className="dash-assistant-text">Ich unterstütze dich bei deinen Aufgaben.</p>
+          </div>
+        </div>
+        <nav className="dash-assistant-actions" aria-label="Assistentenaktionen">
+          <Link to="/rechnungen" className="dash-assistant-action"><span className="dash-assistant-icon"><FileText size={17} /></span><span>Offene Rechnungen prüfen</span><ChevronRight size={16} /></Link>
+          <Link to="/finanzen" search={{ neu: "1" }} className="dash-assistant-action"><span className="dash-assistant-icon"><Plus size={17} /></span><span>Neue Buchung erfassen</span><ChevronRight size={16} /></Link>
+          <Link to="/auswertungen" className="dash-assistant-action"><span className="dash-assistant-icon"><ChartNoAxesColumnIncreasing size={17} /></span><span>Monatsübersicht anzeigen</span><ChevronRight size={16} /></Link>
+        </nav>
+      </aside>
     </div>
 
-    <div aria-label="Schnellaktionen" className="grid grid-cols-3 gap-3">
-      <Link to="/kassenbons" search={{ capture: "1" }} className="dash-card dash-action"><span className="dash-icon dash-brand"><Camera size={21} /></span><span>Beleg erfassen<small>Foto oder Galerie</small></span><ChevronRight size={16} /></Link>
-      <Link to="/finanzen" search={{ neu: "1" }} className="dash-card dash-action"><span className="dash-icon dash-brand"><Plus size={21} /></span><span>Buchung erfassen<small>Einnahme oder Ausgabe</small></span><ChevronRight size={16} /></Link>
-      <Link to="/rechnungen" search={{ neu: "1" }} className="dash-card dash-action"><span className="dash-icon dash-brand"><FileText size={21} /></span><span>Rechnung erstellen<small>Schnell & einfach</small></span><ChevronRight size={16} /></Link>
-    </div>
-
-    <section className="dash-card" aria-label="Einnahmen und Ausgaben im Diagrammzeitraum">
-      <div className="dash-chart-heading"><span className="dash-icon dash-brand"><TrendingUp size={21} /></span><div><h2 className="dash-title">Einnahmen & Ausgaben</h2><p className="mt-1 text-xs text-muted-foreground">{formatDate(chartRange.from)} – {formatDate(chartRange.to)}</p></div>
-        <label className="ml-auto flex items-center gap-2 text-xs text-muted-foreground"><span className="sr-only">Diagrammzeitraum</span><select className="h-9 rounded-lg border border-border bg-card px-2 text-xs text-foreground" value={chartPreset} onChange={(e) => setChartPreset(e.target.value as ChartPreset)} aria-label="Diagrammzeitraum">{(["6m", "12m", "jahr", "quartal"] as const).map((p) => <option key={p} value={p}>{CHART_PRESET_LABEL[p]}</option>)}</select></label></div>
-      <div className="dash-line-chart min-w-0"><IncomeExpenseChart data={chart} /></div>
+    <section aria-label="Schnellzugriff">
+      <h2 className="dash-section-title">Schnellzugriff</h2>
+      <div className="dash-quick">
+        <Link to="/kassenbons" search={{ capture: "1" }} className="dash-card dash-action"><span className="dash-icon dash-brand"><Camera size={22} /></span><span>Beleg scannen<small>Foto oder Galerie</small></span><ChevronRight size={16} /></Link>
+        <Link to="/finanzen" search={{ neu: "1" }} className="dash-card dash-action"><span className="dash-icon dash-brand"><Plus size={22} /></span><span>Neue Buchung<small>Einnahme oder Ausgabe</small></span><ChevronRight size={16} /></Link>
+        <Link to="/rechnungen" search={{ neu: "1" }} className="dash-card dash-action"><span className="dash-icon dash-brand"><FileText size={22} /></span><span>Rechnung erstellen<small>Schnell & einfach</small></span><ChevronRight size={16} /></Link>
+        <Link to="/angebote" search={{ neu: "1" }} className="dash-card dash-action"><span className="dash-icon dash-brand"><FileSignature size={22} /></span><span>Angebot erstellen<small>Für deine Kunden</small></span><ChevronRight size={16} /></Link>
+      </div>
     </section>
 
-    <section className="dash-card" aria-label="Monatliche Einnahmen und Ausgaben als Balken">
-      <div className="dash-chart-heading"><span className="dash-icon dash-brand"><ChartNoAxesColumnIncreasing size={21} /></span><div><h2 className="dash-title">Monatliche Einnahmen & Ausgaben</h2><p className="mt-1 text-xs text-muted-foreground">{CHART_PRESET_LABEL[chartPreset]} · {formatDate(chartRange.from)} – {formatDate(chartRange.to)}</p></div></div>
-      <div className="dash-bar-chart min-w-0"><MonthlyBars data={chart} /></div>
+    <section className="dash-card dash-secondary-section" aria-label="Einnahmen und Ausgaben im Diagrammzeitraum">
+      <div className="dash-chart-heading"><span className="dash-icon dash-brand"><TrendingUp size={21} /></span><div><h2 className="dash-title">Einnahmen & Ausgaben</h2><p className="mt-1 text-xs text-muted-foreground">{formatDate(chartRange.from)} – {formatDate(chartRange.to)}</p></div></div>
+      <div className="dash-line-chart min-w-0"><IncomeExpenseChart data={chart} /></div>
     </section>
 
     <section className="dash-card dash-secondary-section" aria-label="Ausgabenübersicht">

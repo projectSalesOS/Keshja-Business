@@ -789,3 +789,169 @@ body { font-feature-settings: "tnum" 0; }
 @media (max-width: 639px) {
   .business-ui:has(.dashboard-view) .app-main { padding: 16px 16px calc(40px + env(safe-area-inset-bottom)); }
 }
+
+/* ============ Dashboard-Redesign 2026-11 (visuelle Referenz: helles Premium-Finanz-Dashboard) ============
+ * Nur Darstellung: Kennzahlen, Diagrammdaten, Aufgaben und Verknüpfungen bleiben unverändert. */
+.business-ui:has(.dashboard-view) {
+  --dash-background: oklch(0.974 0.009 258);
+  --dash-surface: oklch(1 0 0);
+  --dash-glass: color-mix(in oklab, oklch(1 0 0) 86%, transparent);
+  --dash-brand: oklch(0.52 0.20 262);
+  --dash-brand-2: oklch(0.55 0.19 305);
+  --dash-navy: oklch(0.295 0.05 265);
+  --dash-income: oklch(0.48 0.12 155);
+  --dash-expense: oklch(0.55 0.19 25);
+  --dash-income-accent: oklch(0.52 0.13 155);
+  --dash-expense-accent: oklch(0.58 0.18 25);
+  --dash-category-muted: oklch(0.72 0.03 280);
+  --dash-line: oklch(0.93 0.010 258);
+  --dash-contour: oklch(0.92 0.014 258);
+  --dash-reflection: linear-gradient(160deg, oklch(1 0 0 / 0.65), transparent 55%);
+  --dash-shadow: 0 1px 2px oklch(0.40 0.05 265 / 0.04), 0 16px 36px -20px oklch(0.45 0.10 265 / 0.18);
+  --dash-bar-from: oklch(0.62 0.16 262);
+  --dash-bar-to: oklch(0.64 0.15 310);
+  --dash-bar-expense: oklch(0.78 0.07 20);
+  background:
+    radial-gradient(1100px 520px at 88% -12%, oklch(0.90 0.05 285 / 0.5), transparent 62%),
+    radial-gradient(900px 480px at -8% 18%, oklch(0.91 0.045 250 / 0.55), transparent 58%),
+    linear-gradient(180deg, oklch(0.972 0.010 256), oklch(0.978 0.008 265) 50%, oklch(0.982 0.006 280));
+  color: var(--dash-navy);
+}
+.dashboard-view .dash-card {
+  background-color: var(--dash-glass);
+  backdrop-filter: blur(14px) saturate(115%);
+  border-color: var(--dash-contour);
+  box-shadow: var(--dash-shadow);
+  border-radius: 20px;
+}
+.dashboard-view .dash-title { color: var(--dash-navy); }
+
+/* Begrüßungskopf */
+.dashboard-view .dash-greet { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 12px; }
+.dashboard-view .dash-greet h1 { font-family: var(--font-sans); font-size: 30px; font-weight: 700; letter-spacing: -0.01em; color: var(--dash-navy); }
+.dashboard-view .dash-greet p { margin-top: 4px; font-size: 14px; color: var(--muted-foreground); }
+.dashboard-view .dash-header-period { background: var(--dash-glass); backdrop-filter: blur(10px); }
+.dashboard-view .dash-notifications summary { background: var(--dash-glass); backdrop-filter: blur(10px); }
+.dashboard-view .dash-notification-dot { background: var(--dash-expense); }
+.dashboard-view .dash-notification-list { background: var(--dash-surface); }
+
+/* Kennzahlen */
+.dashboard-view .dash-kpis { display: grid; grid-template-columns: 1.55fr 1fr 1fr; gap: 16px; }
+.dashboard-view .dash-kpi { display: flex; flex-direction: column; gap: 10px; border-left-width: 1px; border-left-color: var(--dash-contour); }
+.dashboard-view .dash-kpi-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.dashboard-view .dash-kpi-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.dashboard-view .dash-kpi-sub { font-size: 12px; color: var(--muted-foreground); }
+.dashboard-view .dash-delta { display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 4px 10px; font-size: 11px; font-weight: 600; }
+.dashboard-view .dash-delta-onBrand { background: oklch(1 0 0); color: var(--dash-income); }
+.dashboard-view .dash-delta-income { background: color-mix(in oklab, var(--dash-income) 12%, var(--dash-surface)); color: var(--dash-income); }
+.dashboard-view .dash-delta-expense { background: color-mix(in oklab, var(--dash-expense) 12%, var(--dash-surface)); color: var(--dash-expense); }
+.dashboard-view .dash-profit-card {
+  grid-column: auto; min-height: 172px; padding: 22px 26px;
+  background-image: linear-gradient(118deg, var(--dash-brand), var(--dash-brand-2));
+  border: none; color: oklch(1 0 0);
+}
+.dashboard-view .dash-profit-card .dash-title { color: oklch(1 0 0 / 0.85); }
+.dashboard-view .dash-profit-card > .dash-icon { position: static; }
+.dashboard-view .dash-profit-card .dash-icon { background: oklch(1 0 0 / 0.18); color: oklch(1 0 0); }
+.dashboard-view .dash-profit-card .dash-metric { font-size: 36px; text-align: left; color: oklch(1 0 0); }
+.dashboard-view .dash-profit-card .dash-kpi-sub { color: oklch(1 0 0 / 0.75); }
+.dashboard-view .dash-income-card { background-image: linear-gradient(150deg, color-mix(in oklab, var(--dash-income) 9%, transparent), transparent 70%); }
+.dashboard-view .dash-expense-card { background-image: linear-gradient(150deg, color-mix(in oklab, var(--dash-expense) 9%, transparent), transparent 70%); }
+.dashboard-view .dash-income-card .dash-icon { background: color-mix(in oklab, var(--dash-income) 12%, var(--dash-surface)); }
+.dashboard-view .dash-expense-card .dash-icon { background: color-mix(in oklab, var(--dash-expense) 12%, var(--dash-surface)); }
+.dashboard-view .dash-icon.dash-brand { background: color-mix(in oklab, var(--dash-brand) 10%, var(--dash-surface)); color: var(--dash-brand); }
+
+/* Hauptbereich: Kennzahlen + Diagramm/Aufgaben links, Assistent rechts */
+.dashboard-view .dash-hero { display: grid; grid-template-columns: minmax(0,1fr) 300px; gap: 16px; align-items: start; }
+.dashboard-view .dash-hero-main { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.dashboard-view .dash-hero-grid { display: grid; grid-template-columns: minmax(0,1.35fr) minmax(0,1fr); gap: 16px; }
+.dashboard-view .dash-chart-card .dash-bar-chart { height: 220px; }
+
+/* Aufgaben */
+.dashboard-view .dash-tasks ul { display: flex; flex-direction: column; }
+.dashboard-view .dash-task { display: flex; align-items: center; gap: 12px; padding-block: 11px; }
+.dashboard-view .dash-task + .dash-task { border-top: 1px solid var(--dash-line); }
+.dashboard-view .dash-task-check {
+  display: grid; place-items: center; width: 24px; height: 24px; min-height: 24px; flex-shrink: 0;
+  border: 2px solid var(--dash-contour); border-radius: 8px; background: var(--dash-surface); color: oklch(1 0 0);
+}
+.dashboard-view .dash-task[data-done="true"] .dash-task-check { background: var(--dash-brand-2); border-color: var(--dash-brand-2); }
+.dashboard-view .dash-task-label { min-width: 0; font-size: 14px; color: var(--dash-navy); }
+.dashboard-view .dash-task[data-done="true"] .dash-task-label { text-decoration: line-through; color: var(--muted-foreground); }
+.dashboard-view .dash-task-count {
+  margin-left: auto; display: grid; place-items: center; min-width: 26px; height: 24px; padding-inline: 8px;
+  border-radius: 999px; background: color-mix(in oklab, var(--dash-expense) 14%, var(--dash-surface));
+  color: var(--dash-expense); font-size: 12px; font-weight: 600;
+}
+
+/* Business-Assistent */
+.dashboard-view .dash-assistant { display: flex; flex-direction: column; gap: 14px; padding: 22px; }
+.dashboard-view .dash-assistant-intro { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.dashboard-view .dash-assistant-robot { width: 128px; height: 128px; object-fit: contain; filter: drop-shadow(0 10px 18px oklch(0.5 0.12 290 / 0.25)); }
+.dashboard-view .dash-assistant .dash-title { display: inline-flex; align-items: center; gap: 6px; font-size: 16px; }
+.dashboard-view .dash-assistant .dash-title svg { color: var(--dash-brand-2); }
+.dashboard-view .dash-assistant-text { margin-top: 4px; font-size: 13px; color: var(--muted-foreground); }
+.dashboard-view .dash-assistant-actions { display: flex; flex-direction: column; gap: 10px; }
+.dashboard-view .dash-assistant-action {
+  display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+  border: 1px solid var(--dash-contour); border-radius: 14px; background: var(--dash-glass);
+  font-size: 13px; font-weight: 500; color: var(--dash-navy);
+}
+.dashboard-view .dash-assistant-action:hover { border-color: var(--dash-brand); }
+.dashboard-view .dash-assistant-action > svg { margin-left: auto; color: var(--muted-foreground); }
+.dashboard-view .dash-assistant-icon { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: color-mix(in oklab, var(--dash-brand) 10%, var(--dash-surface)); color: var(--dash-brand); flex-shrink: 0; }
+
+/* Schnellzugriff */
+.dashboard-view .dash-section-title { font-size: 17px; font-weight: 650; color: var(--dash-navy); margin-bottom: 10px; }
+.dashboard-view .dash-quick { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; }
+.dashboard-view .dash-quick .dash-action {
+  display: flex; flex-direction: row; align-items: center; gap: 14px; min-height: 88px;
+  padding: 16px 18px; text-align: left; font-size: 14px; font-weight: 600; color: var(--dash-navy);
+}
+.dashboard-view .dash-quick .dash-action .dash-icon { width: 48px; height: 48px; border-radius: 14px; }
+.dashboard-view .dash-quick .dash-action small { font-size: 11px; }
+.dashboard-view .dash-quick .dash-action > svg { margin-left: auto; color: var(--muted-foreground); }
+
+/* Sprachbuchung im neuen Farbschema */
+.dashboard-view .dash-voice-card { border-left-color: var(--dash-brand); background: linear-gradient(110deg, var(--dash-glass), color-mix(in oklab, var(--dash-brand) 8%, var(--dash-glass))); }
+.dashboard-view .dash-microphone { background: linear-gradient(135deg, var(--dash-brand), var(--dash-brand-2)); color: oklch(1 0 0); }
+.dashboard-view .dash-voice-copy strong { color: var(--dash-navy); }
+
+@media (max-width: 1023px) {
+  .dashboard-view .dash-hero { grid-template-columns: minmax(0,1fr); }
+  .dashboard-view .dash-assistant-intro { flex-direction: row; text-align: left; align-items: center; }
+  .dashboard-view .dash-assistant-robot { width: 84px; height: 84px; }
+}
+@media (max-width: 639px) {
+  .dashboard-view .dash-greet h1 { font-size: 22px; }
+  .dashboard-view .dash-kpis { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .dashboard-view .dash-profit-card { grid-column: 1 / -1; min-height: 150px; padding: 18px; }
+  .dashboard-view .dash-profit-card .dash-metric { font-size: 30px; text-align: left; }
+  .dashboard-view :is(.dash-income-card,.dash-expense-card) { display: flex; min-height: 118px; padding: 14px; }
+  .dashboard-view :is(.dash-income-card,.dash-expense-card) .dash-icon { width: 30px; height: 30px; }
+  .dashboard-view :is(.dash-income-card,.dash-expense-card) .dash-metric { font-size: 22px; }
+  .dashboard-view .dash-hero-grid { grid-template-columns: minmax(0,1fr); }
+  .dashboard-view .dash-chart-card .dash-bar-chart { height: 180px; }
+  .dashboard-view .dash-quick { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .dashboard-view .dash-quick .dash-action { flex-direction: column; align-items: flex-start; gap: 10px; min-height: 108px; padding: 14px; font-size: 13px; }
+  .dashboard-view .dash-quick .dash-action .dash-icon { width: 40px; height: 40px; }
+  .dashboard-view .dash-quick .dash-action > svg { display: none; }
+}
+
+/* Navigation im Referenzlook: helle bläuliche Fläche, marineblau, aktiver Punkt mit Blau-Verlauf. */
+.navigation-drawer {
+  background: linear-gradient(180deg, oklch(0.975 0.010 256), oklch(0.965 0.014 275));
+  border-color: oklch(0.92 0.014 258);
+}
+.navigation-link { border-left: none; border-radius: 13px; color: oklch(0.33 0.05 265); min-height: 52px; }
+.navigation-link:hover { background: oklch(1 0 0 / 0.6); }
+.navigation-link[aria-current="page"] {
+  background: linear-gradient(118deg, oklch(0.52 0.20 262), oklch(0.55 0.19 305));
+  color: oklch(1 0 0); font-weight: 600;
+  box-shadow: 0 8px 20px -8px oklch(0.52 0.20 262 / 0.5);
+}
+.navigation-icon, .navigation-icon-blue, .navigation-icon-orange, .navigation-icon-income, .navigation-icon-expense, .navigation-icon-amber, .navigation-icon-neutral {
+  --nav-icon: oklch(0.42 0.06 265); background: transparent;
+}
+.navigation-link[aria-current="page"] .navigation-icon { --nav-icon: oklch(1 0 0); background: oklch(1 0 0 / 0.18); }
+.navigation-heading, .navigation-account { border-color: oklch(0.92 0.014 258); }
