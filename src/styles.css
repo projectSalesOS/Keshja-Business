@@ -1139,3 +1139,117 @@ body { font-feature-settings: "tnum" 0; }
   .dashboard-view .dash-qa:last-child::before { left: auto; right: 0; transform: translate(0, 4px); }
   .dashboard-view .dash-qa:last-child:hover::before, .dashboard-view .dash-qa:last-child:focus-within::before { transform: translate(0, 0); }
 }
+
+/* ===== Gradient Glass 2026-11c: app-weites Designsystem =====
+ * Funktionsfarben: blau=Buchungen/Belege, violett=KI, grün=Einnahmen, rosé=Ausgaben,
+ * orange=Rechnungen, türkis=Angebote/Kunden. Wellen starten rechts unten. Nur Darstellung. */
+.business-ui, [role="dialog"], [role="alertdialog"] {
+  --tone-blue: oklch(0.56 0.17 255); --tone-violet: oklch(0.55 0.19 298); --tone-green: oklch(0.56 0.14 155);
+  --tone-rose: oklch(0.59 0.18 15); --tone-orange: oklch(0.68 0.16 55); --tone-amber: var(--tone-orange);
+  --tone-teal: oklch(0.60 0.10 195); --tone-indigo: oklch(0.52 0.16 275); --tone-neutral: oklch(0.50 0.03 265);
+  --glass-bg: oklch(1 0 0 / 0.72);
+  --glass-border: oklch(0.92 0.02 270 / 0.9);
+  --glass-shadow: 0 1px 2px oklch(0.4 0.05 265 / 0.05), 0 18px 40px -26px oklch(0.45 0.12 275 / 0.35), inset 0 1px 0 oklch(1 0 0 / 0.95);
+  --wave-a: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100' preserveAspectRatio='none'%3E%3Cpath d='M200 0 C185 45 140 75 60 92 C35 97 15 99 0 100 H200Z'/%3E%3C/svg%3E");
+  --wave-b: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100' preserveAspectRatio='none'%3E%3Cpath d='M200 22 C170 60 150 50 110 78 C85 95 50 98 20 100 H200Z'/%3E%3C/svg%3E");
+}
+.business-ui.is-dashboard, .business-ui { background:
+  radial-gradient(60% 40% at 100% 0%, oklch(0.96 0.03 270 / 0.6), transparent 70%),
+  radial-gradient(50% 35% at 0% 100%, oklch(0.97 0.025 200 / 0.5), transparent 70%), oklch(0.995 0.002 270); }
+.dashboard-view { background: transparent !important; }
+
+/* Reusable glass card with waves: dashboard KPIs, quick actions, shared Stat tiles */
+.glass-tile, .dashboard-view .dash-kpi, .dashboard-view .dash-quick .dash-action {
+  --w1: var(--tone-blue); --w2: var(--tone-violet);
+  position: relative; overflow: hidden; isolation: isolate;
+  background-color: var(--glass-bg);
+  background-image: radial-gradient(80% 90% at 100% 0%, color-mix(in oklab, var(--w2) 10%, transparent), transparent 65%),
+    linear-gradient(160deg, oklch(1 0 0 / 0.95), color-mix(in oklab, var(--w1) 7%, oklch(1 0 0 / 0.7)));
+  backdrop-filter: blur(16px) saturate(150%);
+  border: 1px solid color-mix(in oklab, var(--w1) 20%, oklch(1 0 0));
+  box-shadow: 0 1px 2px oklch(0.4 0.05 265 / 0.05), 0 20px 40px -24px color-mix(in oklab, var(--w1) 50%, transparent), inset 0 1px 0 oklch(1 0 0), inset 0 0 0 1px oklch(1 0 0 / 0.5);
+}
+:is(.glass-tile, .dashboard-view .dash-kpi, .dashboard-view .dash-quick .dash-action) > * { position: relative; z-index: 1; }
+:is(.glass-tile, .dashboard-view .dash-kpi, .dashboard-view .dash-quick .dash-action)::before,
+:is(.glass-tile, .dashboard-view .dash-kpi, .dashboard-view .dash-quick .dash-action)::after {
+  content: ""; display: block; position: absolute; z-index: 0; pointer-events: none;
+  left: auto; top: auto; right: 0; bottom: 0; border-radius: 0; opacity: 1;
+  mask-size: 100% 100%; mask-repeat: no-repeat;
+}
+:is(.glass-tile, .dashboard-view .dash-kpi, .dashboard-view .dash-quick .dash-action)::before {
+  width: 62%; height: 78%; max-height: none; mask-image: var(--wave-a);
+  background: linear-gradient(200deg, color-mix(in oklab, var(--w2) 42%, transparent), color-mix(in oklab, var(--w1) 22%, transparent) 55%, transparent);
+}
+:is(.glass-tile, .dashboard-view .dash-kpi, .dashboard-view .dash-quick .dash-action)::after {
+  width: 48%; height: 60%; max-height: none; mask-image: var(--wave-b);
+  background: linear-gradient(210deg, color-mix(in oklab, var(--w1) 55%, transparent), color-mix(in oklab, var(--w2) 25%, transparent) 60%, oklch(1 0 0 / 0.4));
+  filter: drop-shadow(0 -1px 0 oklch(1 0 0 / 0.8));
+}
+.dashboard-view .dash-quick .dash-action::before { width: 45%; height: 95%; }
+.dashboard-view .dash-quick .dash-action::after { width: 34%; height: 80%; }
+.dashboard-view .dash-income-card, .glass-tint-green, .glass-tint-accent-green { --w1: var(--tone-green); --w2: oklch(0.80 0.12 165); }
+.dashboard-view .dash-expense-card, .glass-tint-red, .glass-tint-destructive, .glass-tint-accent-pink { --w1: var(--tone-rose); --w2: oklch(0.78 0.13 55); }
+.glass-tint-accent-orange, .dashboard-view .dash-action:has(.tone-amber) { --w1: var(--tone-orange); --w2: oklch(0.82 0.12 75); }
+.glass-tint-accent-turquoise, .dashboard-view .dash-action:has(.tone-teal) { --w1: var(--tone-teal); --w2: var(--tone-violet); }
+.glass-tint-accent-blue, .dashboard-view .dash-action:has(.tone-blue) { --w1: var(--tone-blue); --w2: oklch(0.72 0.12 230); }
+.dashboard-view .dash-action:has(.lucide-plus) { --w1: var(--tone-green); --w2: oklch(0.80 0.12 165); }
+.dashboard-view .dash-action:has(.lucide-plus) .dash-icon { --tone: var(--tone-green); }
+.dashboard-view .dash-quick .dash-action:hover { transform: translateY(-1px); border-color: color-mix(in oklab, var(--w1) 40%, oklch(1 0 0)); }
+.dashboard-view .tone-amber { --tone: var(--tone-orange); }
+
+/* General cards, tables, dialogs: calm glass without waves */
+.business-ui :where([class~="bg-card"][class~="border"], [class~="bg-card"][class~="shadow-card"]),
+.business-ui .dash-card:not(.dash-kpi):not(.dash-action) {
+  background-color: var(--glass-bg);
+  background-image: radial-gradient(70% 60% at 100% 0%, oklch(0.95 0.03 275 / 0.45), transparent 70%), linear-gradient(170deg, oklch(1 0 0 / 0.9), oklch(0.99 0.006 270 / 0.6));
+  backdrop-filter: blur(14px) saturate(140%);
+  border-color: var(--glass-border); box-shadow: var(--glass-shadow);
+}
+:where([role="dialog"], [role="alertdialog"])[class~="bg-card"],
+:where([role="dialog"], [role="alertdialog"])[class~="bg-background"] {
+  background-color: oklch(1 0 0 / 0.9);
+  background-image: radial-gradient(70% 45% at 100% 0%, oklch(0.94 0.04 280 / 0.55), transparent 70%), radial-gradient(60% 40% at 0% 100%, oklch(0.96 0.03 210 / 0.45), transparent 70%);
+  backdrop-filter: blur(20px) saturate(150%);
+  border-color: var(--glass-border);
+  box-shadow: 0 30px 70px -30px oklch(0.4 0.12 275 / 0.45), inset 0 1px 0 oklch(1 0 0);
+}
+.business-ui :where(thead) { background: linear-gradient(90deg, oklch(0.97 0.015 260 / 0.8), oklch(0.97 0.015 300 / 0.6)); }
+:where(.business-ui, [role="dialog"], [role="alertdialog"]) :where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), select, textarea)[class~="border"] {
+  background-color: oklch(1 0 0 / 0.85); border-color: oklch(0.91 0.02 270);
+  box-shadow: inset 0 1px 2px oklch(0.4 0.05 265 / 0.04);
+}
+:where(.business-ui, [role="dialog"], [role="alertdialog"]) :where(input, select, textarea):focus-visible {
+  border-color: color-mix(in oklab, var(--tone-blue) 55%, oklch(1 0 0));
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--tone-blue) 16%, transparent);
+}
+:where(.business-ui, [role="dialog"], [role="alertdialog"]) :where(button, a)[class~="bg-primary"] {
+  background-image: linear-gradient(120deg, var(--tone-blue), var(--tone-violet));
+  box-shadow: 0 10px 22px -12px color-mix(in oklab, var(--tone-violet) 70%, transparent), inset 0 1px 0 oklch(1 0 0 / 0.3);
+}
+
+/* Navigation: colored icon tiles per function */
+.navigation-icon-blue { --t: var(--tone-blue); } .navigation-icon-orange { --t: var(--tone-orange); }
+.navigation-icon-teal { --t: var(--tone-teal); } .navigation-icon-income { --t: var(--tone-green); }
+.navigation-icon-expense { --t: var(--tone-rose); } .navigation-icon-violet, .navigation-icon-brand { --t: var(--tone-violet); }
+.navigation-icon-neutral, .navigation-icon-amber { --t: var(--tone-neutral); }
+.navigation-icon {
+  display: inline-grid; place-items: center; width: 36px; height: 36px; flex-shrink: 0; border-radius: 11px;
+  --nav-icon: var(--t, var(--tone-neutral)); color: var(--nav-icon);
+  background: linear-gradient(145deg, color-mix(in oklab, var(--t, var(--tone-neutral)) 16%, oklch(1 0 0)), color-mix(in oklab, var(--t, var(--tone-neutral)) 6%, oklch(1 0 0)));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--t, var(--tone-neutral)) 16%, transparent), 0 4px 10px -6px color-mix(in oklab, var(--t, var(--tone-neutral)) 50%, transparent);
+}
+.navigation-icon svg { color: var(--nav-icon); stroke: currentColor; }
+.navigation-link[aria-current="page"] {
+  background: linear-gradient(118deg, oklch(0.95 0.035 262 / 0.95), oklch(0.95 0.04 300 / 0.85));
+  color: oklch(0.30 0.08 270); font-weight: 650;
+  box-shadow: inset 0 0 0 1px oklch(0.88 0.05 275), 0 10px 22px -16px oklch(0.5 0.16 275 / 0.6);
+}
+.navigation-link[aria-current="page"] .navigation-icon {
+  --nav-icon: oklch(1 0 0); background: linear-gradient(135deg, var(--t, var(--tone-blue)), color-mix(in oklab, var(--t, var(--tone-blue)) 60%, var(--tone-violet)));
+}
+.navigation-drawer, .business-ui.has-sidebar .app-sidebar {
+  background: linear-gradient(180deg, oklch(1 0 0 / 0.85), oklch(0.975 0.014 275 / 0.85));
+  backdrop-filter: blur(18px);
+}
+/* SectionTabs / segmented controls */
+.business-ui :where(nav[aria-label] a[aria-current="page"]) { color: var(--tone-blue); }

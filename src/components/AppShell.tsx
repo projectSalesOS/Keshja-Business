@@ -11,14 +11,14 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 
 const NAV = [
-  { to: "/dashboard", label: "Dashboard", tone: "brand", icon: LayoutDashboard, match: [] as string[] },
-  { to: "/rechnungen", label: "Rechnungen", tone: "blue", icon: FileText, match: [] as string[] },
-  { to: "/angebote", label: "Angebote", tone: "orange", icon: FileSignature, match: [] as string[] },
+  { to: "/dashboard", label: "Dashboard", tone: "blue", icon: LayoutDashboard, match: [] as string[] },
+  { to: "/rechnungen", label: "Rechnungen", tone: "orange", icon: FileText, match: [] as string[] },
+  { to: "/angebote", label: "Angebote", tone: "teal", icon: FileSignature, match: [] as string[] },
   { to: "/finanzen", label: "Einnahmen & Ausgaben", tone: "income", icon: Wallet, match: ["/kassenbons", "/auswertungen"] },
   { to: "/fixkosten", label: "Wiederkehrende Kosten", tone: "expense", icon: Repeat, match: [] as string[] },
-  { to: "/kunden", label: "Kunden", tone: "amber", icon: Users, match: [] as string[] },
+  { to: "/kunden", label: "Kunden", tone: "teal", icon: Users, match: [] as string[] },
   { to: "/einstellungen", label: "Einstellungen", tone: "neutral", icon: Settings, match: [] as string[] },
-  { to: "/tarif", label: "Tarif & Nutzung", tone: "brand", icon: CreditCard, match: [] as string[] },
+  { to: "/tarif", label: "Tarif & Nutzung", tone: "violet", icon: CreditCard, match: [] as string[] },
 ] as const;
 
 function useActive() {
@@ -114,7 +114,7 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
           <span>{item.label}</span>
         </Link>;
       })}
-      {operator && <Link to="/admin" className="navigation-link" onClick={onNavigate}><span className="navigation-icon navigation-icon-brand"><ShieldCheck size={21}/></span><span>Betreiberverwaltung</span></Link>}
+      {operator && <Link to="/admin" className="navigation-link" onClick={onNavigate}><span className="navigation-icon navigation-icon-violet"><ShieldCheck size={21}/></span><span>Betreiberverwaltung</span></Link>}
     </nav>
   );
 }
