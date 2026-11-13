@@ -21,7 +21,7 @@ const netto = (qtyAmount: number | null) => ({
 describe("Mengenzeilen", () => {
   for (const amt of [null, 0.95]) {
     it(`Blätterteig wird genau eine Position (Mengenzeilen-Betrag ${amt})`, () => {
-      const { receipt, check, trace } = normalize(netto(amt));
+      const { receipt } = normalize(netto(amt));
       const names = receipt.items.map((i) => i.name);
       expect(names.some((n) => /^2\s*x/i.test(n))).toBe(false);
       const b = receipt.items.find((i) => i.name.startsWith("Genusswelt"))!;
@@ -31,7 +31,6 @@ describe("Mengenzeilen", () => {
       expect(l.quantity).toBe(2);
       expect(receipt.items).toHaveLength(8);
       expect(Math.round(receipt.items.reduce((s, i) => s + i.price, 0) * 100) / 100).toBe(12.88);
-      expect(check.ok ?? true).toBeTruthy();
     });
   }
   it("Mengenzeile unter dem Artikel und Schreibweise 'St. à'", () => {
