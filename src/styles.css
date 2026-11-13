@@ -1253,3 +1253,19 @@ body { font-feature-settings: "tnum" 0; }
 }
 /* SectionTabs / segmented controls */
 .business-ui :where(nav[aria-label] a[aria-current="page"]) { color: var(--tone-blue); }
+
+/* 2026-11d: Schnellzugriff ohne Wellen, Berichte-Menüpunkt, vierter Rundknopf */
+.dashboard-view .dash-quick .dash-action::before, .dashboard-view .dash-quick .dash-action::after { content: none; display: none; }
+.navigation-icon-indigo { --t: var(--tone-indigo); }
+.dashboard-view .dash-qa:nth-child(4) { --tone: var(--tone-teal); }
+.dashboard-view .dash-qa:nth-child(3) .dash-round-btn { color: var(--tone-indigo); }
+.dashboard-view .dash-qa:nth-child(4)::before { left: auto; right: 0; transform: translate(0, 4px); }
+.dashboard-view .dash-qa:nth-child(3)::before { left: 50%; right: auto; transform: translate(-50%, 4px); }
+@media (min-width: 1024px) and (hover: hover) {
+  .dashboard-view .dash-qa:nth-child(3):hover::before, .dashboard-view .dash-qa:nth-child(3):focus-within::before { transform: translate(-50%, 0); }
+  .dashboard-view .dash-qa:nth-child(4):hover::before, .dashboard-view .dash-qa:nth-child(4):focus-within::before { transform: translate(0, 0); }
+}
+@media (max-width: 639px) {
+  .dashboard-view .dash-top-controls { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; width: 100%; max-width: 360px; }
+  .dashboard-view .dash-qa-label { font-size: 10px; white-space: normal; text-align: center; line-height: 1.15; }
+}

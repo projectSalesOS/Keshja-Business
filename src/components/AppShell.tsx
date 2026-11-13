@@ -1,6 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { LayoutDashboard, Repeat, Users, Wallet, Settings, LogOut, FileText, FileSignature, Menu, CreditCard, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Repeat, Users, Wallet, Settings, LogOut, FileText, FileSignature, Menu, CreditCard, ShieldCheck, ChartNoAxesColumnIncreasing } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import logoMark from "@/assets/keshja-business-logo.png.asset.json";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,7 +14,8 @@ const NAV = [
   { to: "/dashboard", label: "Dashboard", tone: "blue", icon: LayoutDashboard, match: [] as string[] },
   { to: "/rechnungen", label: "Rechnungen", tone: "orange", icon: FileText, match: [] as string[] },
   { to: "/angebote", label: "Angebote", tone: "teal", icon: FileSignature, match: [] as string[] },
-  { to: "/finanzen", label: "Einnahmen & Ausgaben", tone: "income", icon: Wallet, match: ["/kassenbons", "/auswertungen"] },
+  { to: "/finanzen", label: "Einnahmen & Ausgaben", tone: "income", icon: Wallet, match: ["/kassenbons"] },
+  { to: "/auswertungen", label: "Berichte", tone: "indigo", icon: ChartNoAxesColumnIncreasing, match: [] as string[] },
   { to: "/fixkosten", label: "Wiederkehrende Kosten", tone: "expense", icon: Repeat, match: [] as string[] },
   { to: "/kunden", label: "Kunden", tone: "teal", icon: Users, match: [] as string[] },
   { to: "/einstellungen", label: "Einstellungen", tone: "neutral", icon: Settings, match: [] as string[] },
