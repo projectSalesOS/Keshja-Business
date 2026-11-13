@@ -1,3 +1,4 @@
+import { mergeQuantityLines } from "./receipt-quantity";
 import { checkReceipt, type ReceiptCheck } from "./receipt-check";
 import {
   classifyLineType,
@@ -44,8 +45,9 @@ export function classifyLines(raw: RawReceipt): ClassifiedLine[] {
  * keine Zufallsauswahl, keine Uhrzeit, kein Netzwerk, keine Preisheuristik.
  */
 export function normalize(raw: RawReceipt): NormalizeResult {
-  const classified = classifyLines(raw);
-  const notes: string[] = [];
+  const merged = mergeQuantityLines(raw.lines);
+  const classified = classifyLines({ ...raw, lines: merged.lines });
+  const notes: string[] = [...merged.notes];
 
   const items: ParsedItem[] = [];
   const traceItems: TraceItem[] = [];
@@ -185,7 +187,7 @@ export function normalize(raw: RawReceipt): NormalizeResult {
   const total = round2(raw.total);
 
   let receiptDiscount = 0;
-  let unresolved = 0;
+  let unresolved = merged.unresolved;
 
   if (total > 0 && aggregateControls.length > 0) {
     if (Math.abs(withoutDiscount - total) <= TOLERANCE) {

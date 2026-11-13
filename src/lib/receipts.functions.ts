@@ -53,6 +53,9 @@ Absolute Regeln:
   sowie Zeilen wie "Gesamter Preisvorteil" oder "Sie sparen" mit zurück. Sie werden nachgelagert klassifiziert.
 - Bei Mengen ("3 x 1,29") oder Gewicht ("0,842 kg x 2,99 EUR/kg") ist "amount" die Zeilensumme,
   "quantity" die Menge bzw. das Gewicht und "unitPrice" der Stück-/Kilopreis.
+- Steht eine Mengenzeile wie "2 x 0,95" oder "2 St. à 0,95" auf einer EIGENEN Zeile (über oder unter dem Artikel),
+  gib sie als eigene Zeile mit Text wie gedruckt, amount=null, quantity und unit_price zurück. Erfinde dafür keinen Artikel;
+  die Zuordnung zum Artikel erfolgt nachgelagert.
 - "total" ist ausschließlich der auf dem Bon ausgewiesene Zahlbetrag.
 - Kategorien nur für echte Warenzeilen setzen, sonst null. Nur diese Werte sind erlaubt:
 ${CATEGORY_TREE_PROMPT}
