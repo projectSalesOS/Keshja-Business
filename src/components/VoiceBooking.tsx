@@ -16,7 +16,7 @@ type Recognition = {
 };
 type SpeechWindow = Window & { SpeechRecognition?: new () => Recognition; webkitSpeechRecognition?: new () => Recognition };
 
-export function VoiceBooking({ orgId, onResult, prominent = false, dashboard = false }: { orgId: string; onResult: (result: ReturnType<typeof parseVoiceBooking>) => void; prominent?: boolean; dashboard?: boolean }) {
+export function VoiceBooking({ orgId, onResult, prominent = false, dashboard = false, compact = false }: { orgId: string; onResult: (result: ReturnType<typeof parseVoiceBooking>) => void; prominent?: boolean; dashboard?: boolean; compact?: boolean }) {
   const entitlement = useTariff(orgId);
   const check = useServerFn(checkFeature);
   const recognition = useRef<Recognition | null>(null);
@@ -64,6 +64,22 @@ export function VoiceBooking({ orgId, onResult, prominent = false, dashboard = f
     r.onend = () => { setListening(false); if (!receivedResult) setError("Keine Sprache erkannt. Bitte erneut versuchen oder manuell erfassen."); };
     setError(""); setTranscript("");
     try { r.start(); setListening(true); } catch { setError("Mikrofon konnte nicht gestartet werden."); }
+  }
+  if (compact) {
+    const locked = !entitlement.data?.plan.voice;
+    const hint = locked ? "Sprachbuchung ist in deinem Tarif nicht enthalten." : !supported ? "Dieser Browser unterstützt keine Spracherkennung." : "";
+    return (
+      <div className="dash-voice-compact">
+        <button type="button" className="dash-round-btn dash-mic-btn" data-listening={listening} disabled={locked || !supported} title={hint || (listening ? "Sprachaufnahme stoppen" : "Buchung per Sprache erfassen")} onClick={() => listening ? recognition.current?.stop() : start()} aria-label={listening ? "Sprachaufnahme stoppen" : "Buchung per Sprache erfassen"} aria-pressed={listening}>
+          {listening ? <Square size={17} /> : <Mic size={19} />}
+        </button>
+        {(listening || transcript || error) && <div className="dash-voice-pop" role="status">
+          {listening && <p>Mikrofon aktiv – bitte Buchung sprechen.</p>}
+          {transcript && <p>„{transcript}“</p>}
+          {error && <p role="alert" className="text-destructive">{error}</p>}
+        </div>}
+      </div>
+    );
   }
   if (!entitlement.data?.plan.voice) return <TariffNotice feature="Sprachbuchung" />;
   return (

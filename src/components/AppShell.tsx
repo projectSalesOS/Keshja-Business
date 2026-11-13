@@ -101,16 +101,36 @@ export function useSignOut() {
   };
 }
 
-export function AppShell({ children }: { children: ReactNode; dashboard?: boolean }) {
+function NavList({ onNavigate }: { onNavigate?: () => void }) {
+  const isActive = useActive();
+  const { data: operator } = useOperator();
+  return (
+    <nav aria-label="Hauptnavigation" className="navigation-list">
+      {NAV.map((item) => {
+        const active = isActive(item);
+        const Icon = item.icon;
+        return <Link key={item.to} to={item.to} aria-current={active ? "page" : undefined} className="navigation-link" onClick={onNavigate}>
+          <span className={`navigation-icon navigation-icon-${item.tone}`}><Icon size={21} strokeWidth={1.75} /></span>
+          <span>{item.label}</span>
+        </Link>;
+      })}
+      {operator && <Link to="/admin" className="navigation-link" onClick={onNavigate}><span className="navigation-icon navigation-icon-brand"><ShieldCheck size={21}/></span><span>Betreiberverwaltung</span></Link>}
+    </nav>
+  );
+}
+
+export function AppShell({ children, dashboard = false }: { children: ReactNode; dashboard?: boolean }) {
   const { data: profile } = useProfile();
   const { data: org } = useOrganization();
   const signOut = useSignOut();
-  const isActive = useActive();
-  const { data: operator } = useOperator();
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="business-ui min-h-screen bg-background">
+    <div className={`business-ui min-h-screen bg-background ${dashboard ? "has-sidebar is-dashboard" : ""}`}>
+      {dashboard && <aside className="app-sidebar" aria-label="Seitenleiste">
+        <div className="app-sidebar-logo"><Logo /></div>
+        <NavList />
+      </aside>}
       <header className="sticky top-0 z-20 grid h-16 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-card/90 px-3 backdrop-blur-lg sm:px-5">
         <Button type="button" variant="ghost" size="icon" className="navigation-trigger" aria-label="Menü öffnen" title="Menü öffnen" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}>
           <Menu size={22} strokeWidth={1.75} />
@@ -136,17 +156,7 @@ export function AppShell({ children }: { children: ReactNode; dashboard?: boolea
         <SheetContent side="left" className="navigation-drawer" overlayClassName="navigation-overlay" closeLabel="Menü schließen" aria-describedby={undefined}>
           <SheetTitle className="sr-only">KESHJA Business – Navigation</SheetTitle>
           <div className="navigation-heading"><Logo /></div>
-          <nav aria-label="Hauptnavigation" className="navigation-list">
-            {NAV.map((item) => {
-              const active = isActive(item);
-              const Icon = item.icon;
-              return <Link key={item.to} to={item.to} aria-current={active ? "page" : undefined} className="navigation-link" onClick={() => setMenuOpen(false)}>
-                <span className={`navigation-icon navigation-icon-${item.tone}`}><Icon size={21} strokeWidth={1.75} /></span>
-                <span>{item.label}</span>
-              </Link>;
-            })}
-            {operator && <Link to="/admin" className="navigation-link" onClick={() => setMenuOpen(false)}><span className="navigation-icon navigation-icon-brand"><ShieldCheck size={21}/></span><span>Betreiberverwaltung</span></Link>}
-          </nav>
+          <NavList onNavigate={() => setMenuOpen(false)} />
           <div className="navigation-account">
             {profile && <div className="min-w-0"><p className="truncate text-sm font-semibold">{profile.displayName}</p><p className="truncate text-xs text-muted-foreground">{org?.organization?.name ?? "Kein Unternehmen"}</p></div>}
             <Button variant="ghost" onClick={() => { setMenuOpen(false); void signOut(); }} className="w-full justify-start"><LogOut size={18} />Abmelden</Button>
