@@ -56,6 +56,10 @@ Absolute Regeln:
 - Steht eine Mengenzeile wie "2 x 0,95" oder "2 St. à 0,95" auf einer EIGENEN Zeile (über oder unter dem Artikel),
   gib sie als eigene Zeile mit Text wie gedruckt, amount=null, quantity und unit_price zurück. Erfinde dafür keinen Artikel;
   die Zuordnung zum Artikel erfolgt nachgelagert.
+- Gewichtszeilen wie "0,890 kg x 1,29 EUR/kg" ebenso: eigene Zeile, amount=null, quantity=Gewicht, unit_price=Kilopreis.
+- Preiszuordnung NUR nach der räumlichen Zeile: "amount" ist ausschließlich der Betrag, der in DERSELBEN gedruckten Zeile
+  rechts neben dem Text steht. Steht rechts kein Betrag, ist amount=null. Verschiebe niemals Beträge auf die nächste
+  oder vorherige Zeile und ordne Preise nie nach fortlaufender Reihenfolge zu.
 - "total" ist ausschließlich der auf dem Bon ausgewiesene Zahlbetrag.
 - Kategorien nur für echte Warenzeilen setzen, sonst null. Nur diese Werte sind erlaubt:
 ${CATEGORY_TREE_PROMPT}

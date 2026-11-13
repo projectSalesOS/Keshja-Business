@@ -46,3 +46,31 @@ describe("Mengenzeilen", () => {
     expect(trace.notes.join(" ")).toMatch(/bitte prüfen/);
   });
 });
+
+describe("REWE-Bon 28.10.2026", () => {
+  const rows: [string, number | null][] = [
+    ["BANANE BANDEROLE", 1.15], ["0,890 kg x 1,29 EUR/kg", null], ["RD-HACKFLEISCH", 5.79], ["GEFL.WIENER", 3.29],
+    ["JA! SCHMELZKAESE", 2.98], ["2 Stk x 1,49", null], ["SCHLEMMERBROET.", 0.99], ["STREUSELSCHNECKE", 1.19],
+    ["BERLINER 6ER", 2.99], ["TORTILLA WEIZ.LE", 1.29], ["KARTOFFELCREME", 2.69], ["PORREE", 0.98], ["2 Stk x 0,49", null],
+    ["BIO SCHLAGSAHNE", 1.19], ["PIZZA SPINACI", 1.79], ["CHAMPIGN.3.WAHL", 1.58], ["2 Stk x 0,79", null],
+    ["ANZUENDWUERFEL", 1.95], ["JA! TOIPA 3LG", 3.75], ["SUMME", 33.6], ["Geg. Mastercard", 33.6],
+  ];
+  it("ergibt 33,60 € mit richtiger Zuordnung von Gewicht und Mengen", () => {
+    const { receipt } = normalize({ merchant: "REWE", date: "2026-10-28", time: "16:21", total: 33.6,
+      lines: rows.map(([t, a], i) => L(i, t, a)) });
+    const by = (p: string) => receipt.items.find((i) => i.name.startsWith(p))!;
+    expect(receipt.items).toHaveLength(15);
+    expect(Math.round(receipt.items.reduce((s, i) => s + i.price, 0) * 100) / 100).toBe(33.6);
+    expect([by("BANANE").quantity, by("BANANE").price]).toEqual([0.89, 1.15]);
+    expect(by("RD-HACK").price).toBe(5.79);
+    expect(by("GEFL").price).toBe(3.29);
+    expect([by("JA! SCHMELZ").quantity, by("JA! SCHMELZ").price]).toEqual([2, 2.98]);
+    expect([by("PORREE").quantity, by("PORREE").price]).toEqual([2, 0.98]);
+    expect([by("CHAMPIGN").quantity, by("CHAMPIGN").price]).toEqual([2, 1.58]);
+  });
+  it("OCR-Tippfehler „2 StR x 1,49“ wird trotzdem als Mengenzeile erkannt", () => {
+    const { receipt } = normalize({ merchant: "REWE", date: "2026-10-28", time: null, total: 2.98,
+      lines: [L(0, "JA! SCHMELZKAESE", 2.98), L(1, "2 StR x 1,49", null)] });
+    expect(receipt.items).toHaveLength(1);
+  });
+});

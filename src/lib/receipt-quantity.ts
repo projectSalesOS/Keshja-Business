@@ -10,7 +10,7 @@ const num = (s: string) => Number(s.replace(",", "."));
 export function parseQuantityLine(line: RawLine): { quantity: number; unitPrice: number | null } | null {
   const m = line.text
     .trim()
-    .match(/^(\d+(?:[.,]\d{1,3})?)\s*(?:kg\s*)?(?:st(?:k|ück)?\.?\s*)?(?:x|×|\*|à|a\b)\s*(?:à\s*)?(\d+[.,]\d{1,2})?\s*(?:eur|€)?(?:\s*\/\s*kg)?\s*$/i);
+    .match(/^(\d+(?:[.,]\d{1,3})?)\s*(?:kg\s*)?(?:st[a-zü]{0,4}\.?\s*)?(?:x|×|\*|à|a\b)\s*(?:à\s*)?(\d+[.,]\d{1,2})?\s*(?:eur|€)?(?:\s*\/\s*kg)?\s*$/i);
   if (!m) return null;
   const quantity = num(m[1]!);
   if (!(quantity > 0)) return null;
