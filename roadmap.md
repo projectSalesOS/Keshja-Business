@@ -95,3 +95,6 @@
 ## Dashboard-Redesign nach Bildreferenz (10.11.2026)
 - [x] Dashboard an die visuelle Referenz angelehnt: heller bläulicher Hintergrund, Glaskarten, Blau-Violett-Verlauf bei Gewinn/Verlust, grüne/rote Kennzahlen mit Vormonats-Badge, Balkendiagramm mit Blau-Violett-Verläufen, Aufgabenkarte mit Häkchen und echten Anzahlen, Business-Assistent-Karte mit festem Roboterbild und drei Aktionen, Schnellzugriff mit vier Karten inkl. Angebot erstellen. Begrüßung tageszeitabhängig mit echtem Vornamen; Seitenmenü im Referenzlook (aktiver Punkt mit Blau-Verlauf).
 - [x] Keine Datenbank-, Logik- oder Navigationsänderungen; Desktop (1440px) und Mobil (411px) angemeldet geprüft: kein Seitenüberlauf, keine Laufzeitfehler, Aufgaben-Häkchen schaltbar, Menü öffnet; 120 Tests bestanden, Build OK.
+
+## Dashboard-Feinschliff (13.11.2026)
+- [x] Wellen-KPIs (hell, weniger Lila), Glocke/Profil neben Abmelden, Berichte-Knopf mit Tooltips/Beschriftungen, farbiges Icon-System; Desktop/Mobil geprüft

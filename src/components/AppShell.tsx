@@ -136,6 +136,8 @@ export function AppShell({ children, dashboard = false }: { children: ReactNode;
           <Menu size={22} strokeWidth={1.75} />
         </Button>
         <Logo />
+        <div className="app-header-actions">
+        <div id="app-header-extras" className="contents" />
         <Button
           variant="ghost"
           size="icon"
@@ -146,6 +148,7 @@ export function AppShell({ children, dashboard = false }: { children: ReactNode;
         >
           <LogOut className="h-4 w-4" />
         </Button>
+        </div>
       </header>
 
       <main className="app-main mx-auto w-full min-w-0 px-5 pb-28 pt-6 sm:px-8 lg:px-16 lg:pt-12">
